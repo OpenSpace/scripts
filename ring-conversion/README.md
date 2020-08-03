@@ -1,0 +1,1 @@
+Conversion scripts for https://bjj.mmedia.is/data/s_rings/index.html turning the text values into PNGs.

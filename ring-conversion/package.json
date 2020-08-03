@@ -1,0 +1,14 @@
+{
+  "name": "ring-conversion",
+  "version": "1.0.0",
+  "description": "Conversion scripts for https://bjj.mmedia.is/data/s_rings/index.html turning the text values into PNGs.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pngjs": "^5.0.0"
+  }
+}
