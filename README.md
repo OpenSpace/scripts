@@ -22,8 +22,8 @@ Used for planetary rings. (Conversion scripts for turning the text values into P
 ## session-recording-easeinout
 Script to create an eased version of a session recording file
 
-##skyskan-conversion
+## skyskan-conversion
 Used to convertion DS/DM alignement files to OpenSpace/SGCT config files.
 
-##streamnodes-conversion
+## streamnodes-conversion
 Script to convert from HDF files to binary used for the OpenSpace softwares renderable named renderableStreamNodes.
