@@ -1,0 +1,9 @@
+return {
+	{
+		Type = 'ReadFitsTask',
+		InFileOrFolderPath = 'C:/os/scripts/jupyter-notebooks/gaia/datain/',
+		OutFileOrFolderPath='C:/os/scripts/jupyter-notebooks/gaia/dataout/',
+		SingleFileProcess = false,
+		ThreadsToUse = 6
+	}
+}

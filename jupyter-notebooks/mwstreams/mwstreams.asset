@@ -1,0 +1,530 @@
+local assetHelper = asset.require('util/asset_helper')
+local transforms = asset.require('scene/solarsystem/sun/transforms')local Disk = {
+        Identifier = 'Disk',
+        Parent = 'Root',
+        Transform = {
+            Translation = {
+                Type = 'StaticTranslation',
+                -- The center of the Milky Way is approximately 8 kiloparsec from the Sun.
+                -- The x-axis of galactic coordinates points from the sun towards the center
+                -- of the galaxy.
+                Position = { 8 * 3.086E19, 0, 0 }
+            },
+            Rotation = {
+                Type = 'SpiceRotation',
+                SourceFrame = 'ECLIPTIC'
+,                DestinationFrame = 'GALACTIC'
+            }
+        },
+        Renderable = {            Type = 'RenderableBillboardsCloud',
+            Enabled = true,
+            Color = {0.3411764705882353,0.47058823529411764, 0.6431372549019608},
+            Opacity = 0.70,            File = asset.localResource('Disk.speck'),
+            Texture = asset.localResource('point3A.png'),
+            PolygonSides = 6,
+            Unit = 'pc',
+            ScaleFactor = 440,
+            BillboardMinMaxSize = { 0.0, 300.0 },
+            EnablePixelSizeControl = false
+        },        GUI = {
+            Name = 'Disk',
+            Path = '/Milky Way/Streams'
+        }
+    }
+
+local MagellanicClouds = {
+        Identifier = 'MagellanicClouds',
+        Parent = 'Root',
+        Transform = {
+            Translation = {
+                Type = 'StaticTranslation',
+                -- The center of the Milky Way is approximately 8 kiloparsec from the Sun.
+                -- The x-axis of galactic coordinates points from the sun towards the center
+                -- of the galaxy.
+                Position = { 8 * 3.086E19, 0, 0 }
+            },
+            Rotation = {
+                Type = 'SpiceRotation',
+                SourceFrame = 'ECLIPTIC'
+,                DestinationFrame = 'GALACTIC'
+            }
+        },
+        Renderable = {            Type = 'RenderableBillboardsCloud',
+            Enabled = true,
+            Color = {0.4,0.7607843137254902, 0.6470588235294118},
+            Opacity = 0.70,            File = asset.localResource('MagellanicClouds.speck'),
+            Texture = asset.localResource('point3A.png'),
+            PolygonSides = 6,
+            Unit = 'pc',
+            ScaleFactor = 440,
+            BillboardMinMaxSize = { 0.0, 300.0 },
+            EnablePixelSizeControl = false
+        },        GUI = {
+            Name = 'MagellanicClouds',
+            Path = '/Milky Way/Streams'
+        }
+    }
+
+local Sagittarius = {
+        Identifier = 'Sagittarius',
+        Parent = 'Root',
+        Transform = {
+            Translation = {
+                Type = 'StaticTranslation',
+                -- The center of the Milky Way is approximately 8 kiloparsec from the Sun.
+                -- The x-axis of galactic coordinates points from the sun towards the center
+                -- of the galaxy.
+                Position = { 8 * 3.086E19, 0, 0 }
+            },
+            Rotation = {
+                Type = 'SpiceRotation',
+                SourceFrame = 'ECLIPTIC'
+,                DestinationFrame = 'GALACTIC'
+            }
+        },
+        Renderable = {            Type = 'RenderableBillboardsCloud',
+            Enabled = true,
+            Color = {0.9882352941176471,0.5529411764705883, 0.3843137254901961},
+            Opacity = 0.70,            File = asset.localResource('Sagittarius.speck'),
+            Texture = asset.localResource('point3A.png'),
+            PolygonSides = 6,
+            Unit = 'pc',
+            ScaleFactor = 440,
+            BillboardMinMaxSize = { 0.0, 300.0 },
+            EnablePixelSizeControl = false
+        },        GUI = {
+            Name = 'Sagittarius',
+            Path = '/Milky Way/Streams'
+        }
+    }
+
+local GD1 = {
+        Identifier = 'GD1',
+        Parent = 'Root',
+        Transform = {
+            Translation = {
+                Type = 'StaticTranslation',
+                -- The center of the Milky Way is approximately 8 kiloparsec from the Sun.
+                -- The x-axis of galactic coordinates points from the sun towards the center
+                -- of the galaxy.
+                Position = { 8 * 3.086E19, 0, 0 }
+            },
+            Rotation = {
+                Type = 'SpiceRotation',
+                SourceFrame = 'ECLIPTIC'
+,                DestinationFrame = 'GALACTIC'
+            }
+        },
+        Renderable = {            Type = 'RenderableBillboardsCloud',
+            Enabled = true,
+            Color = {0.5529411764705883,0.6274509803921569, 0.796078431372549},
+            Opacity = 0.70,            File = asset.localResource('GD1.speck'),
+            Texture = asset.localResource('point3A.png'),
+            PolygonSides = 6,
+            Unit = 'pc',
+            ScaleFactor = 440,
+            BillboardMinMaxSize = { 0.0, 300.0 },
+            EnablePixelSizeControl = false
+        },        GUI = {
+            Name = 'GD1',
+            Path = '/Milky Way/Streams'
+        }
+    }
+
+local Orphan = {
+        Identifier = 'Orphan',
+        Parent = 'Root',
+        Transform = {
+            Translation = {
+                Type = 'StaticTranslation',
+                -- The center of the Milky Way is approximately 8 kiloparsec from the Sun.
+                -- The x-axis of galactic coordinates points from the sun towards the center
+                -- of the galaxy.
+                Position = { 8 * 3.086E19, 0, 0 }
+            },
+            Rotation = {
+                Type = 'SpiceRotation',
+                SourceFrame = 'ECLIPTIC'
+,                DestinationFrame = 'GALACTIC'
+            }
+        },
+        Renderable = {            Type = 'RenderableBillboardsCloud',
+            Enabled = true,
+            Color = {0.9058823529411765,0.5411764705882353, 0.7647058823529411},
+            Opacity = 0.70,            File = asset.localResource('Orphan.speck'),
+            Texture = asset.localResource('point3A.png'),
+            PolygonSides = 6,
+            Unit = 'pc',
+            ScaleFactor = 440,
+            BillboardMinMaxSize = { 0.0, 300.0 },
+            EnablePixelSizeControl = false
+        },        GUI = {
+            Name = 'Orphan',
+            Path = '/Milky Way/Streams'
+        }
+    }
+
+local Pal5 = {
+        Identifier = 'Pal5',
+        Parent = 'Root',
+        Transform = {
+            Translation = {
+                Type = 'StaticTranslation',
+                -- The center of the Milky Way is approximately 8 kiloparsec from the Sun.
+                -- The x-axis of galactic coordinates points from the sun towards the center
+                -- of the galaxy.
+                Position = { 8 * 3.086E19, 0, 0 }
+            },
+            Rotation = {
+                Type = 'SpiceRotation',
+                SourceFrame = 'ECLIPTIC'
+,                DestinationFrame = 'GALACTIC'
+            }
+        },
+        Renderable = {            Type = 'RenderableBillboardsCloud',
+            Enabled = true,
+            Color = {0.6509803921568628,0.8470588235294118, 0.32941176470588235},
+            Opacity = 0.70,            File = asset.localResource('Pal5.speck'),
+            Texture = asset.localResource('point3A.png'),
+            PolygonSides = 6,
+            Unit = 'pc',
+            ScaleFactor = 440,
+            BillboardMinMaxSize = { 0.0, 300.0 },
+            EnablePixelSizeControl = false
+        },        GUI = {
+            Name = 'Pal5',
+            Path = '/Milky Way/Streams'
+        }
+    }
+
+local Ophiuchus = {
+        Identifier = 'Ophiuchus',
+        Parent = 'Root',
+        Transform = {
+            Translation = {
+                Type = 'StaticTranslation',
+                -- The center of the Milky Way is approximately 8 kiloparsec from the Sun.
+                -- The x-axis of galactic coordinates points from the sun towards the center
+                -- of the galaxy.
+                Position = { 8 * 3.086E19, 0, 0 }
+            },
+            Rotation = {
+                Type = 'SpiceRotation',
+                SourceFrame = 'ECLIPTIC'
+,                DestinationFrame = 'GALACTIC'
+            }
+        },
+        Renderable = {            Type = 'RenderableBillboardsCloud',
+            Enabled = true,
+            Color = {1.0,0.8509803921568627, 0.1843137254901961},
+            Opacity = 0.70,            File = asset.localResource('Ophiuchus.speck'),
+            Texture = asset.localResource('point3A.png'),
+            PolygonSides = 6,
+            Unit = 'pc',
+            ScaleFactor = 440,
+            BillboardMinMaxSize = { 0.0, 300.0 },
+            EnablePixelSizeControl = false
+        },        GUI = {
+            Name = 'Ophiuchus',
+            Path = '/Milky Way/Streams'
+        }
+    }
+
+local ATLAS = {
+        Identifier = 'ATLAS',
+        Parent = 'Root',
+        Transform = {
+            Translation = {
+                Type = 'StaticTranslation',
+                -- The center of the Milky Way is approximately 8 kiloparsec from the Sun.
+                -- The x-axis of galactic coordinates points from the sun towards the center
+                -- of the galaxy.
+                Position = { 8 * 3.086E19, 0, 0 }
+            },
+            Rotation = {
+                Type = 'SpiceRotation',
+                SourceFrame = 'ECLIPTIC'
+,                DestinationFrame = 'GALACTIC'
+            }
+        },
+        Renderable = {            Type = 'RenderableBillboardsCloud',
+            Enabled = true,
+            Color = {0.8980392156862745,0.7686274509803922, 0.5803921568627451},
+            Opacity = 0.70,            File = asset.localResource('ATLAS.speck'),
+            Texture = asset.localResource('point3A.png'),
+            PolygonSides = 6,
+            Unit = 'pc',
+            ScaleFactor = 440,
+            BillboardMinMaxSize = { 0.0, 300.0 },
+            EnablePixelSizeControl = false
+        },        GUI = {
+            Name = 'ATLAS',
+            Path = '/Milky Way/Streams'
+        }
+    }
+
+local AliqaUma = {
+        Identifier = 'AliqaUma',
+        Parent = 'Root',
+        Transform = {
+            Translation = {
+                Type = 'StaticTranslation',
+                -- The center of the Milky Way is approximately 8 kiloparsec from the Sun.
+                -- The x-axis of galactic coordinates points from the sun towards the center
+                -- of the galaxy.
+                Position = { 8 * 3.086E19, 0, 0 }
+            },
+            Rotation = {
+                Type = 'SpiceRotation',
+                SourceFrame = 'ECLIPTIC'
+,                DestinationFrame = 'GALACTIC'
+            }
+        },
+        Renderable = {            Type = 'RenderableBillboardsCloud',
+            Enabled = true,
+            Color = {0.7019607843137254,0.7019607843137254, 0.7019607843137254},
+            Opacity = 0.70,            File = asset.localResource('AliqaUma.speck'),
+            Texture = asset.localResource('point3A.png'),
+            PolygonSides = 6,
+            Unit = 'pc',
+            ScaleFactor = 440,
+            BillboardMinMaxSize = { 0.0, 300.0 },
+            EnablePixelSizeControl = false
+        },        GUI = {
+            Name = 'AliqaUma',
+            Path = '/Milky Way/Streams'
+        }
+    }
+
+local Chenab = {
+        Identifier = 'Chenab',
+        Parent = 'Root',
+        Transform = {
+            Translation = {
+                Type = 'StaticTranslation',
+                -- The center of the Milky Way is approximately 8 kiloparsec from the Sun.
+                -- The x-axis of galactic coordinates points from the sun towards the center
+                -- of the galaxy.
+                Position = { 8 * 3.086E19, 0, 0 }
+            },
+            Rotation = {
+                Type = 'SpiceRotation',
+                SourceFrame = 'ECLIPTIC'
+,                DestinationFrame = 'GALACTIC'
+            }
+        },
+        Renderable = {            Type = 'RenderableBillboardsCloud',
+            Enabled = true,
+            Color = {0.4,0.7607843137254902, 0.6470588235294118},
+            Opacity = 0.70,            File = asset.localResource('Chenab.speck'),
+            Texture = asset.localResource('point3A.png'),
+            PolygonSides = 6,
+            Unit = 'pc',
+            ScaleFactor = 440,
+            BillboardMinMaxSize = { 0.0, 300.0 },
+            EnablePixelSizeControl = false
+        },        GUI = {
+            Name = 'Chenab',
+            Path = '/Milky Way/Streams'
+        }
+    }
+
+local Elqui = {
+        Identifier = 'Elqui',
+        Parent = 'Root',
+        Transform = {
+            Translation = {
+                Type = 'StaticTranslation',
+                -- The center of the Milky Way is approximately 8 kiloparsec from the Sun.
+                -- The x-axis of galactic coordinates points from the sun towards the center
+                -- of the galaxy.
+                Position = { 8 * 3.086E19, 0, 0 }
+            },
+            Rotation = {
+                Type = 'SpiceRotation',
+                SourceFrame = 'ECLIPTIC'
+,                DestinationFrame = 'GALACTIC'
+            }
+        },
+        Renderable = {            Type = 'RenderableBillboardsCloud',
+            Enabled = true,
+            Color = {0.9882352941176471,0.5529411764705883, 0.3843137254901961},
+            Opacity = 0.70,            File = asset.localResource('Elqui.speck'),
+            Texture = asset.localResource('point3A.png'),
+            PolygonSides = 6,
+            Unit = 'pc',
+            ScaleFactor = 440,
+            BillboardMinMaxSize = { 0.0, 300.0 },
+            EnablePixelSizeControl = false
+        },        GUI = {
+            Name = 'Elqui',
+            Path = '/Milky Way/Streams'
+        }
+    }
+
+local Indus = {
+        Identifier = 'Indus',
+        Parent = 'Root',
+        Transform = {
+            Translation = {
+                Type = 'StaticTranslation',
+                -- The center of the Milky Way is approximately 8 kiloparsec from the Sun.
+                -- The x-axis of galactic coordinates points from the sun towards the center
+                -- of the galaxy.
+                Position = { 8 * 3.086E19, 0, 0 }
+            },
+            Rotation = {
+                Type = 'SpiceRotation',
+                SourceFrame = 'ECLIPTIC'
+,                DestinationFrame = 'GALACTIC'
+            }
+        },
+        Renderable = {            Type = 'RenderableBillboardsCloud',
+            Enabled = true,
+            Color = {0.5529411764705883,0.6274509803921569, 0.796078431372549},
+            Opacity = 0.70,            File = asset.localResource('Indus.speck'),
+            Texture = asset.localResource('point3A.png'),
+            PolygonSides = 6,
+            Unit = 'pc',
+            ScaleFactor = 440,
+            BillboardMinMaxSize = { 0.0, 300.0 },
+            EnablePixelSizeControl = false
+        },        GUI = {
+            Name = 'Indus',
+            Path = '/Milky Way/Streams'
+        }
+    }
+
+local Jhelum = {
+        Identifier = 'Jhelum',
+        Parent = 'Root',
+        Transform = {
+            Translation = {
+                Type = 'StaticTranslation',
+                -- The center of the Milky Way is approximately 8 kiloparsec from the Sun.
+                -- The x-axis of galactic coordinates points from the sun towards the center
+                -- of the galaxy.
+                Position = { 8 * 3.086E19, 0, 0 }
+            },
+            Rotation = {
+                Type = 'SpiceRotation',
+                SourceFrame = 'ECLIPTIC'
+,                DestinationFrame = 'GALACTIC'
+            }
+        },
+        Renderable = {            Type = 'RenderableBillboardsCloud',
+            Enabled = true,
+            Color = {0.9058823529411765,0.5411764705882353, 0.7647058823529411},
+            Opacity = 0.70,            File = asset.localResource('Jhelum.speck'),
+            Texture = asset.localResource('point3A.png'),
+            PolygonSides = 6,
+            Unit = 'pc',
+            ScaleFactor = 440,
+            BillboardMinMaxSize = { 0.0, 300.0 },
+            EnablePixelSizeControl = false
+        },        GUI = {
+            Name = 'Jhelum',
+            Path = '/Milky Way/Streams'
+        }
+    }
+
+local Phoenix = {
+        Identifier = 'Phoenix',
+        Parent = 'Root',
+        Transform = {
+            Translation = {
+                Type = 'StaticTranslation',
+                -- The center of the Milky Way is approximately 8 kiloparsec from the Sun.
+                -- The x-axis of galactic coordinates points from the sun towards the center
+                -- of the galaxy.
+                Position = { 8 * 3.086E19, 0, 0 }
+            },
+            Rotation = {
+                Type = 'SpiceRotation',
+                SourceFrame = 'ECLIPTIC'
+,                DestinationFrame = 'GALACTIC'
+            }
+        },
+        Renderable = {            Type = 'RenderableBillboardsCloud',
+            Enabled = true,
+            Color = {0.6509803921568628,0.8470588235294118, 0.32941176470588235},
+            Opacity = 0.70,            File = asset.localResource('Phoenix.speck'),
+            Texture = asset.localResource('point3A.png'),
+            PolygonSides = 6,
+            Unit = 'pc',
+            ScaleFactor = 440,
+            BillboardMinMaxSize = { 0.0, 300.0 },
+            EnablePixelSizeControl = false
+        },        GUI = {
+            Name = 'Phoenix',
+            Path = '/Milky Way/Streams'
+        }
+    }
+
+local TucanaIII = {
+        Identifier = 'TucanaIII',
+        Parent = 'Root',
+        Transform = {
+            Translation = {
+                Type = 'StaticTranslation',
+                -- The center of the Milky Way is approximately 8 kiloparsec from the Sun.
+                -- The x-axis of galactic coordinates points from the sun towards the center
+                -- of the galaxy.
+                Position = { 8 * 3.086E19, 0, 0 }
+            },
+            Rotation = {
+                Type = 'SpiceRotation',
+                SourceFrame = 'ECLIPTIC'
+,                DestinationFrame = 'GALACTIC'
+            }
+        },
+        Renderable = {            Type = 'RenderableBillboardsCloud',
+            Enabled = true,
+            Color = {1.0,0.8509803921568627, 0.1843137254901961},
+            Opacity = 0.70,            File = asset.localResource('TucanaIII.speck'),
+            Texture = asset.localResource('point3A.png'),
+            PolygonSides = 6,
+            Unit = 'pc',
+            ScaleFactor = 440,
+            BillboardMinMaxSize = { 0.0, 300.0 },
+            EnablePixelSizeControl = false
+        },        GUI = {
+            Name = 'TucanaIII',
+            Path = '/Milky Way/Streams'
+        }
+    }
+
+local Turranburra = {
+        Identifier = 'Turranburra',
+        Parent = 'Root',
+        Transform = {
+            Translation = {
+                Type = 'StaticTranslation',
+                -- The center of the Milky Way is approximately 8 kiloparsec from the Sun.
+                -- The x-axis of galactic coordinates points from the sun towards the center
+                -- of the galaxy.
+                Position = { 8 * 3.086E19, 0, 0 }
+            },
+            Rotation = {
+                Type = 'SpiceRotation',
+                SourceFrame = 'ECLIPTIC'
+,                DestinationFrame = 'GALACTIC'
+            }
+        },
+        Renderable = {            Type = 'RenderableBillboardsCloud',
+            Enabled = true,
+            Color = {0.8980392156862745,0.7686274509803922, 0.5803921568627451},
+            Opacity = 0.70,            File = asset.localResource('Turranburra.speck'),
+            Texture = asset.localResource('point3A.png'),
+            PolygonSides = 6,
+            Unit = 'pc',
+            ScaleFactor = 440,
+            BillboardMinMaxSize = { 0.0, 300.0 },
+            EnablePixelSizeControl = false
+        },        GUI = {
+            Name = 'Turranburra',
+            Path = '/Milky Way/Streams'
+        }
+    }
+
+assetHelper.registerSceneGraphNodesAndExport(asset, { Disk,MagellanicClouds,Sagittarius,GD1,Orphan,Pal5,Ophiuchus,ATLAS,AliqaUma,Chenab,Elqui,Indus,Jhelum,Phoenix,TucanaIII,Turranburra,})

@@ -1,0 +1,10 @@
+return {
+	{
+		Type = 'ConstructOctreeTask',
+		InFileOrFolderPath = 'C:/os/scripts/jupyter-notebooks/gaia/dataout/',
+		OutFileOrFolderPath = 'C:/os/scripts/jupyter-notebooks/gaia/dataout/octree/',
+		MaxDist = 5000,
+		MaxStarsPerNode = 50000,
+		SingleFileInput = false,
+	}
+}
