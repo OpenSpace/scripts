@@ -50,7 +50,7 @@ def sphericalToCartesianCoord(r, t, p):
   return cartesianPosition
 
 def argParsing():
-  parser = argparse.ArgumentParser(description='This converter converts stream node data from .hdf to binary files used for the OpenSpace softwares renderable named renderableStreamNodes')
+  parser = argparse.ArgumentParser(description='This converter converts stream node data from .hdf to binary files used for the OpenSpace softwares renderable named renderableFluxNodes')
   
   parser.add_argument('-energyBin',
                       help='Specify what energy bin to use. \
@@ -313,11 +313,11 @@ if __name__ == '__main__':
   #else:
 
   float_array_fluxes = array('f', _fluxes)
-  outfileBinaryFluxes = open("fluxes"+engBin, 'wb')  # wb = write binary
+  outfileBinaryFluxes = open("fluxes_"+engBin, 'wb')  # wb = write binary
   float_array_fluxes.tofile(outfileBinaryFluxes)
 
   float_array_radiuses = array('f', _radiuses)
-  outfileBinaryRadiuses = open("radiuses+engBin", 'wb')
+  outfileBinaryRadiuses = open("radiuses_"+engBin, 'wb')
   float_array_radiuses.tofile(outfileBinaryRadiuses)
 
   nrOfNodesPerTimeStep_int = [nrOfNodesPerTimeStep_int]
@@ -325,7 +325,7 @@ if __name__ == '__main__':
   nHdfFiles = [nHdfFiles]
   nrOfFiles = array('L', nHdfFiles)
   float_array_positions = array('f', _positions)
-  outfileBinaryPositions = open("positions+engBin", 'wb')
+  outfileBinaryPositions = open("positions_"+engBin, 'wb')
   numberOfElements.tofile(outfileBinaryPositions)
   nrOfFiles.tofile(outfileBinaryPositions)
   float_array_positions.tofile(outfileBinaryPositions)
