@@ -1,0 +1,19 @@
+local assetHelper = asset.require('util/asset_helper')
+local dataFolder = asset.localResource('dataout/octree')
+local node = {
+	Identifier = 'jupyter-gaia-sample',
+	Renderable = {
+		Type = 'RenderableGaiaStars',
+		RenderOption = 'Motion',
+		File = dataFolder .. '/',
+		FileReaderOption = 'StreamOctree',
+		Texture = asset.localResource('./halo.png'),
+		MagnitudeBoost = 25,
+		LuminosityMultiplier = 80,
+		Sigma = 0.5,
+		ColorMap = asset.localResource('./charity_bv2rgb.cmap'),
+	},
+	GUI={Name='Jupyter Gaia',Path='/Milky Way/Gaia'}
+}
+
+assetHelper.registerSceneGraphNodesAndExport(asset, {node})
