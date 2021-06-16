@@ -1,0 +1,4 @@
+v1.0
+spk generated from celestrak tle data. 
+Their historical archive only goes through 2004.
+Future versions will include specially requested data.

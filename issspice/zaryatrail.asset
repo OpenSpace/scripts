@@ -1,0 +1,63 @@
+--trail.asset
+local assetHelper = asset.require('util/asset_helper')
+local transforms = asset.require('scene/solarsystem/planets/earth/transforms')
+
+local zaryaId = "-125544"
+
+local kernels = {
+  asset.localResource("zarya_v01.bsp")
+}
+
+-- local startTime = "2004 JAN 01 00:00:00.000"
+-- local endTime = "2005 JAN 01 00:00:00.000"
+local startTime = "1998 NOV 19 18:51:03.182"
+local endTime = "2005 JAN 01 11:20:26.202"
+
+local ISSNode = { 
+  Identifier = "ISSNode",
+  Parent = transforms.EarthInertial.Identifier,
+  Transform = {
+    Translation = {
+      Type = "SpiceTranslation",
+      Target = zaryaId,
+      Observer = "EARTH",
+      Frame = "J2000",
+      Kernels = kernels
+    }
+  },
+  GUI = {
+    Name = "ISS Node",
+    Path = "/Solar System/Planets/Earth/ISS_SPICE",
+    Hidden = true
+  }
+}
+
+local ISSTrail = {
+  Identifier = "LucyTrailSun",
+  Parent = transforms.EarthInertial.Identifier,
+  Renderable = {
+    Type = "RenderableTrailTrajectory",
+    Translation = { 
+      Type = "SpiceTranslation",
+      Target = zaryaId,
+      Observer = "EARTH",
+      Frame = "J2000",
+      Kernels = kernels
+    },
+    Color = { 0.200000,0.700000,0.870000 },
+    StartTime = startTime,
+    EndTime = endTime,
+    SampleInterval = 100,
+    Enabled = true
+  },
+  GUI = {
+    Name = "ISS Trail",
+    Path = "/Solar System/Planets/Earth/ISS_SPICE",
+  }
+}
+
+
+assetHelper.registerSceneGraphNodesAndExport(asset, {
+  ISSNode,
+  ISSTrail,
+})

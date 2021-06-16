@@ -1,0 +1,25 @@
+ 
+MKSPK -- Version 6.1.0, November 8, 2016 -- Toolkit Version N0066
+ 
+MKSPK Setup File Template for input data type TL_ELEMENTS and output
+SPK type 10
+ 
+\begindata
+   INPUT_DATA_TYPE   = 'TL_ELEMENTS'
+   OUTPUT_SPK_TYPE   = 10
+   TLE_INPUT_OBJ_ID  = 25544
+   TLE_SPK_OBJ_ID    = -125544
+   CENTER_ID         = 399
+   REF_FRAME_NAME    = 'J2000'
+   PRODUCER_ID       = 'OpenSpace (Micah)'
+   LEAPSECONDS_FILE  = 'naif0012.tls'
+   INPUT_DATA_FILE   = 'zarya.txt'
+   OUTPUT_SPK_FILE   = 'zarya_v01.bsp'
+   PCK_FILE          = 'geophysical.ker'
+   COMMENT_FILE      = 'commnt.txt'
+   TLE_START_PAD     = '12 hours'
+   TLE_STOP_PAD      = '12 hours'
+   SEGMENT_ID        = 'zarya'
+   APPEND_TO_OUTPUT  = 'NO'
+\begintext
+ 
