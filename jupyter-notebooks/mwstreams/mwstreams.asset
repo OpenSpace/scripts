@@ -10,11 +10,6 @@ local transforms = asset.require('scene/solarsystem/sun/transforms')local Disk =
                 -- of the galaxy.
                 Position = { 8 * 3.086E19, 0, 0 }
             },
-            Rotation = {
-                Type = 'SpiceRotation',
-                SourceFrame = 'ECLIPTIC'
-,                DestinationFrame = 'GALACTIC'
-            }
         },
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
@@ -22,7 +17,7 @@ local transforms = asset.require('scene/solarsystem/sun/transforms')local Disk =
             Opacity = 0.70,            File = asset.localResource('Disk.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
-            Unit = 'pc',
+            Unit = 'Kpc',
             ScaleFactor = 440,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
@@ -43,11 +38,6 @@ local MagellanicClouds = {
                 -- of the galaxy.
                 Position = { 8 * 3.086E19, 0, 0 }
             },
-            Rotation = {
-                Type = 'SpiceRotation',
-                SourceFrame = 'ECLIPTIC'
-,                DestinationFrame = 'GALACTIC'
-            }
         },
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
@@ -55,7 +45,7 @@ local MagellanicClouds = {
             Opacity = 0.70,            File = asset.localResource('MagellanicClouds.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
-            Unit = 'pc',
+            Unit = 'Kpc',
             ScaleFactor = 440,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
@@ -76,11 +66,6 @@ local Sagittarius = {
                 -- of the galaxy.
                 Position = { 8 * 3.086E19, 0, 0 }
             },
-            Rotation = {
-                Type = 'SpiceRotation',
-                SourceFrame = 'ECLIPTIC'
-,                DestinationFrame = 'GALACTIC'
-            }
         },
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
@@ -88,7 +73,7 @@ local Sagittarius = {
             Opacity = 0.70,            File = asset.localResource('Sagittarius.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
-            Unit = 'pc',
+            Unit = 'Kpc',
             ScaleFactor = 440,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
@@ -109,11 +94,6 @@ local GD1 = {
                 -- of the galaxy.
                 Position = { 8 * 3.086E19, 0, 0 }
             },
-            Rotation = {
-                Type = 'SpiceRotation',
-                SourceFrame = 'ECLIPTIC'
-,                DestinationFrame = 'GALACTIC'
-            }
         },
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
@@ -121,7 +101,7 @@ local GD1 = {
             Opacity = 0.70,            File = asset.localResource('GD1.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
-            Unit = 'pc',
+            Unit = 'Kpc',
             ScaleFactor = 440,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
@@ -142,11 +122,6 @@ local Orphan = {
                 -- of the galaxy.
                 Position = { 8 * 3.086E19, 0, 0 }
             },
-            Rotation = {
-                Type = 'SpiceRotation',
-                SourceFrame = 'ECLIPTIC'
-,                DestinationFrame = 'GALACTIC'
-            }
         },
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
@@ -154,7 +129,7 @@ local Orphan = {
             Opacity = 0.70,            File = asset.localResource('Orphan.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
-            Unit = 'pc',
+            Unit = 'Kpc',
             ScaleFactor = 440,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
@@ -175,11 +150,6 @@ local Pal5 = {
                 -- of the galaxy.
                 Position = { 8 * 3.086E19, 0, 0 }
             },
-            Rotation = {
-                Type = 'SpiceRotation',
-                SourceFrame = 'ECLIPTIC'
-,                DestinationFrame = 'GALACTIC'
-            }
         },
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
@@ -187,7 +157,7 @@ local Pal5 = {
             Opacity = 0.70,            File = asset.localResource('Pal5.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
-            Unit = 'pc',
+            Unit = 'Kpc',
             ScaleFactor = 440,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
@@ -208,11 +178,6 @@ local Ophiuchus = {
                 -- of the galaxy.
                 Position = { 8 * 3.086E19, 0, 0 }
             },
-            Rotation = {
-                Type = 'SpiceRotation',
-                SourceFrame = 'ECLIPTIC'
-,                DestinationFrame = 'GALACTIC'
-            }
         },
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
@@ -220,7 +185,7 @@ local Ophiuchus = {
             Opacity = 0.70,            File = asset.localResource('Ophiuchus.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
-            Unit = 'pc',
+            Unit = 'Kpc',
             ScaleFactor = 440,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
@@ -241,11 +206,6 @@ local ATLAS = {
                 -- of the galaxy.
                 Position = { 8 * 3.086E19, 0, 0 }
             },
-            Rotation = {
-                Type = 'SpiceRotation',
-                SourceFrame = 'ECLIPTIC'
-,                DestinationFrame = 'GALACTIC'
-            }
         },
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
@@ -253,7 +213,7 @@ local ATLAS = {
             Opacity = 0.70,            File = asset.localResource('ATLAS.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
-            Unit = 'pc',
+            Unit = 'Kpc',
             ScaleFactor = 440,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
@@ -274,11 +234,6 @@ local AliqaUma = {
                 -- of the galaxy.
                 Position = { 8 * 3.086E19, 0, 0 }
             },
-            Rotation = {
-                Type = 'SpiceRotation',
-                SourceFrame = 'ECLIPTIC'
-,                DestinationFrame = 'GALACTIC'
-            }
         },
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
@@ -286,7 +241,7 @@ local AliqaUma = {
             Opacity = 0.70,            File = asset.localResource('AliqaUma.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
-            Unit = 'pc',
+            Unit = 'Kpc',
             ScaleFactor = 440,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
@@ -307,11 +262,6 @@ local Chenab = {
                 -- of the galaxy.
                 Position = { 8 * 3.086E19, 0, 0 }
             },
-            Rotation = {
-                Type = 'SpiceRotation',
-                SourceFrame = 'ECLIPTIC'
-,                DestinationFrame = 'GALACTIC'
-            }
         },
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
@@ -319,7 +269,7 @@ local Chenab = {
             Opacity = 0.70,            File = asset.localResource('Chenab.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
-            Unit = 'pc',
+            Unit = 'Kpc',
             ScaleFactor = 440,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
@@ -340,11 +290,6 @@ local Elqui = {
                 -- of the galaxy.
                 Position = { 8 * 3.086E19, 0, 0 }
             },
-            Rotation = {
-                Type = 'SpiceRotation',
-                SourceFrame = 'ECLIPTIC'
-,                DestinationFrame = 'GALACTIC'
-            }
         },
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
@@ -352,7 +297,7 @@ local Elqui = {
             Opacity = 0.70,            File = asset.localResource('Elqui.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
-            Unit = 'pc',
+            Unit = 'Kpc',
             ScaleFactor = 440,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
@@ -373,11 +318,6 @@ local Indus = {
                 -- of the galaxy.
                 Position = { 8 * 3.086E19, 0, 0 }
             },
-            Rotation = {
-                Type = 'SpiceRotation',
-                SourceFrame = 'ECLIPTIC'
-,                DestinationFrame = 'GALACTIC'
-            }
         },
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
@@ -385,7 +325,7 @@ local Indus = {
             Opacity = 0.70,            File = asset.localResource('Indus.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
-            Unit = 'pc',
+            Unit = 'Kpc',
             ScaleFactor = 440,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
@@ -406,11 +346,6 @@ local Jhelum = {
                 -- of the galaxy.
                 Position = { 8 * 3.086E19, 0, 0 }
             },
-            Rotation = {
-                Type = 'SpiceRotation',
-                SourceFrame = 'ECLIPTIC'
-,                DestinationFrame = 'GALACTIC'
-            }
         },
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
@@ -418,7 +353,7 @@ local Jhelum = {
             Opacity = 0.70,            File = asset.localResource('Jhelum.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
-            Unit = 'pc',
+            Unit = 'Kpc',
             ScaleFactor = 440,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
@@ -439,11 +374,6 @@ local Phoenix = {
                 -- of the galaxy.
                 Position = { 8 * 3.086E19, 0, 0 }
             },
-            Rotation = {
-                Type = 'SpiceRotation',
-                SourceFrame = 'ECLIPTIC'
-,                DestinationFrame = 'GALACTIC'
-            }
         },
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
@@ -451,7 +381,7 @@ local Phoenix = {
             Opacity = 0.70,            File = asset.localResource('Phoenix.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
-            Unit = 'pc',
+            Unit = 'Kpc',
             ScaleFactor = 440,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
@@ -472,11 +402,6 @@ local TucanaIII = {
                 -- of the galaxy.
                 Position = { 8 * 3.086E19, 0, 0 }
             },
-            Rotation = {
-                Type = 'SpiceRotation',
-                SourceFrame = 'ECLIPTIC'
-,                DestinationFrame = 'GALACTIC'
-            }
         },
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
@@ -484,7 +409,7 @@ local TucanaIII = {
             Opacity = 0.70,            File = asset.localResource('TucanaIII.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
-            Unit = 'pc',
+            Unit = 'Kpc',
             ScaleFactor = 440,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
@@ -505,11 +430,6 @@ local Turranburra = {
                 -- of the galaxy.
                 Position = { 8 * 3.086E19, 0, 0 }
             },
-            Rotation = {
-                Type = 'SpiceRotation',
-                SourceFrame = 'ECLIPTIC'
-,                DestinationFrame = 'GALACTIC'
-            }
         },
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
@@ -517,7 +437,7 @@ local Turranburra = {
             Opacity = 0.70,            File = asset.localResource('Turranburra.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
-            Unit = 'pc',
+            Unit = 'Kpc',
             ScaleFactor = 440,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
