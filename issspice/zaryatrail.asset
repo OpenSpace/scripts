@@ -8,10 +8,10 @@ local kernels = {
   asset.localResource("zarya_v01.bsp")
 }
 
--- local startTime = "2004 JAN 01 00:00:00.000"
--- local endTime = "2005 JAN 01 00:00:00.000"
-local startTime = "1998 NOV 19 18:51:03.182"
-local endTime = "2005 JAN 01 11:20:26.202"
+local startTime = "2004 DEC 01 00:00:00.000"
+local endTime = "2005 JAN 01 00:00:00.000"
+-- local startTime = "1998 NOV 19 18:51:03.182"
+-- local endTime = "2005 JAN 01 11:20:26.202"
 
 local ISSNode = { 
   Identifier = "ISSNode",
@@ -26,9 +26,9 @@ local ISSNode = {
     }
   },
   GUI = {
-    Name = "ISS Node",
-    Path = "/Solar System/Planets/Earth/ISS_SPICE",
-    Hidden = true
+    Name = "ISS Node (SPICE)",
+    Path = "/Solar System/Planets/Earth/Satellites/ISS",
+    Hidden = false
   }
 }
 
@@ -51,8 +51,8 @@ local ISSTrail = {
     Enabled = true
   },
   GUI = {
-    Name = "ISS Trail",
-    Path = "/Solar System/Planets/Earth/ISS_SPICE",
+    Name = "ISS Trail (SPICE)",
+    Path = "/Solar System/Planets/Earth/Satellites/ISS",
   }
 }
 
