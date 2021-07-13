@@ -10,6 +10,7 @@ r = requests.get(LINK)
 # asking for the type of Kernel, so to use this when searching for file names
 KERNEL = input("File Type of Kernel (.bc will be bc): ")
 
+
 # Asking for the file path
 print("\nPlease choose the new location of your files by choosing a folder in the following pop-up")
 root = tkinter.Tk()
@@ -69,5 +70,26 @@ for i in NameArray:
         r = requests.get(j, allow_redirects=True)
         open(final_file_path, 'wb').write(r.content)
 
+for i in NameArray:
+    KernelsList = ""
+    KernelsList + "\n  Kernels .. \"/" + i +"\","
+
+KernelsFileText = "local Kernels = asset.syncedResource({ " \
+                  "\nName = (Fill Mission Name here)," \
+                  "\nType = \"HttpSynchronization\","\
+                  "\nIdentifier = (Fill Identifier Here)," \
+                  "\nVersion = 1" \
+                  "\n})" \
+                  "\n\nlocal (fill in the name of the kernels list)= {" \
+                  "\n " + KernelsList + "\n }"\
+                  "\n\nasset.export(\"Kernels\", Kernels)" \
+                  "\nasset.export(\"fill in name of kernels list\", fill in name of kernels list)"
+
+# Making Kernels asset with all the asset names and having it open in selected folder
+KernelAssetFile = "kernels.asset"
+Kernels_file_path = os.path.join(file_path, KernelAssetFile)
+open(Kernels_file_path, 'x').write(KernelsFileText)
+
 # Print Message for when it is complete
-print("\nYour files are now in the chosen folder. Thank you for using InternRobo. Ad Astra!")
+print("\nYour files and kernel asset file are now in the chosen folder. Thank you for using InternRobo. Ad Astra!")
+
