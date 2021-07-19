@@ -14,11 +14,11 @@ local transforms = asset.require('scene/solarsystem/sun/transforms')local Disk =
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
             Color = {0.3411764705882353,0.47058823529411764, 0.6431372549019608},
-            Opacity = 0.70,            File = asset.localResource('Disk.speck'),
+            Opacity = 1.0,            File = asset.localResource('Disk.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
             Unit = 'Kpc',
-            ScaleFactor = 440,
+            ScaleFactor = 432.0,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
         },        GUI = {
@@ -42,11 +42,11 @@ local MagellanicClouds = {
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
             Color = {0.4,0.7607843137254902, 0.6470588235294118},
-            Opacity = 0.70,            File = asset.localResource('MagellanicClouds.speck'),
+            Opacity = 0.4,            File = asset.localResource('MagellanicClouds.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
             Unit = 'Kpc',
-            ScaleFactor = 440,
+            ScaleFactor = 434.0,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
         },        GUI = {
@@ -70,11 +70,11 @@ local Sagittarius = {
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
             Color = {0.9882352941176471,0.5529411764705883, 0.3843137254901961},
-            Opacity = 0.70,            File = asset.localResource('Sagittarius.speck'),
+            Opacity = 0.4,            File = asset.localResource('Sagittarius.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
             Unit = 'Kpc',
-            ScaleFactor = 440,
+            ScaleFactor = 434.0,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
         },        GUI = {
@@ -98,11 +98,11 @@ local GD1 = {
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
             Color = {0.5529411764705883,0.6274509803921569, 0.796078431372549},
-            Opacity = 0.70,            File = asset.localResource('GD1.speck'),
+            Opacity = 1.0,            File = asset.localResource('GD1.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
             Unit = 'Kpc',
-            ScaleFactor = 440,
+            ScaleFactor = 437.0,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
         },        GUI = {
@@ -126,11 +126,11 @@ local Orphan = {
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
             Color = {0.9058823529411765,0.5411764705882353, 0.7647058823529411},
-            Opacity = 0.70,            File = asset.localResource('Orphan.speck'),
+            Opacity = 1.0,            File = asset.localResource('Orphan.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
             Unit = 'Kpc',
-            ScaleFactor = 440,
+            ScaleFactor = 440.0,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
         },        GUI = {
@@ -154,11 +154,11 @@ local Pal5 = {
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
             Color = {0.6509803921568628,0.8470588235294118, 0.32941176470588235},
-            Opacity = 0.70,            File = asset.localResource('Pal5.speck'),
+            Opacity = 0.8,            File = asset.localResource('Pal5.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
             Unit = 'Kpc',
-            ScaleFactor = 440,
+            ScaleFactor = 437.0,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
         },        GUI = {
@@ -182,11 +182,11 @@ local Ophiuchus = {
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
             Color = {1.0,0.8509803921568627, 0.1843137254901961},
-            Opacity = 0.70,            File = asset.localResource('Ophiuchus.speck'),
+            Opacity = 0.8,            File = asset.localResource('Ophiuchus.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
             Unit = 'Kpc',
-            ScaleFactor = 440,
+            ScaleFactor = 437.0,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
         },        GUI = {
@@ -210,11 +210,11 @@ local ATLAS = {
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
             Color = {0.8980392156862745,0.7686274509803922, 0.5803921568627451},
-            Opacity = 0.70,            File = asset.localResource('ATLAS.speck'),
+            Opacity = 0.8,            File = asset.localResource('ATLAS.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
             Unit = 'Kpc',
-            ScaleFactor = 440,
+            ScaleFactor = 437.0,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
         },        GUI = {
@@ -238,11 +238,11 @@ local AliqaUma = {
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
             Color = {0.7019607843137254,0.7019607843137254, 0.7019607843137254},
-            Opacity = 0.70,            File = asset.localResource('AliqaUma.speck'),
+            Opacity = 0.8,            File = asset.localResource('AliqaUma.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
             Unit = 'Kpc',
-            ScaleFactor = 440,
+            ScaleFactor = 437.0,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
         },        GUI = {
@@ -266,11 +266,11 @@ local Chenab = {
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
             Color = {0.4,0.7607843137254902, 0.6470588235294118},
-            Opacity = 0.70,            File = asset.localResource('Chenab.speck'),
+            Opacity = 0.8,            File = asset.localResource('Chenab.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
             Unit = 'Kpc',
-            ScaleFactor = 440,
+            ScaleFactor = 437.0,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
         },        GUI = {
@@ -294,11 +294,11 @@ local Elqui = {
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
             Color = {0.9882352941176471,0.5529411764705883, 0.3843137254901961},
-            Opacity = 0.70,            File = asset.localResource('Elqui.speck'),
+            Opacity = 0.8,            File = asset.localResource('Elqui.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
             Unit = 'Kpc',
-            ScaleFactor = 440,
+            ScaleFactor = 437.0,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
         },        GUI = {
@@ -322,11 +322,11 @@ local Indus = {
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
             Color = {0.5529411764705883,0.6274509803921569, 0.796078431372549},
-            Opacity = 0.70,            File = asset.localResource('Indus.speck'),
+            Opacity = 0.8,            File = asset.localResource('Indus.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
             Unit = 'Kpc',
-            ScaleFactor = 440,
+            ScaleFactor = 437.0,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
         },        GUI = {
@@ -350,11 +350,11 @@ local Jhelum = {
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
             Color = {0.9058823529411765,0.5411764705882353, 0.7647058823529411},
-            Opacity = 0.70,            File = asset.localResource('Jhelum.speck'),
+            Opacity = 0.8,            File = asset.localResource('Jhelum.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
             Unit = 'Kpc',
-            ScaleFactor = 440,
+            ScaleFactor = 437.0,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
         },        GUI = {
@@ -378,11 +378,11 @@ local Phoenix = {
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
             Color = {0.6509803921568628,0.8470588235294118, 0.32941176470588235},
-            Opacity = 0.70,            File = asset.localResource('Phoenix.speck'),
+            Opacity = 0.8,            File = asset.localResource('Phoenix.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
             Unit = 'Kpc',
-            ScaleFactor = 440,
+            ScaleFactor = 437.0,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
         },        GUI = {
@@ -406,11 +406,11 @@ local TucanaIII = {
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
             Color = {1.0,0.8509803921568627, 0.1843137254901961},
-            Opacity = 0.70,            File = asset.localResource('TucanaIII.speck'),
+            Opacity = 0.8,            File = asset.localResource('TucanaIII.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
             Unit = 'Kpc',
-            ScaleFactor = 440,
+            ScaleFactor = 437.0,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
         },        GUI = {
@@ -434,11 +434,11 @@ local Turranburra = {
         Renderable = {            Type = 'RenderableBillboardsCloud',
             Enabled = true,
             Color = {0.8980392156862745,0.7686274509803922, 0.5803921568627451},
-            Opacity = 0.70,            File = asset.localResource('Turranburra.speck'),
+            Opacity = 0.8,            File = asset.localResource('Turranburra.speck'),
             Texture = asset.localResource('point3A.png'),
             PolygonSides = 6,
             Unit = 'Kpc',
-            ScaleFactor = 440,
+            ScaleFactor = 437.0,
             BillboardMinMaxSize = { 0.0, 300.0 },
             EnablePixelSizeControl = false
         },        GUI = {
