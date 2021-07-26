@@ -1,0 +1,46 @@
+local assetHelper = asset.require('util/asset_helper')
+local transforms = asset.require('scene/solarsystem/sun/transforms')
+local nodes = {}
+local stars = {
+                          Identifier = 'CRA',
+                          Renderable = {
+                            Type = 'RenderableStars',
+                            File = asset.localResource('data/CRA/CRA.speck'),
+                            Texture = asset.localResource('halo.png'),
+                            ColorMap = asset.localResource('colorbv.cmap'),
+                            MagnitudeExponent = 6.3,
+                            SizeComposition = 'Distance Modulus',
+                            RenderMethod = 'Texture Based', -- or PSF
+                            DataMapping = {
+                              Bv = 'color',
+                              Luminance = 'lum',
+                              AbsoluteMagnitude = 'absmag',
+                              ApparentMagnitude = 'appmag',
+                              Vx = 'vx',
+                              Vy = 'vy',
+                              Vz = 'vz',
+                              Speed = 'speed'
+                            }
+                          },
+                          GUI = {
+                            Name = 'CRA',
+                            Path = '/Other/BANYAN Sigma'
+                          }
+                        }
+table.insert(nodes, stars)
+local elipseMesh = {                                  Identifier = 'CRAellipse',
+                                  Renderable = {
+                                    Type = 'RenderableDUMeshes',
+                                    Enabled = true,
+                                    Opacity = 0.4,
+                                    File = asset.localResource('data/CRA/CRAellipse.speck'),
+                                    MeshColor = {{ 0.1, 0.5, 0.6 }},
+                                    Unit = 'pc'
+                                  },
+                                  GUI = {
+                                    Name = 'CRAellipse',
+                                    Path = '/Other/BANYAN Sigma'
+                                  }
+                                }
+table.insert(nodes, elipseMesh)
+assetHelper.registerSceneGraphNodesAndExport(asset, nodes)

@@ -1,0 +1,27 @@
+# Digital_Universe ATLAS
+# American Museum of Natural History and Hayden Planetarium
+# http://www.haydenplanetarium.org/universe/
+#
+# Models of young associations within 150 pc from BANYAN Sigma (Gagne et al. 2018)
+
+textcolor1
+7.18 -50.81 -18.04 text CAR
+-6.04 -5.08 84.91 text CBER
+-25.91 -25.91 -21.37 text COL
+130.36 -0.22 -41.73 text CRA
+49.77 -84.49 -25.51 text EPSC
+33.43 -80.83 -34.58 text ETAC
+-38.55 0.82 -15.75 text HYA
+1.88 -148.09 -18.01 text IC2391
+47.44 -137.56 -12.55 text IC2602
+54.33 -94.20 5.80 text LCC
+4.03 -96.75 -59.73 text OCT
+10.58 -124.41 -13.86 text PL8
+-118.90 28.51 -54.40 text PLE
+-116.33 6.83 -35.92 text TAU
+5.38 -20.09 -36.09 text THA
+107.47 -60.83 26.56 text UCL
+-7.45 9.87 21.95 text UMA
+121.16 -16.92 48.89 text USCO
+-27.05 -46.26 -84.23 text XFOR
+21.58 -80.29 -14.28 text VCA

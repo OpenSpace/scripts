@@ -1,0 +1,25 @@
+# Digital_Universe ATLAS
+# American Museum of Natural History and Hayden Planetarium
+# http://www.haydenplanetarium.org/universe/
+#
+# Models of young associations within 150 pc from BANYAN Sigma (Gagne et al. 2018)
+
+filepath +:./PLEABDMG
+
+include PLEABDMG.speck
+eval psize 10
+eval ptsize 0.05 2.5
+eval points on
+eval lum lum 0 1
+eval slum 1.0
+eval cmap colorbv.cmap
+eval color color 0.1 1.5
+eval polylumvar point-size area
+eval polysize 0.0005
+eval polysides 4
+eval polymin 1
+eval alpha 0.9
+eval poly on
+eval laxes off
+eval label off
+eval off

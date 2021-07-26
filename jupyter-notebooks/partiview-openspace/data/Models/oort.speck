@@ -1,0 +1,12 @@
+# DIGITAL UNIVERSE ATLAS
+# American Museum of Natural History and Hayden Planetarium
+# http://www.haydenplanetarium.org/universe/ 
+#
+# Use of these data is subject to the terms of the License.
+#
+# Oort Cloud Sphere (50,000 AU radius, ecliptic coords) version 6.0
+# Prepared by: Carter Emmart, Brian Abbott (AMNH/Hayden Planetarium)
+
+0 0 0 ellipsoid -s line -c 1 -r 0.242407 -n 36,19
+textcolor 1
+0.2 0.2 0.2 text Oort Cloud

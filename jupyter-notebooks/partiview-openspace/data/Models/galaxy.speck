@@ -1,0 +1,17 @@
+# DIGITAL UNIVERSE ATLAS
+# American Museum of Natural History and Hayden Planetarium
+# http://www.haydenplanetarium.org/universe/ 
+#
+# Use of these data is subject to the terms of the License.
+#
+# Milky Way Image (NGC 1232, modified) version 2.0
+# Prepared by: Brian Abbott, Carter Emmart (AMNH/Hayden Planetarium)
+
+datavar 0 size   # Sets the size of the polygon
+datavar 1 txno
+datavar 2 ori
+polyorivar 2     # Polygon orientation unit vectors in the xy plane
+texturevar 1
+
+texture -M 1 eso9845d-processed.pbm
+8000.0 0.0 -25.0 14250.0 1 1 0 0 0 1 0  # orientation in XY plane

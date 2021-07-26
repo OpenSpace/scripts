@@ -1,0 +1,46 @@
+local assetHelper = asset.require('util/asset_helper')
+local transforms = asset.require('scene/solarsystem/sun/transforms')
+local nodes = {}
+local stars = {
+                          Identifier = 'IC2602',
+                          Renderable = {
+                            Type = 'RenderableStars',
+                            File = asset.localResource('data/IC2602/IC2602.speck'),
+                            Texture = asset.localResource('halo.png'),
+                            ColorMap = asset.localResource('colorbv.cmap'),
+                            MagnitudeExponent = 6.2,
+                            SizeComposition = 'Distance Modulus',
+                            RenderMethod = 'Texture Based', -- or PSF
+                            DataMapping = {
+                              Bv = 'color',
+                              Luminance = 'lum',
+                              AbsoluteMagnitude = 'absmag',
+                              ApparentMagnitude = 'appmag',
+                              Vx = 'vx',
+                              Vy = 'vy',
+                              Vz = 'vz',
+                              Speed = 'speed'
+                            }
+                          },
+                          GUI = {
+                            Name = 'IC2602',
+                            Path = '/Other/BANYAN Sigma'
+                          }
+                        }
+table.insert(nodes, stars)
+local elipseMesh = {                                  Identifier = 'IC2602ellipse',
+                                  Renderable = {
+                                    Type = 'RenderableDUMeshes',
+                                    Enabled = true,
+                                    Opacity = 0.4,
+                                    File = asset.localResource('data/IC2602/IC2602ellipse.speck'),
+                                    MeshColor = {{ 0.1, 0.5, 0.6 }},
+                                    Unit = 'pc'
+                                  },
+                                  GUI = {
+                                    Name = 'IC2602ellipse',
+                                    Path = '/Other/BANYAN Sigma'
+                                  }
+                                }
+table.insert(nodes, elipseMesh)
+assetHelper.registerSceneGraphNodesAndExport(asset, nodes)

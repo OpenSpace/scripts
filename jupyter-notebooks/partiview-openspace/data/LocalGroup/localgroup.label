@@ -1,0 +1,57 @@
+# DIGITAL UNIVERSE ATLAS
+# American Museum of Natural History and Hayden Planetarium
+# http://www.haydenplanetarium.org/universe/
+#
+# Use of these data is subject to the terms of the License. Please see the license file.
+#
+# Globular Clusters version 2.6
+# Source: Properties of Galactic Globular Clusters, C. Francis+ (U Cambridge)
+# Prepared by: Brian Abbott (AMNH)
+
+textcolor 1
+8000 -10 -10 text Milky Way
+7630 -41290. -27150 text LMC
+24420 -37900. -44000. text SMC
+-14940 -85730 -35550. text Carina dSph
+4120 6481 44980. text Draco dSph
+-30900 -47770. -12573 text Fornax dSph
+-12282 -12710 2041 text Leo I dSph
+-60630 -51170. 18903 text Leo II dSph
+18340 1800 -4620 text Sag dSph
+3160 -10000 -87370 text Sculptor dSph
+-28400 -56950 57850 text Sextans dSph
+-12630 47300. 48620. text Ursa Minor dSph
+-377870 624600 -28864 text M31
+-376570 623000 -29377 text M32
+-3925 6607 -297100 text NGC 205
+-35513 575450 -312690 text And I
+-35769 442980 -31770 text And II
+-3294 58531 -3314 text And III
+-441470 60284 -2019 text And V
+-174360 60626 -4638 text And VI
+-250420 708580 -131 text And VII
+-3945 60269 -25751 text And IX
+-435140 60440 -241760 text And X
+-35187 45238 -2616 text And XV
+-25895 371110 -2661 text And XVI
+-379180 65066 -251600 text And XVII
+-35776 74732 -428970 text And XIX
+-32530 567610 -166190 text NGC 147
+-305320 512350 -15406 text NGC 185
+-47664 500340 -42066 text M33
+-3989 7205 -48090. text IC 10
+-22018 2643 -60960 text IC 1613
+42024 1989 -15460 text NGC 6822
+64210 25478 -894200 text WLM
+758170 512080 -55676 text Aquarius dSph
+-44200. 21814 -721 text Cetus dSph
+-4026 -12238 54678 text Leo A
+-55360. 6638 -633140 text Pegasus dIrr
+6030 -15972 -41530 text Phoenix dSph
+-34782 4657 -503440 text Pisces dSph
+94954 365550 -297240 text Sag dIrr
+47540 -35945 -64745 text Tucana dSph
+-10433 73845 237060 text EGB0427+63
+-446240 -10109 9233 text Sextans A
+-58164 -77761 93062 text Sextans B
+-77728 21319 74860 text UGC 4879

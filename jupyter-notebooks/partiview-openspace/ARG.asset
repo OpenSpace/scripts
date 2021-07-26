@@ -1,0 +1,46 @@
+local assetHelper = asset.require('util/asset_helper')
+local transforms = asset.require('scene/solarsystem/sun/transforms')
+local nodes = {}
+local stars = {
+                          Identifier = 'ARG',
+                          Renderable = {
+                            Type = 'RenderableStars',
+                            File = asset.localResource('data/ARG/ARG.speck'),
+                            Texture = asset.localResource('halo.png'),
+                            ColorMap = asset.localResource('colorbv.cmap'),
+                            MagnitudeExponent = 6.3,
+                            SizeComposition = 'Distance Modulus',
+                            RenderMethod = 'Texture Based', -- or PSF
+                            DataMapping = {
+                              Bv = 'color',
+                              Luminance = 'lum',
+                              AbsoluteMagnitude = 'absmag',
+                              ApparentMagnitude = 'appmag',
+                              Vx = 'vx',
+                              Vy = 'vy',
+                              Vz = 'vz',
+                              Speed = 'speed'
+                            }
+                          },
+                          GUI = {
+                            Name = 'ARG',
+                            Path = '/Other/BANYAN Sigma'
+                          }
+                        }
+table.insert(nodes, stars)
+local elipseMesh = {                                  Identifier = 'ARGellipse',
+                                  Renderable = {
+                                    Type = 'RenderableDUMeshes',
+                                    Enabled = true,
+                                    Opacity = 0.4,
+                                    File = asset.localResource('data/ARG/ARGellipse.speck'),
+                                    MeshColor = {{ 0.1, 0.5, 0.6 }},
+                                    Unit = 'pc'
+                                  },
+                                  GUI = {
+                                    Name = 'ARGellipse',
+                                    Path = '/Other/BANYAN Sigma'
+                                  }
+                                }
+table.insert(nodes, elipseMesh)
+assetHelper.registerSceneGraphNodesAndExport(asset, nodes)

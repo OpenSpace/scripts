@@ -1,0 +1,631 @@
+## DIGITAL UNIVERSE ATLAS
+## American Museum of Natural History and Hayden Planetarium
+## http://www.haydenplanetarium.org/universe/ 
+##
+## Use of these data is subject to the terms of the License.
+##
+## BANYAN Partiview Config File
+## Prepared by: Jonathan Gagne (Carnegie DTM)
+## ============================================================================
+
+# Tell Partiview where the data files are...
+filepath +:.:./data
+
+object g1=Current
+include CURRENT/CURRENT.cf
+warp -extrap vx -z 0 -p 100 -seconds
+include CURRENT/CURRENT_ellipsoid.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+eval on
+
+object g2=BackUp
+include CURRENT2/CURRENT2.cf
+add warp -extrap vx -z 0 -p 100 -seconds
+eval off
+
+##
+## Milky Way image (NGC 1232)
+## ------------------------------------------------------------------------
+##
+object g3=Gal
+
+include Models/galaxy.speck
+eval points off
+eval polylumvar size
+# polygon radius = "size" data variable (in mwpoly.speck file) * "polysize" setting
+# the polysize accounts for the fact that the edge of the 
+# galaxy does not meet the image boundary.
+eval polysize 1.55
+eval txscale 0.5
+eval polysides 4
+eval color const 1 1 1
+eval alpha 0.90
+eval poly
+eval on
+
+object g4=30pc
+include Grids/100ly.speck
+#object g34=1kly
+#include Grids/1kly.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+eval alpha 1.0
+eval labelsize 0.0
+eval labelmin 8
+eval textcment 1 0.2 0.2 0.4
+eval laxes off
+eval on
+
+##
+## Open Clusters
+## ------------------------------------------------------------------------
+##
+#object g5=NYADB
+#include NYADB/NYADB.speck
+#include NYADB/NYADB.label
+
+object g5=NYADB
+include NYADB/NYADB.speck
+eval psize 100
+eval ptsize 0.05 2.5
+eval points on
+eval lum const 0.1
+eval slum 1.0
+eval cmap colorbv.cmap
+eval color const 0.8 0.7 0.5
+eval polylumvar point-size area
+eval polysize 0.0005
+eval polysides 4
+eval polymin 1
+eval alpha 0.9
+eval poly on
+eval laxes off
+eval label off
+warp -extrap vx -z 0 -p 100 -seconds
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+eval off
+
+include NYADB/NYADB.label
+eval lsize 5
+eval psize 4000
+eval ptsize 0.05 4
+#eval lum const 120
+eval slum 2700
+#eval color const 0.8 0.8 0.8
+#eval polysize 1e-7
+#eval polysides 12
+eval alpha 0.35
+#eval poly on
+eval labelmin 8
+eval textcment 1 0.05 0.4 0.2
+eval laxes off
+eval labels on
+eval off
+
+object g6=OCL
+include OCeDR3_labels/ocedr3.speck
+include OCeDR3_labels/ocedr3.label
+warp -extrap vx -z 0 -p 100 -seconds
+eval psize 4000
+eval ptsize 0.05 4
+eval lum const 120
+eval slum 2700
+eval color const 0.1 0.8 0.4
+eval polysize 1e-6
+eval polysides 12
+eval alpha 0.35
+eval poly on
+eval lsize 10
+eval labelmin 8
+eval textcment 1 0.05 0.4 0.2
+eval laxes off
+eval labels on
+eval off
+
+# ##
+# ## OB Associations
+# ## ------------------------------------------------------------------------
+# ##
+#object g6=OB
+#
+#include OBassociations/ob.speck
+#include OBassociations/ob.label
+#eval psize 50000
+#eval ptsize 0.05 5
+#eval lum diameter 0 1			# luminosity, or size, is based on physical size of assoc
+#eval slum 1.0
+#eval cmap OBassociations/ob.cmap
+#eval color arm exact			# color is related to spiral arm distribution
+##eval color const .5 .5 .5
+#eval polysize 1.0
+#eval polysides 7
+#eval poly on
+#eval alpha 0.25
+#eval labelsize 20
+#eval labelmin 8
+#eval textcment 1 0.4 0.5 1.0
+#eval laxes off
+#eval label on
+#eval off
+
+##
+## Meingast et al. (2020) coronae
+## ------------------------------------------------------------------------
+##
+object g7=Coronae
+
+include Coronae/Coronae.cf
+warp -extrap vx -z 0 -p 100 -seconds
+include CURRENT/CURRENT_ellipsoid.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+eval off
+
+#
+# Kounkel Groups
+# ------------------------------------------------------------------------
+#
+object g8=Kounkel
+
+include KounkelGroups/kounkelgroups.speck
+include KounkelGroups/kounkelgroups.label
+eval psize 4000
+eval ptsize 0.05 4
+eval lum const 120
+eval slum 2700
+eval color const 0.7 0.8 0.4
+eval polysize 1e-6
+eval polysides 12
+eval alpha 0.35
+eval poly on
+eval lsize 10
+eval labelmin 8
+eval textcment 1 0.05 0.4 0.2
+eval laxes off
+eval labels on
+eval off
+
+##
+## BANYAN XYZ models
+## ------------------------------------------------------------------------
+##
+object g9=BSigma
+
+include BanyanEllipses/banyanellipses.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+include BanyanModels/bsigma.label
+eval lsize 10
+eval labelmin 8
+eval laxes off
+eval labels on
+eval off
+
+object g10=ABDMG
+include ABDMG/ABDMG.cf
+include ABDMG/ABDMGellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g11=ARG
+include ARG/ARG.cf
+include ARG/ARGellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g12=BPMG
+include BPMG/BPMG.cf
+include BPMG/BPMGellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g13=CAR
+include CAR/CAR.cf
+include CAR/CARellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g14=CARN
+include CARN/CARN.cf
+include CARN/CARNellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g15=CBER
+include CBER/CBER.cf
+include CBER/CBERellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g16=COL
+include COL/COL.cf
+include COL/COLellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g17=CrA
+include CRA/CRA.cf
+include CRA/CRAellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g18=EpsC
+include EPSC/EPSC.cf
+include EPSC/EPSCellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g19=EtaC
+include ETAC/ETAC.cf
+include ETAC/ETACellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g20=HYA
+include HYA/HYA.cf
+include HYA/HYAellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g21=IC2391
+include IC2391/IC2391.cf
+include IC2391/IC2391ellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g22=PL5
+include PL5/PL5.cf
+include PL5/PL5.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+#object g22=IC2602
+#include IC2602/IC2602.cf
+#include IC2602/IC2602ellipse.speck
+#eval cment 1 0.1 0.3 0.5
+#eval cment 2 0.1 0.5 0.1
+#add warp -extrap vx -z 0 -p 100 -seconds
+
+object g23=LCC
+include LCC/LCC.cf
+include LCC/LCCellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g24=MUTA
+include MUTAU/MUTAU.cf
+include MUTAU/MUTAUellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g25=OCT
+include OCT/OCT.cf
+include OCT/OCTellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g26=Pl8
+include PL8/PL8.cf
+include PL8/PL8ellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g27=PLE
+include PLE/PLE.cf
+include PLE/PLEellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g28=ROph
+include ROPH/ROPH.cf
+include ROPH/ROPHellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g29=TAU
+include TAU/TAU.cf
+include TAU/TAUellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g30=THA
+include THA/THA.cf
+include THA/THAellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g31=THOR
+include THOR/THOR.cf
+include THOR/THORellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g32=TWA
+include TWA/TWA.cf
+include TWA/TWAellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g33=UCL
+include UCL/UCL.cf
+include UCL/UCLellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g34=UCrA
+include UCRA/UCRA.cf
+include UCRA/UCRAellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g35=UMA
+include UMA/UMA.cf
+include UMA/UMAellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g36=USCO
+include USCO/USCO.cf
+include USCO/USCOellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g37=VCA
+include VCA/VCA.cf
+include VCA/VCAellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g38=XFOR
+include XFOR/XFOR.cf
+include XFOR/XFORellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g39=118TAU
+include 118TAU/118TAU.cf
+include 118TAU/118TAUellipse.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g40=PERI
+include PERI/PERI.cf
+include PERI/PERI.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+object g41=UMATAILS
+include UMATAILS/UMATAILS.cf
+include UMATAILS/UMATAILS.speck
+eval cment 1 0.1 0.3 0.5
+eval cment 2 0.1 0.5 0.1
+add warp -extrap vx -z 0 -p 100 -seconds
+
+##
+## Oh Groups
+## ------------------------------------------------------------------------
+##
+object g42=Oh
+
+include OhGroups/ohgroups.speck
+include OhGroups/ohgroups.label
+eval psize 4000
+eval ptsize 0.05 4
+eval lum const 120
+eval slum 2700
+eval color const 0.1 0.8 0.4
+eval polysize 1e-6
+eval polysides 12
+eval alpha 0.35
+eval poly on
+eval lsize 10
+eval labelmin 8
+eval textcment 1 0.05 0.4 0.2
+eval laxes off
+eval labels on
+eval off
+
+object g43=dummy
+eval off
+
+######################################################################################################################################################
+
+#object g30=ALL
+#include ALL/ALL.cf
+#add warp -extrap vx -z 0 -p 100 -seconds
+
+#object g31=BANYANXIII
+#include BANYANXIII/BANYANXIII.cf
+#add warp -extrap vx -z 0 -p 100 -seconds
+
+#object g32=ellipses
+#include BanyanEllipses/banyanellipses.speck
+#eval cment 1 0.1 0.3 0.5
+#eval cment 2 0.1 0.5 0.1
+#include BanyanModels/bsigma.label
+#eval lsize 10
+#eval labelmin 8
+#eval laxes off
+#eval labels on
+#eval off
+
+
+#object g32=WDSEEDS
+#include WD_seeds/WD_seeds.cf
+#add warp -extrap vx -z 0 -p 100 -seconds
+
+#object g33=10ly
+#include Grids/10ly.speck
+#eval cment 1 0.1 0.3 0.5
+#eval cment 2 0.1 0.5 0.1
+#eval alpha 1.0
+#eval labelsize 0.
+#eval labelmin 8
+#eval textcment 1 0.2 0.2 0.4
+#eval laxes off
+#eval off
+
+##
+## Globular Clusters
+## ------------------------------------------------------------------------
+##
+#object g35=GC
+#
+#include GlobularClusters/gc.speck
+#include GlobularClusters/gc.label
+#eval psize 25000
+#eval ptsize 0.05 3
+#eval lum const 120
+#eval slum 5000
+#eval color const 0.8 0.8 0
+#eval polysize 1e-5
+#eval polysides 5
+#eval alpha 0.35
+#eval poly on
+#eval lsize 130
+#eval labelmin 5
+#eval textcment 1 0.5 0.5 0
+#eval laxes off
+#eval label on
+#eval off
+
+
+
+##
+## Current labels
+## ------------------------------------------------------------------------
+##
+#object g38=CLabels
+#
+#include CLABELS/clabels.speck
+#include CLABELS/clabels.label
+#eval psize 4000
+#eval ptsize 0.05 4
+#eval lum const 120
+#eval slum 2700
+#eval color const 0.1 0.8 0.4
+#eval polysize 1e-6
+#eval polysides 12
+#eval alpha 0.35
+#eval poly on
+#eval lsize 10
+#eval labelmin 8
+#eval textcment 1 0.05 0.4 0.2
+#eval laxes off
+#eval labels on
+#eval off
+
+##
+## Current labels #2
+## ------------------------------------------------------------------------
+##
+#object g39=CLabels2
+#
+#include CLABELS2/clabels2.speck
+#include CLABELS2/clabels2.label
+#eval psize 4000
+#eval ptsize 0.05 4
+#eval lum const 120
+#eval slum 2700
+#eval color const 0.1 0.8 0.4
+#eval polysize 1e-6
+#eval polysides 12
+#eval alpha 0.35
+#eval poly on
+#eval lsize 10
+#eval labelmin 8
+#eval textcment 1 0.05 0.4 0.2
+#eval laxes off
+#eval labels on
+#eval off
+
+###
+### Local Group of Galaxies
+### ------------------------------------------------------------------------
+###
+#object g41=LocalGroup
+#
+#include LocalGroup/localgroup.speck
+#include LocalGroup/localgroup.label
+#eval psize 4000
+#eval ptsize 0.05 4
+#eval lum const 120
+#eval slum 2700
+#eval color const 0.1 0.8 0.4
+#eval polysize 1e-6
+#eval polysides 12
+#eval alpha 0.35
+#eval poly on
+#eval lsize 3000
+#eval labelmin 8
+#eval textcment 1 0.05 0.4 0.2
+#eval laxes off
+#eval labels on
+#eval off
+
+
+##########################################
+## General Partiview commands
+##########################################
+eval g1					# stars are the active group on start up
+
+eval clip .1 1000000	# use this clip once you leave the Oort sphere (this is the default)
+#eval clip 1e-5 1e5		# use this clip if you want to see the solar system when you start
+
+eval fov 60
+eval interest 0 0 0		# the Point of Interest is the Sun
+
+#eval jump 0.000001 0.000001 0 -20 80 30		# your position is the Sun at start up
+#eval home 0.000001 0.000001 0 -20 80 30		# this is where you go if you hit the Home button
+#eval jump 0.003 0.001 0.0005 -20 80 30
+#eval home 0.03 0.01 0.005 -20 80 30
+
+eval jump 30 30 0.0005 -20 80 30
+eval home 30 30 0.005 -20 80 30
+
+eval censize 0.0		# Point of Interest marker size (invisible by default)
+#eval censize 0.3067		# 1 light-year Point of Interest marker size
+#eval censize 3.067		# 10 light-years
+#eval censize 30.67		# 100 light-years
+#eval censize 306.7		# 1000 light years
+
+eval speed *70
+#eval g2 on
+#eval g2
+
+include customcommands.cf
+
+

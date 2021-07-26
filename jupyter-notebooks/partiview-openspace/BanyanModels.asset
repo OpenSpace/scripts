@@ -1,0 +1,31 @@
+local assetHelper = asset.require('util/asset_helper')
+local transforms = asset.require('scene/solarsystem/sun/transforms')
+local nodes = {}
+local stars = {
+                          Identifier = 'bsigma',
+                          Renderable = {
+                            Type = 'RenderableStars',
+                            File = asset.localResource('data/BanyanModels/bsigma.speck'),
+                            Texture = asset.localResource('halo.png'),
+                            ColorMap = asset.localResource('colorbv.cmap'),
+                            MagnitudeExponent = 6.3,
+                            SizeComposition = 'Distance Modulus',
+                            RenderMethod = 'Texture Based', -- or PSF
+                            DataMapping = {
+                              Bv = 'color',
+                              Luminance = 'lum',
+                              AbsoluteMagnitude = 'absmag',
+                              ApparentMagnitude = 'appmag',
+                              Vx = 'vx',
+                              Vy = 'vy',
+                              Vz = 'vz',
+                              Speed = 'speed'
+                            }
+                          },
+                          GUI = {
+                            Name = 'bsigma',
+                            Path = '/Other/BANYAN Sigma'
+                          }
+                        }
+table.insert(nodes, stars)
+assetHelper.registerSceneGraphNodesAndExport(asset, nodes)

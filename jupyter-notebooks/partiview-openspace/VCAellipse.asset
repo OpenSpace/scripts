@@ -1,0 +1,46 @@
+local assetHelper = asset.require('util/asset_helper')
+local transforms = asset.require('scene/solarsystem/sun/transforms')
+local nodes = {}
+local stars = {
+                          Identifier = 'VCA',
+                          Renderable = {
+                            Type = 'RenderableStars',
+                            File = asset.localResource('data/VCA/VCA.speck'),
+                            Texture = asset.localResource('halo.png'),
+                            ColorMap = asset.localResource('colorbv.cmap'),
+                            MagnitudeExponent = 6.2,
+                            SizeComposition = 'Distance Modulus',
+                            RenderMethod = 'Texture Based', -- or PSF
+                            DataMapping = {
+                              Bv = 'color',
+                              Luminance = 'lum',
+                              AbsoluteMagnitude = 'absmag',
+                              ApparentMagnitude = 'appmag',
+                              Vx = 'vx',
+                              Vy = 'vy',
+                              Vz = 'vz',
+                              Speed = 'speed'
+                            }
+                          },
+                          GUI = {
+                            Name = 'VCA',
+                            Path = '/Other/BANYAN Sigma'
+                          }
+                        }
+table.insert(nodes, stars)
+local elipseMesh = {                                  Identifier = 'VCAellipse',
+                                  Renderable = {
+                                    Type = 'RenderableDUMeshes',
+                                    Enabled = true,
+                                    Opacity = 0.4,
+                                    File = asset.localResource('data/VCA/VCAellipse.speck'),
+                                    MeshColor = {{ 0.1, 0.5, 0.6 }},
+                                    Unit = 'pc'
+                                  },
+                                  GUI = {
+                                    Name = 'VCAellipse',
+                                    Path = '/Other/BANYAN Sigma'
+                                  }
+                                }
+table.insert(nodes, elipseMesh)
+assetHelper.registerSceneGraphNodesAndExport(asset, nodes)

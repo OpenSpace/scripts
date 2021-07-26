@@ -1,0 +1,19 @@
+local assetHelper = asset.require('util/asset_helper')
+local transforms = asset.require('scene/solarsystem/sun/transforms')
+local nodes = {}
+local elipseMesh = {                                  Identifier = 'PRAEellipse',
+                                  Renderable = {
+                                    Type = 'RenderableDUMeshes',
+                                    Enabled = true,
+                                    Opacity = 0.4,
+                                    File = asset.localResource('data/PRAE/PRAEellipse.speck'),
+                                    MeshColor = {{ 0.1, 0.5, 0.6 }},
+                                    Unit = 'pc'
+                                  },
+                                  GUI = {
+                                    Name = 'PRAEellipse',
+                                    Path = '/Other/BANYAN Sigma'
+                                  }
+                                }
+table.insert(nodes, elipseMesh)
+assetHelper.registerSceneGraphNodesAndExport(asset, nodes)
