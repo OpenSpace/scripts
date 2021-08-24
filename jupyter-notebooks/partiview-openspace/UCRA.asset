@@ -1,6 +1,7 @@
 local assetHelper = asset.require('util/asset_helper')
 local transforms = asset.require('scene/solarsystem/sun/transforms')
 local nodes = {}
+local PARSEC_CONSTANT = 3.0856776E16;
 local stars = {
                           Identifier = 'UCRA',
                           Renderable = {
@@ -24,23 +25,37 @@ local stars = {
                           },
                           GUI = {
                             Name = 'UCRA',
-                            Path = '/Other/BANYAN Sigma'
+                            Path = '/Other/Partiview Stars'
                           }
                         }
 table.insert(nodes, stars)
-local elipseMesh = {                                  Identifier = 'UCRAellipse',
-                                  Renderable = {
-                                    Type = 'RenderableDUMeshes',
-                                    Enabled = true,
-                                    Opacity = 0.4,
-                                    File = asset.localResource('data/UCRA/UCRAellipse.speck'),
-                                    MeshColor = {{ 0.1, 0.5, 0.6 }},
-                                    Unit = 'pc'
-                                  },
-                                  GUI = {
-                                    Name = 'UCRAellipse',
-                                    Path = '/Other/BANYAN Sigma'
-                                  }
+local ellipseMesh  = {
+                          Identifier = 'UCRAellipse',
+                          Renderable = {
+                              Type = 'RenderableSphericalGrid',
+                              Color = { 1.0, 0.5, 0.2 },
+                              LineWidth = 2.0,
+                              Segments = 40,
+                              Enabled = false
+                            },
+                          Transform = {
+                              Scale = { 
+                                Type = 'NonUniformStaticScale', 
+                                Scale = {12.562976 * PARSEC_CONSTANT,3.3281893 * PARSEC_CONSTANT,8.1212001  * PARSEC_CONSTANT}
+                                },
+                              Rotation = {
+                                Type = 'StaticRotation',
+                                Rotation ={0.98384467,-0.15630009,0.087292274,0.15670825,0.98764249,0.0021999163,-0.086557406,0.011515043,0.99618031}
+                                },
+                              Translation = {
+                                Type = 'StaticTranslation',
+                                Position = {143.06338 * PARSEC_CONSTANT,-1.1609230 * PARSEC_CONSTANT,-39.725585 * PARSEC_CONSTANT}
                                 }
-table.insert(nodes, elipseMesh)
+                              },
+                              GUI = {
+                            Name = 'UCRAellipse',
+                            Path = '/Other/Partiview Ellipses'
+                          }
+                        }
+table.insert(nodes, ellipseMesh)
 assetHelper.registerSceneGraphNodesAndExport(asset, nodes)

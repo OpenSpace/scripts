@@ -1,6 +1,7 @@
 local assetHelper = asset.require('util/asset_helper')
 local transforms = asset.require('scene/solarsystem/sun/transforms')
 local nodes = {}
+local PARSEC_CONSTANT = 3.0856776E16;
 local stars = {
                           Identifier = 'kounkelgroups',
                           Renderable = {
@@ -24,7 +25,7 @@ local stars = {
                           },
                           GUI = {
                             Name = 'kounkelgroups',
-                            Path = '/Other/BANYAN Sigma'
+                            Path = '/Other/Partiview Stars'
                           }
                         }
 table.insert(nodes, stars)

@@ -1,6 +1,7 @@
 local assetHelper = asset.require('util/asset_helper')
 local transforms = asset.require('scene/solarsystem/sun/transforms')
 local nodes = {}
+local PARSEC_CONSTANT = 3.0856776E16;
 local stars = {
                           Identifier = 'XFOR',
                           Renderable = {
@@ -24,23 +25,37 @@ local stars = {
                           },
                           GUI = {
                             Name = 'XFOR',
-                            Path = '/Other/BANYAN Sigma'
+                            Path = '/Other/Partiview Stars'
                           }
                         }
 table.insert(nodes, stars)
-local elipseMesh = {                                  Identifier = 'XFORellipse',
-                                  Renderable = {
-                                    Type = 'RenderableDUMeshes',
-                                    Enabled = true,
-                                    Opacity = 0.4,
-                                    File = asset.localResource('data/XFOR/XFORellipse.speck'),
-                                    MeshColor = {{ 0.1, 0.5, 0.6 }},
-                                    Unit = 'pc'
-                                  },
-                                  GUI = {
-                                    Name = 'XFORellipse',
-                                    Path = '/Other/BANYAN Sigma'
-                                  }
+local ellipseMesh  = {
+                          Identifier = 'XFORellipse',
+                          Renderable = {
+                              Type = 'RenderableSphericalGrid',
+                              Color = { 1.0, 0.5, 0.2 },
+                              LineWidth = 2.0,
+                              Segments = 40,
+                              Enabled = false
+                            },
+                          Transform = {
+                              Scale = { 
+                                Type = 'NonUniformStaticScale', 
+                                Scale = {10.538278 * PARSEC_CONSTANT,4.6308957 * PARSEC_CONSTANT,1.4330018  * PARSEC_CONSTANT}
+                                },
+                              Rotation = {
+                                Type = 'StaticRotation',
+                                Rotation ={0.62404493,0.54751937,0.55748584,-0.65215803,-0.028045311,0.75756410,0.43041588,-0.83632290,0.33956762}
+                                },
+                              Translation = {
+                                Type = 'StaticTranslation',
+                                Position = {-27.045674 * PARSEC_CONSTANT,-46.259657 * PARSEC_CONSTANT,-84.229607 * PARSEC_CONSTANT}
                                 }
-table.insert(nodes, elipseMesh)
+                              },
+                              GUI = {
+                            Name = 'XFORellipse',
+                            Path = '/Other/Partiview Ellipses'
+                          }
+                        }
+table.insert(nodes, ellipseMesh)
 assetHelper.registerSceneGraphNodesAndExport(asset, nodes)

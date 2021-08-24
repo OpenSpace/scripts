@@ -1,6 +1,7 @@
 local assetHelper = asset.require('util/asset_helper')
 local transforms = asset.require('scene/solarsystem/sun/transforms')
 local nodes = {}
+local PARSEC_CONSTANT = 3.0856776E16;
 local stars = {
                           Identifier = 'OCT',
                           Renderable = {
@@ -24,23 +25,37 @@ local stars = {
                           },
                           GUI = {
                             Name = 'OCT',
-                            Path = '/Other/BANYAN Sigma'
+                            Path = '/Other/Partiview Stars'
                           }
                         }
 table.insert(nodes, stars)
-local elipseMesh = {                                  Identifier = 'OCTellipse',
-                                  Renderable = {
-                                    Type = 'RenderableDUMeshes',
-                                    Enabled = true,
-                                    Opacity = 0.4,
-                                    File = asset.localResource('data/OCT/OCTellipse.speck'),
-                                    MeshColor = {{ 0.1, 0.5, 0.6 }},
-                                    Unit = 'pc'
-                                  },
-                                  GUI = {
-                                    Name = 'OCTellipse',
-                                    Path = '/Other/BANYAN Sigma'
-                                  }
+local ellipseMesh  = {
+                          Identifier = 'OCTellipse',
+                          Renderable = {
+                              Type = 'RenderableSphericalGrid',
+                              Color = { 1.0, 0.5, 0.2 },
+                              LineWidth = 2.0,
+                              Segments = 40,
+                              Enabled = false
+                            },
+                          Transform = {
+                              Scale = { 
+                                Type = 'NonUniformStaticScale', 
+                                Scale = {125.53011 * PARSEC_CONSTANT,27.777889 * PARSEC_CONSTANT,12.145618  * PARSEC_CONSTANT}
+                                },
+                              Rotation = {
+                                Type = 'StaticRotation',
+                                Rotation ={0.97009671,0.24077255,-0.030674853,-0.24189432,0.94864257,-0.20387351,-0.019987675,0.20519710,0.97851655}
+                                },
+                              Translation = {
+                                Type = 'StaticTranslation',
+                                Position = {4.0311201 * PARSEC_CONSTANT,-96.749884 * PARSEC_CONSTANT,-59.733891 * PARSEC_CONSTANT}
                                 }
-table.insert(nodes, elipseMesh)
+                              },
+                              GUI = {
+                            Name = 'OCTellipse',
+                            Path = '/Other/Partiview Ellipses'
+                          }
+                        }
+table.insert(nodes, ellipseMesh)
 assetHelper.registerSceneGraphNodesAndExport(asset, nodes)

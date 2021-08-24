@@ -1,6 +1,7 @@
 local assetHelper = asset.require('util/asset_helper')
 local transforms = asset.require('scene/solarsystem/sun/transforms')
 local nodes = {}
+local PARSEC_CONSTANT = 3.0856776E16;
 local stars = {
                           Identifier = 'Check-Amina',
                           Renderable = {
@@ -24,7 +25,7 @@ local stars = {
                           },
                           GUI = {
                             Name = 'Check-Amina',
-                            Path = '/Other/BANYAN Sigma'
+                            Path = '/Other/Partiview Stars'
                           }
                         }
 table.insert(nodes, stars)
@@ -51,25 +52,37 @@ local stars = {
                           },
                           GUI = {
                             Name = 'CURRENT',
-                            Path = '/Other/BANYAN Sigma'
+                            Path = '/Other/Partiview Stars'
                           }
                         }
 table.insert(nodes, stars)
-local elipseMesh = {                                  Identifier = 'CURRENT_ellipsoid',
-                                  Renderable = {
-                                    Type = 'RenderableDUMeshes',
-                                    Enabled = true,
-                                    Opacity = 0.4,
-                                    File = asset.localResource('data/CURRENT/CURRENT_ellipsoid.speck'),
-                                    MeshColor = {{ 0.1, 0.5, 0.6 }},
-                                    Unit = 'pc'
-                                  },
-                                  GUI = {
-                                    Name = 'CURRENT_ellipsoid',
-                                    Path = '/Other/BANYAN Sigma'
-                                  }
-                                }
-table.insert(nodes, elipseMesh)
+local stars = {
+                          Identifier = 'CURRENT_blank',
+                          Renderable = {
+                            Type = 'RenderableStars',
+                            File = asset.localResource('data/CURRENT/CURRENT_blank.speck'),
+                            Texture = asset.localResource('halo.png'),
+                            ColorMap = asset.localResource('colorbv.cmap'),
+                            MagnitudeExponent = 6.3,
+                            SizeComposition = 'Distance Modulus',
+                            RenderMethod = 'Texture Based', -- or PSF
+                            DataMapping = {
+                              Bv = 'color',
+                              Luminance = 'lum',
+                              AbsoluteMagnitude = 'absmag',
+                              ApparentMagnitude = 'appmag',
+                              Vx = 'vx',
+                              Vy = 'vy',
+                              Vz = 'vz',
+                              Speed = 'speed'
+                            }
+                          },
+                          GUI = {
+                            Name = 'CURRENT_blank',
+                            Path = '/Other/Partiview Stars'
+                          }
+                        }
+table.insert(nodes, stars)
 local stars = {
                           Identifier = 'faherty_vela_puppis',
                           Renderable = {
@@ -93,7 +106,7 @@ local stars = {
                           },
                           GUI = {
                             Name = 'faherty_vela_puppis',
-                            Path = '/Other/BANYAN Sigma'
+                            Path = '/Other/Partiview Stars'
                           }
                         }
 table.insert(nodes, stars)
@@ -120,7 +133,7 @@ local stars = {
                           },
                           GUI = {
                             Name = 'sagittarius_rrlyrae',
-                            Path = '/Other/BANYAN Sigma'
+                            Path = '/Other/Partiview Stars'
                           }
                         }
 table.insert(nodes, stars)

@@ -1,19 +1,34 @@
 local assetHelper = asset.require('util/asset_helper')
 local transforms = asset.require('scene/solarsystem/sun/transforms')
 local nodes = {}
-local elipseMesh = {                                  Identifier = 'PRAEellipse',
-                                  Renderable = {
-                                    Type = 'RenderableDUMeshes',
-                                    Enabled = true,
-                                    Opacity = 0.4,
-                                    File = asset.localResource('data/PRAE/PRAEellipse.speck'),
-                                    MeshColor = {{ 0.1, 0.5, 0.6 }},
-                                    Unit = 'pc'
-                                  },
-                                  GUI = {
-                                    Name = 'PRAEellipse',
-                                    Path = '/Other/BANYAN Sigma'
-                                  }
+local PARSEC_CONSTANT = 3.0856776E16;
+local ellipseMesh  = {
+                          Identifier = 'PRAEellipse',
+                          Renderable = {
+                              Type = 'RenderableSphericalGrid',
+                              Color = { 1.0, 0.5, 0.2 },
+                              LineWidth = 2.0,
+                              Segments = 40,
+                              Enabled = false
+                            },
+                          Transform = {
+                              Scale = { 
+                                Type = 'NonUniformStaticScale', 
+                                Scale = {8.1923616 * PARSEC_CONSTANT,4.5199711 * PARSEC_CONSTANT,4.3157059  * PARSEC_CONSTANT}
+                                },
+                              Rotation = {
+                                Type = 'StaticRotation',
+                                Rotation ={0.78441583,0.38894122,-0.48313200,-0.50033316,0.85715177,-0.12230115,0.36654949,0.33766193,0.86696361}
+                                },
+                              Translation = {
+                                Type = 'StaticTranslation',
+                                Position = {-140.92445 * PARSEC_CONSTANT,-69.029178 * PARSEC_CONSTANT,100.15467 * PARSEC_CONSTANT}
                                 }
-table.insert(nodes, elipseMesh)
+                              },
+                              GUI = {
+                            Name = 'PRAEellipse',
+                            Path = '/Other/Partiview Ellipses'
+                          }
+                        }
+table.insert(nodes, ellipseMesh)
 assetHelper.registerSceneGraphNodesAndExport(asset, nodes)
