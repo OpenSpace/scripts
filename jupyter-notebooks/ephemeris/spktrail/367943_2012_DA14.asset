@@ -1,0 +1,25 @@
+local assetHelper = asset.require('util/asset_helper')
+local spkTrail = {
+    Identifier = '367943 Duende (2012 DA14)',
+    Parent = 'Earth',
+    Renderable = {
+        Type = 'RenderableTrailTrajectory',
+        Enabled = true,
+        Translation = {
+          Type = 'SpiceTranslation',
+          Target = '367943',
+          Observer = 'SSB',
+          Kernels = {asset.localResource('367943_2012_DA14.bsp')}
+        },
+        Color = { 0.4, 0.0, 0.7 },
+        StartTime = '2020-05-31 00:01:09.185',
+        EndTime = '2022-08-09 00:01:09.183',
+        SampleInterval = 3600
+    },
+    GUI = {
+        Name = '367943 Duende (2012 DA14)',
+        Path = '/B612'
+    }
+}
+
+assetHelper.registerSceneGraphNodesAndExport(asset, { spkTrail })

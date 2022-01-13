@@ -1,0 +1,25 @@
+local assetHelper = asset.require('util/asset_helper')
+local spkTrail = {
+    Identifier = '60232 (1999 VL148)',
+    Parent = 'Earth',
+    Renderable = {
+        Type = 'RenderableTrailTrajectory',
+        Enabled = true,
+        Translation = {
+          Type = 'SpiceTranslation',
+          Target = '602321999',
+          Observer = 'SSB',
+          Kernels = {asset.localResource('60232_1999_VL148.bsp')}
+        },
+        Color = { 0.4, 0.0, 0.7 },
+        StartTime = '2020-05-31 00:01:09.185',
+        EndTime = '2022-08-09 00:01:09.183',
+        SampleInterval = 3600
+    },
+    GUI = {
+        Name = '60232 (1999 VL148)',
+        Path = '/B612'
+    }
+}
+
+assetHelper.registerSceneGraphNodesAndExport(asset, { spkTrail })

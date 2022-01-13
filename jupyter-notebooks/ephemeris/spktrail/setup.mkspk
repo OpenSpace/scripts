@@ -1,0 +1,21 @@
+\begindata
+   INPUT_DATA_TYPE   = 'STATES'
+   INPUT_DATA_FILE   = 'da14example_states.csv'
+   OUTPUT_SPK_FILE   = '367943_2012_DA14.bsp'
+   OUTPUT_SPK_TYPE   = 8
+   OBJECT_ID         = 367943
+   OBJECT_NAME       = '367943_2012_DA14'
+   CENTER_ID         = 0
+   CENTER_NAME       = 'SSB'
+   REF_FRAME_NAME    = 'GALACTIC'
+   PRODUCER_ID       = 'B612'
+   DATA_ORDER        = 'EPOCH X Y Z VX VY VZ'
+   INPUT_DATA_UNITS  = ('ANGLES=DEGREES' 'DISTANCES=AU')
+   DATA_DELIMITER    = ','
+   LINES_PER_RECORD  = 1
+   IGNORE_FIRST_LINE = 1
+   LEAPSECONDS_FILE  = 'naif0012.tls'
+   POLYNOM_DEGREE    = 9
+   SEGMENT_ID        = 'SPK_STATES_08'
+   TIME_WRAPPER      = '# ETSECONDS'
+\begintext
