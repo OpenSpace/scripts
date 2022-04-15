@@ -1,0 +1,16 @@
+{
+  "name": "treks-to-openspace",
+  "version": "1.0.0",
+  "description": "create wms/vrt/asset files for importing NASA Treks to OpenSpace",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "download-file-sync": "^1.0.4",
+    "gdal": "^0.11.1",
+    "xml-js": "^1.6.11"
+  }
+}
