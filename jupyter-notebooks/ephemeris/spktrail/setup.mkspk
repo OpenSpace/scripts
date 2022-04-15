@@ -5,9 +5,9 @@
    OUTPUT_SPK_TYPE   = 8
    OBJECT_ID         = 367943
    OBJECT_NAME       = '367943_2012_DA14'
-   CENTER_ID         = 0
-   CENTER_NAME       = 'SSB'
-   REF_FRAME_NAME    = 'GALACTIC'
+   CENTER_ID         = 10
+   CENTER_NAME       = 'SUN'
+   REF_FRAME_NAME    = 'ECLIPJ2000'
    PRODUCER_ID       = 'B612'
    DATA_ORDER        = 'EPOCH X Y Z VX VY VZ'
    INPUT_DATA_UNITS  = ('ANGLES=DEGREES' 'DISTANCES=AU')
