@@ -17,7 +17,7 @@ if (!fs.existsSync(tmp)){
 var createWMSFromTemplate = (globe, layer, folder, bounds, projection, bands, levelCount, coverage) => {
   
   var zeroblock = "404,400";
-  if (coverage == 'Global') {
+  if ( coverage == 'Global' ) {
     zeroblock = "400";
   }
 
@@ -65,7 +65,6 @@ var createWMSFromTemplate = (globe, layer, folder, bounds, projection, bands, le
 };
 
 var getLevelCountFromCapabilities = (globe, layer) => {
-  //https://trek.nasa.gov/tiles/Moon/EQ/Apollo15_MetricCam_ClrConf_Global_1024ppd/1.0.0/WMTSCapabilities.xml
   var xmlurl = "https://trek.nasa.gov/tiles/" + globe + "/EQ/" + layer + "/1.0.0/WMTSCapabilities.xml";
   var layerCapabilities;
   let filepath = './tmp/' + layer + '.xml';
@@ -85,7 +84,7 @@ var getLevelCountFromCapabilities = (globe, layer) => {
       return count;    
   } else {
     console.log("Error with capabilities file:", xmlurl);
-    return 1;
+    return 0;
   }
 };
 
@@ -115,14 +114,27 @@ async function createVRT(globe, layerId, folder)  {
  
 };
 
-var createAsset = (globe, layer, description, isHeightLayer) => {
-  var openspacepath = 'scene/solarsystem/planets/earth/moon/moon';
+var createAsset = (globe, layer, description, isHeightLayer, folder) => {
+
+  var openspacepath = 'scene/solarsystem/';
+  switch (globe) {
+    case "Moon":
+      openspacepath += "/planets/earth/moon/moon";
+      break;
+      case "Mars":
+        openspacepath += "/planets/mars/mars"
+        break;
+      case "Mercury":
+        openspacepath += "/planets/mercury/mercury"
+        break;      
+  }
   //todo refactor to switch or somtehing for overlays
   var layerGroup = isHeightLayer ? 'HeightLayers' : 'ColorLayers';
+  var layerIdentifier = layer.replaceAll('.', "").replaceAll(" ", "");
   var assetFileString = `local globeIdentifier = asset.require("${openspacepath}").${globe}.Identifier
 
   local layer = {
-    Identifier = "${layer}",
+    Identifier = "${layerIdentifier}",
     Name = "${description}",
     FilePath = asset.localResource("${layer}.vrt")
   }
@@ -142,7 +154,7 @@ var createAsset = (globe, layer, description, isHeightLayer) => {
 
 async function processProduct(globe, product) {
   
-  if (!product.RASTER_TYPE) {
+  if ( (globe == 'Moon') && (!product.RASTER_TYPE) ) {
     //console.log("non raster products not support", product.productLabel);
     return;
   }
@@ -150,8 +162,16 @@ async function processProduct(globe, product) {
   var boundsArray = product.bbox.split(',');
   var layerId = product.productLabel;
   var projection = product.projection;
+  if (projection.startsWith("GCS")) {
+    projection = "GEO" + projection;
+  }
   var bands = product.BANDS;
   var isHeightLayer = false;
+  
+  if (product.productCat2 == 'Geologic Map') {
+    //polygon type layer not even supported on treks
+    return;
+  }
 
   if (product.RASTER_TYPE == 'colormap') {
     bands = 3;
@@ -166,24 +186,52 @@ async function processProduct(globe, product) {
   if (bands == 4) {bands = 3;}
   if (bands == 0) {bands = 1;}
 
+  if (bands == undefined) {bands = 3;}
 
   if (projection.indexOf('CS[') < 0) {
     var projectionId = projection.substring(projection.lastIndexOf('::') + 2);
     projection = projectionmap[projectionId];
   }
   var folder = product.title.replaceAll(" ", "_");
+  folder = folder.replaceAll(",", "");
+  folder = folder.replaceAll("/", "");
+  folder = folder.replaceAll("\\", "");
+
+  var coverage = product.coverage;
+  if (globe == 'Mars') {
+    coverage = 'Global';
+    var bbox = product.bbox.split(',');
+    if (bbox) {
+      if (Math.abs(bbox[0]) < 179) {
+        coverage = 'Regional';
+      }
+      if (Math.abs(bbox[1]) < 89) {
+        coverage = 'Regional';
+      }
+      if (Math.abs(bbox[2]) < 179) {
+        coverage = 'Regional';
+      }
+      if (Math.abs(bbox[3]) < 89) {
+        coverage = 'Regional';
+      }
+    }
+  }
   if (projection) {
     if (useExistingCache && fs.existsSync("./"+globe+"/"+folder+"/"+layerId+".wms")) {
       process.stdout.write(".");
     } else {
       var levelCount = getLevelCountFromCapabilities(globe, layerId);
-      process.stdout.write("-");
-      createWMSFromTemplate(globe, layerId, folder, boundsArray, projection, bands, levelCount, product.coverage);
-      await createVRT(globe, layerId, folder);
-      createAsset(globe, layerId, product.title, isHeightLayer, folder);  
+      if (levelCount > 0) {
+        process.stdout.write("-");
+        createWMSFromTemplate(globe, layerId, folder, boundsArray, projection, bands, levelCount, coverage);
+        await createVRT(globe, layerId, folder);
+        createAsset(globe, layerId, product.title, isHeightLayer, folder);    
+      } else {
+        console.log("no leveles for", layerId);
+      }
     }
   } else {
-    console.log("no projection found in map for :", projection);
+    console.log("no projection found in map for :", projection, layerId);
   }
 };
 
@@ -223,6 +271,14 @@ var getPageOfResults = (globe) => {
       url += "urn:ogc:def:crs:EPSG::104903";
       globe = 'Moon';
       break;
+    case 'mars':
+      url += "urn:ogc:def:crs:EPSG::104905";
+      globe = 'Mars';
+      break;
+    case 'mercury':
+      url += "urn:ogc:def:crs:IAU2000::19900"
+      globe = "Mercury";
+      break;
     deafult:
       console.log("unknown globe", globe);
       return;
@@ -245,6 +301,7 @@ var getPageOfResults = (globe) => {
 //projection map from:
 //https://svn.osgeo.org/geotools/trunk/modules/plugin/epsg-extension/src/main/resources/org/geotools/referencing/factory/epsg/esri.properties
 let projectionmap = require("./projectionmap.json");
+const { BADFAMILY } = require("dns");
 
 console.log("Hello treks");
 
@@ -253,7 +310,9 @@ var start = 0;
 let rows = 30;
 var numResults = 9999;
 
-getPageOfResults('moon');
+//getPageOfResults('moon');
+//getPageOfResults('mars');
+getPageOfResults('mercury');
 
 //var pageRespone = require("./sampleresponse0.json");
 //showPageOfData("Moon", pageRespone);
