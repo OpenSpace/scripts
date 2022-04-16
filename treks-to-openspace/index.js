@@ -2,25 +2,24 @@ var gdal = require("gdal");
 const util = require('util');
 const { execSync } = require("child_process");
 var fs = require("fs");
+var https = require("https");
 var downloadFileSync = require('download-file-sync');
 var xmljs = require('xml-js');
+
+var useTmpCache = true;
+var useExistingCache = false;
 
 var tmp = './tmp';
 if (!fs.existsSync(tmp)){
   fs.mkdirSync(tmp);
 }
 
-var createWMSFromTemplate = (globe, layer, bounds, projection, bands, levelCount) => {
+var createWMSFromTemplate = (globe, layer, folder, bounds, projection, bands, levelCount, coverage) => {
   
-  var fixedproj = `GEOGCS["GCS_Moon_2000",
-	DATUM["D_Moon_2000",SPHEROID["Moon_2000_IAU_IAG",1737400,0]],
-	PRIMEM["Reference_Meridian",0],UNIT["degree",0.0174532925199433]]
-  `;
-
-  // <UpperLeftX>${bounds[0]}</UpperLeftX>
-  // <UpperLeftY>${bounds[3]}</UpperLeftY>
-  // <LowerRightX>${bounds[2]}</LowerRightX>
-  // <LowerRightY>${bounds[1]}</LowerRightY>
+  var zeroblock = "404,400";
+  if (coverage == 'Global') {
+    zeroblock = "400";
+  }
 
   var template = `<GDAL_WMS>
     <Service name="TMS">
@@ -44,7 +43,7 @@ var createWMSFromTemplate = (globe, layer, bounds, projection, bands, levelCount
     <BandsCount>${bands}</BandsCount>
     <MaxConnections>10</MaxConnections>
     <DataValues NoData="0" Min="1" Max="255"/>
-    <ZeroBlockHttpCodes>404,400</ZeroBlockHttpCodes>    
+    <ZeroBlockHttpCodes>${zeroblock}</ZeroBlockHttpCodes>    
   </GDAL_WMS>`;
 
   //create globe and layer dirs
@@ -52,7 +51,7 @@ var createWMSFromTemplate = (globe, layer, bounds, projection, bands, levelCount
   if (!fs.existsSync(dir)){
       fs.mkdirSync(dir);
   }
-  dir = dir + "/" + layer;
+  dir = dir + "/" + folder;
   if (!fs.existsSync(dir)){
       fs.mkdirSync(dir);
   }
@@ -70,27 +69,35 @@ var getLevelCountFromCapabilities = (globe, layer) => {
   var xmlurl = "https://trek.nasa.gov/tiles/" + globe + "/EQ/" + layer + "/1.0.0/WMTSCapabilities.xml";
   var layerCapabilities;
   let filepath = './tmp/' + layer + '.xml';
-  if (fs.existsSync(filepath)) {
+  if (useTmpCache && fs.existsSync(filepath)) {
     layerCapabilities = fs.readFileSync(filepath);
   } else {
     layerCapabilities = downloadFileSync(xmlurl);
     fs.writeFileSync(filepath, layerCapabilities);
   }
   var jsonCapabilities = xmljs.xml2js(layerCapabilities, {compact: true, alwaysChildren: true});
-  var count = jsonCapabilities.Capabilities.Contents.TileMatrixSet.TileMatrix.length;
-  return count;
+  if (jsonCapabilities && 
+    jsonCapabilities.Capabilities &&
+    jsonCapabilities.Capabilities.Contents &&
+    jsonCapabilities.Capabilities.Contents.TileMatrixSet &&
+    jsonCapabilities.Capabilities.Contents.TileMatrixSet.TileMatrix) {
+      var count = jsonCapabilities.Capabilities.Contents.TileMatrixSet.TileMatrix.length;
+      return count;    
+  } else {
+    console.log("Error with capabilities file:", xmlurl);
+    return 1;
+  }
 };
 
-async function createVRT(globe, layerId)  {
+async function createVRT(globe, layerId, folder)  {
   //var wms = gdal.open("./" + globe + "/" + layerId + ".wms");
   //gdal.
-
-  let path =  __dirname.replace(/\\/g, '/') + '/' + globe + "/" + layerId + '/';
+  let path =  __dirname.replace(/\\/g, '/') + '/' + globe + "/" + folder + '/';
   var buildVrtCommand = 'gdalbuildvrt ' + path + layerId + '.vrt';
   buildVrtCommand += " -te -180 -90 180 90 -addalpha " + path + layerId + ".wms";
   var ret = execSync(buildVrtCommand);
 
-  var lines = fs.readFileSync(path+layerId + ".vrt", 'utf-8').split('\n');
+  var lines = fs.readFileSync(path + layerId + ".vrt", 'utf-8').split('\n');
   var nodataline = "<NODATA>0</NODATA>";
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index];
@@ -107,8 +114,11 @@ async function createVRT(globe, layerId)  {
   })
  
 };
-var createAsset = (globe, layer, description) => {
+
+var createAsset = (globe, layer, description, isHeightLayer) => {
   var openspacepath = 'scene/solarsystem/planets/earth/moon/moon';
+  //todo refactor to switch or somtehing for overlays
+  var layerGroup = isHeightLayer ? 'HeightLayers' : 'ColorLayers';
   var assetFileString = `local globeIdentifier = asset.require("${openspacepath}").${globe}.Identifier
 
   local layer = {
@@ -118,52 +128,68 @@ var createAsset = (globe, layer, description) => {
   }
   
   asset.onInitialize(function()
-    openspace.globebrowsing.addLayer(globeIdentifier, "ColorLayers", layer)
+    openspace.globebrowsing.addLayer(globeIdentifier, "${layerGroup}", layer)
   end)
   
   asset.onDeinitialize(function()
-    openspace.globebrowsing.deleteLayer(globeIdentifier, "ColorLayers", layer.Identifier)
+    openspace.globebrowsing.deleteLayer(globeIdentifier, "${layerGroup}", layer.Identifier)
   end)
   
   asset.export("layer", layer)
   `;
-  fs.writeFileSync("./" + globe + "/" + layer + "/" + layer + ".asset", assetFileString);
+  fs.writeFileSync("./" + globe + "/" + folder + "/" + layer + ".asset", assetFileString);
 }
 
 async function processProduct(globe, product) {
+  
+  if (!product.RASTER_TYPE) {
+    //console.log("non raster products not support", product.productLabel);
+    return;
+  }
+  
   var boundsArray = product.bbox.split(',');
-  var layerID = product.productLabel;
-  var levelCount = getLevelCountFromCapabilities(globe, layerID);
+  var layerId = product.productLabel;
   var projection = product.projection;
   var bands = product.BANDS;
+  var isHeightLayer = false;
 
   if (product.RASTER_TYPE == 'colormap') {
-    console.log("color mapped layers not supported");
-  }
-  if (bands == 2) {
-    bands = 1;
-  }
-
-  if (bands == 4) {
     bands = 3;
+  } else if (product.RASTER_TYPE == 'raw') {
+    isHeightLayer = true;
+    //console.log("skipping height layers");
+    //todo figure out lut height layers are loading but scale is wrong
+    //i.e elevation shows if you use the gamma slider
+    return;
   }
+  if (bands == 2) {bands = 1;}
+  if (bands == 4) {bands = 3;}
+  if (bands == 0) {bands = 1;}
+
 
   if (projection.indexOf('CS[') < 0) {
-    projectionID = projection.substring(projection.lastIndexOf('::') + 2);
-    projection = projectionmap[projectionID];
+    var projectionId = projection.substring(projection.lastIndexOf('::') + 2);
+    projection = projectionmap[projectionId];
   }
-
+  var folder = product.title.replaceAll(" ", "_");
   if (projection) {
-    createWMSFromTemplate(globe, layerID, boundsArray, projection, bands, levelCount);
-    await createVRT(globe, layerID);
-    createAsset(globe, layerID, product.title);
+    if (useExistingCache && fs.existsSync("./"+globe+"/"+folder+"/"+layerId+".wms")) {
+      process.stdout.write(".");
+    } else {
+      var levelCount = getLevelCountFromCapabilities(globe, layerId);
+      process.stdout.write("-");
+      createWMSFromTemplate(globe, layerId, folder, boundsArray, projection, bands, levelCount, product.coverage);
+      await createVRT(globe, layerId, folder);
+      createAsset(globe, layerId, product.title, isHeightLayer, folder);  
+    }
   } else {
-    console.log("no projection found in map for :", projectionID);
+    console.log("no projection found in map for :", projection);
   }
 };
 
 var showPageOfData = (globe, data) => {
   //console.log(data)
+  numResults = data.response.numFound;
   var docs = data.response.docs;
   for (let index = 0; index < docs.length; index++) {
       const doc = docs[index];
@@ -177,10 +203,43 @@ var showPageOfData = (globe, data) => {
               break;
       }
       if (index==7) {
-          console.log(doc);
+          //console.log(doc);
       }
-
   }
+
+  if (start + rows < numResults) {
+    if (start > 20000) {return;}
+    getPageOfResults(globe.toLowerCase());
+  }
+
+};
+
+var getPageOfResults = (globe) => {
+
+  var url = "https://trek.nasa.gov/" + globe;
+  url += "/TrekServices/ws/index/eq/searchItems?proj=";
+  switch (globe) {
+    case 'moon':
+      url += "urn:ogc:def:crs:EPSG::104903";
+      globe = 'Moon';
+      break;
+    deafult:
+      console.log("unknown globe", globe);
+      return;
+  }
+  url += "&start=" + start + "&rows=" + rows;
+
+  var tmpPath = "./tmp/" + globe + start + ".json";
+  if (useTmpCache && fs.existsSync(tmpPath)) {
+    json = fs.readFileSync(tmpPath);
+  } else {
+    json = downloadFileSync(url);
+  }
+  fs.writeFileSync(tmpPath, json);
+  start += rows;
+  json = JSON.parse(json);
+  showPageOfData(globe, json);
+
 };
 
 //projection map from:
@@ -189,15 +248,13 @@ let projectionmap = require("./projectionmap.json");
 
 console.log("Hello treks");
 
-var urlbase = "https://trek.nasa.gov/"
-var globe = "moon"
-var urltail = "/TrekServices/ws/index/eq/searchItems?proj=";
-var proj = "urn:ogc:def:crs:EPSG::104903";
-//&start=0&rows=30
 
-var pageRespone = require("./sampleresponse0.json");
-const { createPrivateKey } = require("crypto");
-const { title } = require("process");
+var start = 0;
+let rows = 30;
+var numResults = 9999;
 
-showPageOfData("Moon", pageRespone);
+getPageOfResults('moon');
+
+//var pageRespone = require("./sampleresponse0.json");
+//showPageOfData("Moon", pageRespone);
 
