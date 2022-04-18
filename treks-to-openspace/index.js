@@ -7,7 +7,7 @@ var downloadFileSync = require('download-file-sync');
 var xmljs = require('xml-js');
 
 var useTmpCache = true;
-var useExistingCache = true;
+var useExistingCache = false;
 var assetList = [];
 
 var tmp = './tmp';
@@ -45,7 +45,8 @@ async function createWMSFromTemplate(globe, layer, folder, bounds, projection, b
     <MaxConnections>10</MaxConnections>
     <DataValues NoData="0" Min="1" Max="255"/>
     <ZeroBlockHttpCodes>${zeroblock}</ZeroBlockHttpCodes>    
-  </GDAL_WMS>`;
+  </GDAL_WMS>
+`;
 
   //create globe and layer dirs
   var dir = './' + globe;
@@ -164,7 +165,7 @@ async function createAsset(globe, layer, title, description, projection, isHeigh
     License = 'NASA/Treks',
     Description = [[${title} layer from NASA/Treks for ${globe}]]
   }
-  `;
+`;
   assetList.push(folder);
   fs.writeFileSync("./" + globe + "/" + folder + "/" + folder + ".asset", assetFileString);
 }
@@ -380,10 +381,12 @@ var start = 0;
 let rows = 30;
 var numResults = 9999;
 
-//generally I run the script for each globe individually.
-getPageOfResults('moon');
-//getPageOfResults('mars');
-//getPageOfResults('mercury');
+
+  //currently must the script for each globe individually.
+// getPageOfResults('moon');
+// getPageOfResults('mars');
+getPageOfResults('mercury');
+
 
 //testing code with local file
 //var pageRespone = require("./sampleresponse0.json");
