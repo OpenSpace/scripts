@@ -7,14 +7,15 @@ var downloadFileSync = require('download-file-sync');
 var xmljs = require('xml-js');
 
 var useTmpCache = true;
-var useExistingCache = false;
+var useExistingCache = true;
+var assetList = [];
 
 var tmp = './tmp';
 if (!fs.existsSync(tmp)){
   fs.mkdirSync(tmp);
 }
 
-var createWMSFromTemplate = (globe, layer, folder, bounds, projection, bands, levelCount, coverage) => {
+async function createWMSFromTemplate(globe, layer, folder, bounds, projection, bands, levelCount, coverage) {
   
   var zeroblock = "404,400";
   if ( coverage == 'Global' ) {
@@ -64,7 +65,7 @@ var createWMSFromTemplate = (globe, layer, folder, bounds, projection, bands, le
 
 };
 
-var getLevelCountFromCapabilities = (globe, layer) => {
+async function getLevelCountFromCapabilities(globe, layer) {
   var xmlurl = "https://trek.nasa.gov/tiles/" + globe + "/EQ/" + layer + "/1.0.0/WMTSCapabilities.xml";
   var layerCapabilities;
   let filepath = './tmp/' + layer + '.xml';
@@ -114,7 +115,7 @@ async function createVRT(globe, layerId, folder)  {
  
 };
 
-var createAsset = (globe, layer, description, isHeightLayer, folder) => {
+async function createAsset(globe, layer, title, description, projection, isHeightLayer, folder) {
 
   var openspacepath = 'scene/solarsystem/';
   switch (globe) {
@@ -131,12 +132,17 @@ var createAsset = (globe, layer, description, isHeightLayer, folder) => {
   //todo refactor to switch or somtehing for overlays
   var layerGroup = isHeightLayer ? 'HeightLayers' : 'ColorLayers';
   var layerIdentifier = layer.replaceAll('.', "").replaceAll(" ", "");
+  var layerURL = "https://trek.nasa.gov/";
+  layerURL += globe.toLowerCase() + "/#v=0.1&x=0&y=0&z=1&p=";
+  layerURL += projection + "&d=&l=" + layer + "%2Ctrue%2C1&b=" + globe.toLowerCase();
+  layerURL += "&e=-180.0%2C-90.0%2C180.0%2C90.0&sfv=&w=";
   var assetFileString = `local globeIdentifier = asset.require("${openspacepath}").${globe}.Identifier
 
   local layer = {
     Identifier = "${layerIdentifier}",
-    Name = "${description}",
-    FilePath = asset.localResource("${layer}.vrt")
+    Name = [[${title}]],
+    FilePath = asset.localResource("${layer}.vrt"),
+    Description = [[${description}]]
   }
   
   asset.onInitialize(function()
@@ -148,16 +154,22 @@ var createAsset = (globe, layer, description, isHeightLayer, folder) => {
   end)
   
   asset.export("layer", layer)
+
+
+  asset.meta = {
+    Name = [[${title}]],
+    Version = '1.0',
+    Author = 'NASA/Treks',
+    URL = '${layerURL}',
+    License = 'NASA/Treks',
+    Description = [[${title} layer from NASA/Treks for ${globe}]]
+  }
   `;
-  fs.writeFileSync("./" + globe + "/" + folder + "/" + layer + ".asset", assetFileString);
+  assetList.push(folder);
+  fs.writeFileSync("./" + globe + "/" + folder + "/" + folder + ".asset", assetFileString);
 }
 
 async function processProduct(globe, product) {
-  
-  if ( (globe == 'Moon') && (!product.RASTER_TYPE) ) {
-    //console.log("non raster products not support", product.productLabel);
-    return;
-  }
   
   var boundsArray = product.bbox.split(',');
   var layerId = product.productLabel;
@@ -192,6 +204,56 @@ async function processProduct(globe, product) {
     var projectionId = projection.substring(projection.lastIndexOf('::') + 2);
     projection = projectionmap[projectionId];
   }
+
+  if (globe == 'Mercury') {
+    //currently only one of the mercury projections is working
+    if (projection.indexOf('GCS_Mercury_2000') < 0) {
+      return;
+    }
+  }
+
+  if (globe == 'Mars') {
+    //currently only one of the mercury projections is working
+    if (projection.indexOf("GCS_Mars_2000\"") < 0) {
+      return;
+    }
+    //MGS TES layers not working
+    if (product.instrument == 'ThermalEmissionSpectrometer') {
+      return;
+    }
+    //Viking VIS layers not working
+    if (product.instrument == 'MDIM21') {
+      return;
+    }
+    //hirise global not working
+    if (product.productLabel == 'HiRISE_Global') {
+      return;
+    }
+  }
+
+  if (globe == 'Moon') {
+    //non raster not supported
+    if (!product.RASTER_TYPE) {
+      return;
+    }
+    //Kaguya MI not working
+    if (product.instrument == 'Multiband Imager') {
+      return;
+    }
+    //LP GRS not working
+    if (product.instrument == 'Gamma Ray Spectrometer') {
+      return;
+    }
+    //chang'e layer not working
+    if (product.productLabel == 'CE2_GRAS_DOM_07m') {
+      return;
+    }
+    //some weird projection not working.
+    if (projection && projection.indexOf("\"inf\"") > 0) {
+      return;
+    }
+  }
+
   var folder = product.title.replaceAll(" ", "_");
   folder = folder.replaceAll(",", "");
   folder = folder.replaceAll("/", "");
@@ -219,15 +281,16 @@ async function processProduct(globe, product) {
   if (projection) {
     if (useExistingCache && fs.existsSync("./"+globe+"/"+folder+"/"+layerId+".wms")) {
       process.stdout.write(".");
+      assetList.push(folder);
     } else {
-      var levelCount = getLevelCountFromCapabilities(globe, layerId);
+      var levelCount = await getLevelCountFromCapabilities(globe, layerId);
       if (levelCount > 0) {
         process.stdout.write("-");
-        createWMSFromTemplate(globe, layerId, folder, boundsArray, projection, bands, levelCount, coverage);
+        await createWMSFromTemplate(globe, layerId, folder, boundsArray, projection, bands, levelCount, coverage);
         await createVRT(globe, layerId, folder);
-        createAsset(globe, layerId, product.title, isHeightLayer, folder);    
+        await createAsset(globe, layerId, product.title, product.description, product.trekProjection, isHeightLayer, folder);
       } else {
-        console.log("no leveles for", layerId);
+        //capabilities didnt contain TileMatrixSet
       }
     }
   } else {
@@ -235,7 +298,7 @@ async function processProduct(globe, product) {
   }
 };
 
-var showPageOfData = (globe, data) => {
+async function showPageOfData(globe, data) {
   //console.log(data)
   numResults = data.response.numFound;
   var docs = data.response.docs;
@@ -245,7 +308,7 @@ var showPageOfData = (globe, data) => {
           case "bookmark":
               break;
           case "product":
-            processProduct(globe, doc);
+            await processProduct(globe, doc);
             break;
           default:
               break;
@@ -256,13 +319,22 @@ var showPageOfData = (globe, data) => {
   }
 
   if (start + rows < numResults) {
-    if (start > 20000) {return;}
-    getPageOfResults(globe.toLowerCase());
+    await getPageOfResults(globe.toLowerCase());
+  } else {
+    console.log("write asset", assetList.length);
+    //write meta asset
+    var assetString = "";
+    for (let index = 0; index < assetList.length; index++) {
+      const folder = assetList[index];
+      assetString += "asset.require(\"./" + folder + "/" + folder + "\")\n";
+    }
+    fs.writeFileSync("./" + globe + "/all_treks_layers.asset", assetString);
+    assetList = [];
   }
 
-};
+}
 
-var getPageOfResults = (globe) => {
+async function getPageOfResults(globe) {
 
   var url = "https://trek.nasa.gov/" + globe;
   url += "/TrekServices/ws/index/eq/searchItems?proj=";
@@ -294,26 +366,26 @@ var getPageOfResults = (globe) => {
   fs.writeFileSync(tmpPath, json);
   start += rows;
   json = JSON.parse(json);
-  showPageOfData(globe, json);
+  await showPageOfData(globe, json);
 
-};
+}
 
 //projection map from:
 //https://svn.osgeo.org/geotools/trunk/modules/plugin/epsg-extension/src/main/resources/org/geotools/referencing/factory/epsg/esri.properties
 let projectionmap = require("./projectionmap.json");
-const { BADFAMILY } = require("dns");
 
 console.log("Hello treks");
-
 
 var start = 0;
 let rows = 30;
 var numResults = 9999;
 
-//getPageOfResults('moon');
+//generally I run the script for each globe individually.
+getPageOfResults('moon');
 //getPageOfResults('mars');
-getPageOfResults('mercury');
+//getPageOfResults('mercury');
 
+//testing code with local file
 //var pageRespone = require("./sampleresponse0.json");
 //showPageOfData("Moon", pageRespone);
 
