@@ -137,34 +137,37 @@ async function createAsset(globe, layer, title, description, projection, isHeigh
   layerURL += globe.toLowerCase() + "/#v=0.1&x=0&y=0&z=1&p=";
   layerURL += projection + "&d=&l=" + layer + "%2Ctrue%2C1&b=" + globe.toLowerCase();
   layerURL += "&e=-180.0%2C-90.0%2C180.0%2C90.0&sfv=&w=";
+  if (description == undefined) {
+    description = "";
+  }
   var assetFileString = `local globeIdentifier = asset.require("${openspacepath}").${globe}.Identifier
 
-  local layer = {
-    Identifier = "${layerIdentifier}",
-    Name = [[${title}]],
-    FilePath = asset.localResource("${layer}.vrt"),
-    Description = [[${description}]]
-  }
+local layer = {
+  Identifier = "${layerIdentifier}",
+  Name = [[${title}]],
+  FilePath = asset.localResource("${layer}.vrt"),
+  Description = [[${description}]]
+}
   
-  asset.onInitialize(function()
-    openspace.globebrowsing.addLayer(globeIdentifier, "${layerGroup}", layer)
-  end)
+asset.onInitialize(function()
+  openspace.globebrowsing.addLayer(globeIdentifier, "${layerGroup}", layer)
+end)
   
-  asset.onDeinitialize(function()
-    openspace.globebrowsing.deleteLayer(globeIdentifier, "${layerGroup}", layer.Identifier)
-  end)
+asset.onDeinitialize(function()
+  openspace.globebrowsing.deleteLayer(globeIdentifier, "${layerGroup}", layer.Identifier)
+end)
   
-  asset.export("layer", layer)
+asset.export("layer", layer)
 
 
-  asset.meta = {
-    Name = [[${title}]],
-    Version = '1.0',
-    Author = 'NASA/Treks',
-    URL = '${layerURL}',
-    License = 'NASA/Treks',
-    Description = [[${title} layer from NASA/Treks for ${globe}]]
-  }
+asset.meta = {
+  Name = [[${title}]],
+  Version = "1.0",
+  Author = "NASA/Treks",
+  URL = "${layerURL}",
+  License = "NASA/Treks",
+  Description = [[${title} layer from NASA/Treks for ${globe}]]
+}
 `;
   assetList.push(folder);
   fs.writeFileSync("./" + globe + "/" + folder + "/" + folder + ".asset", assetFileString);
@@ -383,9 +386,9 @@ var numResults = 9999;
 
 
   //currently must the script for each globe individually.
-// getPageOfResults('moon');
+getPageOfResults('moon');
 // getPageOfResults('mars');
-getPageOfResults('mercury');
+// getPageOfResults('mercury');
 
 
 //testing code with local file
