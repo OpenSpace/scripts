@@ -1,5 +1,5 @@
 from cmath import isnan
-from PIL import Image
+from PIL import Image, ImageOps
 import math
 import matplotlib.pyplot as plt
 import sys
@@ -34,7 +34,7 @@ for i in range(len(values[0])):
   minmaxnum.append(calc_minmaxnum([a[i] for a in values]))
 
 def create_image(idx, name):
-  img = Image.new(mode="RGB", size=(minmaxnum[0][2], minmaxnum[1][2]))
+  img = Image.new(mode="RGBA", size=(minmaxnum[0][2], minmaxnum[1][2]))
   cmap = plt.cm.get_cmap('viridis')
   print("{}x{}".format(minmaxnum[0][2], minmaxnum[1][2]))
   for value in values:
@@ -52,7 +52,8 @@ def create_image(idx, name):
     r = int(round(color[0] * 255))
     g = int(round(color[1] * 255))
     b = int(round(color[2] * 255))
-    img.putpixel((x_pxl, y_pxl), (r, g, b))
+    img.putpixel((x_pxl, y_pxl), (r, g, b, 255))
+
   img.save("{}-{}.png".format(sys.argv[2], name))
 
 create_image(2, "n")
@@ -62,7 +63,7 @@ create_image(5, "Uz")
 create_image(6, "Utot")
 create_image(7, "T")
 
-img = Image.new(mode="RGB", size=(minmaxnum[0][2], minmaxnum[1][2]))
+img = Image.new(mode="RGBA", size=(minmaxnum[0][2], minmaxnum[1][2]))
 print("{}x{}".format(minmaxnum[0][2], minmaxnum[1][2]))
 for value in values:
   x = (value[0] - minmaxnum[0][0]) / (minmaxnum[0][1] - minmaxnum[0][0])
@@ -78,5 +79,5 @@ for value in values:
   v5 = (value[5] - minmaxnum[5][0]) / (minmaxnum[5][1] - minmaxnum[5][0])
   if math.isnan(v5):
     v5 = 0
-  img.putpixel((x_pxl, y_pxl), (int(round(v3 * 255)), int(round(v4 * 255)), int(round(v5 * 255))))
+  img.putpixel((x_pxl, y_pxl), (int(round(v3 * 255)), int(round(v4 * 255)), int(round(v5 * 255)), 255))
 img.save("{}-U.png".format(sys.argv[2]))
