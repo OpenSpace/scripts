@@ -6,7 +6,7 @@ Get-Content ..\rev-list.txt | Foreach-Object {
   Write-Host $_
 
   git checkout --force $_
-  D:\scc --exclude-dir gdal_data --by-file --no-cocomo --no-gitignore --count-as glsl:glsl --count-as profile:json --count-as asset:zig --format json > ..\loc\$_.json
+  D:\scc --exclude-dir gdal_data --by-file --no-cocomo --no-gitignore --count-as glsl:glsl,profile:json,asset:zig --format json > ..\loc\$_.json
 }
 ```
 
