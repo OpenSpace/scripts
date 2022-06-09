@@ -6,3 +6,12 @@ Moon/
 Mars/
 Mercury/
 
+loc-analyzer/loc-codegen/*
+loc-analyzer/loc-ghoul/*
+loc-analyzer/loc-openspace/*
+loc-analyzer/loc-sgct/*
+loc-analyzer/node_modules/*
+loc-analyzer/codegen/
+loc-analyzer/Ghoul/
+loc-analyzer/OpenSpace/
+loc-analyzer/sgct/

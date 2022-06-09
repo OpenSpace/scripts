@@ -1,0 +1,15 @@
+{
+  "name": "loc-analyzer",
+  "version": "1.0.0",
+  "description": "A script that will take a list of line-of-code exports from running:\r ```\r rev-list = git rev-list master",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^17.0.41"
+  }
+}
