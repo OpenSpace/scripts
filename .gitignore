@@ -6,3 +6,22 @@ Moon/
 Mars/
 Mercury/
 
+loc-analyzer/loc-codegen/*
+loc-analyzer/loc-ghoul/*
+loc-analyzer/loc-openspace/*
+loc-analyzer/loc-sgct/*
+loc-analyzer/node_modules/*
+loc-analyzer/codegen/
+loc-analyzer/Ghoul/
+loc-analyzer/OpenSpace/
+loc-analyzer/sgct/
+loc-analyzer/loc-codegen-html/*
+loc-analyzer/loc-ghoul-html/*
+loc-analyzer/loc-openspace-html/*
+loc-analyzer/loc-openspace-utf16/*
+loc-analyzer/loc-sgct-html/*
+loc-analyzer/index.js
+loc-analyzer/loc-codegen.csv
+loc-analyzer/loc-ghoul.csv
+loc-analyzer/loc-openspace.csv
+loc-analyzer/loc-sgct.csv
