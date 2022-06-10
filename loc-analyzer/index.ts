@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, writeFileSync, appendFileSync, mkdirSync, rmSync } from "fs";
 import { execSync } from "child_process";
 
-const WriteHtmlFiles = true;
+const WriteHtmlFiles = false;
 const WriteCsvFiles = true;
 
 interface File {
@@ -368,24 +368,24 @@ for (let i = 0; i < openspace.length; i += 1) {
 
   // This check will only fail in the time when the repository didn't exist for the OpenSpace commit
   if (iCodegen >= 0 && codegen[iCodegen].date < commit.date) {
-    commit.locRes.totalLoc = codegen[iCodegen].locRes.totalLoc;
-    commit.locRes.testLoc = codegen[iCodegen].locRes.testLoc;
-    commit.locRes.dataLoc = codegen[iCodegen].locRes.dataLoc;
-    commit.locRes.codeLoc = codegen[iCodegen].locRes.codeLoc;
+    commit.locRes.totalLoc += codegen[iCodegen].locRes.totalLoc;
+    commit.locRes.testLoc += codegen[iCodegen].locRes.testLoc;
+    commit.locRes.dataLoc += codegen[iCodegen].locRes.dataLoc;
+    commit.locRes.codeLoc += codegen[iCodegen].locRes.codeLoc;
   }
 
   if (iGhoul >= 0 && ghoul[iGhoul].date < commit.date) {
-    commit.locRes.totalLoc = ghoul[iGhoul].locRes.totalLoc;
-    commit.locRes.testLoc = ghoul[iGhoul].locRes.testLoc;
-    commit.locRes.dataLoc = ghoul[iGhoul].locRes.dataLoc;
-    commit.locRes.codeLoc = ghoul[iGhoul].locRes.codeLoc;
+    commit.locRes.totalLoc += ghoul[iGhoul].locRes.totalLoc;
+    commit.locRes.testLoc += ghoul[iGhoul].locRes.testLoc;
+    commit.locRes.dataLoc += ghoul[iGhoul].locRes.dataLoc;
+    commit.locRes.codeLoc += ghoul[iGhoul].locRes.codeLoc;
   }
 
   if (iSgct >= 0 && sgct[iSgct].date < commit.date) {
-    commit.locRes.totalLoc = sgct[iSgct].locRes.totalLoc;
-    commit.locRes.testLoc = sgct[iSgct].locRes.testLoc;
-    commit.locRes.dataLoc = sgct[iSgct].locRes.dataLoc;
-    commit.locRes.codeLoc = sgct[iSgct].locRes.codeLoc;
+    commit.locRes.totalLoc += sgct[iSgct].locRes.totalLoc;
+    commit.locRes.testLoc += sgct[iSgct].locRes.testLoc;
+    commit.locRes.dataLoc += sgct[iSgct].locRes.dataLoc;
+    commit.locRes.codeLoc += sgct[iSgct].locRes.codeLoc;
   }
 
   appendFileSync(path, `${commit.date.toISOString()},`);
