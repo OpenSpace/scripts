@@ -7,15 +7,16 @@ var downloadFileSync = require('download-file-sync');
 var xmljs = require('xml-js');
 
 var useTmpCache = true;
-var useExistingCache = false;
+var useExistingCache = true;
 var assetList = [];
+var folderMap = {};
 
 var tmp = './tmp';
 if (!fs.existsSync(tmp)){
   fs.mkdirSync(tmp);
 }
 
-async function createWMSFromTemplate(globe, layer, folder, bounds, projection, bands, levelCount, coverage) {
+async function createWMSFromTemplate(globe, layerid, layer, folder, bounds, projection, bands, levelCount, coverage) {
   
   var zeroblock = "404,400";
   if ( coverage == 'Global' ) {
@@ -24,7 +25,7 @@ async function createWMSFromTemplate(globe, layer, folder, bounds, projection, b
 
   var template = `<GDAL_WMS>
     <Service name="TMS">
-      <ServerUrl>https://trek.nasa.gov/tiles/${globe}/EQ/${layer}/1.0.0//default/default028mm/\${z}/\${y}/\${x}.png</ServerUrl>
+      <ServerUrl>https://trek.nasa.gov/tiles/${globe}/EQ/${layerid}/1.0.0//default/default028mm/\${z}/\${y}/\${x}.png</ServerUrl>
     </Service>
     <DataWindow>
       <UpperLeftX>-180</UpperLeftX>
@@ -90,15 +91,15 @@ async function getLevelCountFromCapabilities(globe, layer) {
   }
 };
 
-async function createVRT(globe, layerId, folder)  {
+async function createVRT(globe, layer, folder)  {
   //var wms = gdal.open("./" + globe + "/" + layerId + ".wms");
   //gdal.
   let path =  __dirname.replace(/\\/g, '/') + '/' + globe + "/" + folder + '/';
-  var buildVrtCommand = 'gdalbuildvrt ' + path + layerId + '.vrt';
-  buildVrtCommand += " -te -180 -90 180 90 -addalpha " + path + layerId + ".wms";
+  var buildVrtCommand = 'gdalbuildvrt ' + path + layer + '.vrt';
+  buildVrtCommand += " -te -180 -90 180 90 -addalpha " + path + layer + ".wms";
   var ret = execSync(buildVrtCommand);
 
-  var lines = fs.readFileSync(path + layerId + ".vrt", 'utf-8').split('\n');
+  var lines = fs.readFileSync(path + layer + ".vrt", 'utf-8').split('\n');
   var nodataline = "<NODATA>0</NODATA>";
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index];
@@ -108,7 +109,7 @@ async function createVRT(globe, layerId, folder)  {
   }
   lines.splice(lines.length-4,0,nodataline);
   var newvrt = lines.join("\n");
-  fs.writeFileSync(path + layerId + '.vrt', newvrt, err => {
+  fs.writeFileSync(path + layer + '.vrt', newvrt, err => {
     if (err) {
       console.log('Error writing no datavalue into vrt for:' + layer, err)
     }
@@ -116,61 +117,32 @@ async function createVRT(globe, layerId, folder)  {
  
 };
 
-async function createAsset(globe, layer, title, description, projection, isHeightLayer, folder) {
+async function createLayer(globe, layer, title, description, projection, isHeightLayer, folder) {
 
-  var openspacepath = 'scene/solarsystem/';
-  switch (globe) {
-    case "Moon":
-      openspacepath += "/planets/earth/moon/moon";
-      break;
-      case "Mars":
-        openspacepath += "/planets/mars/mars"
-        break;
-      case "Mercury":
-        openspacepath += "/planets/mercury/mercury"
-        break;      
-  }
   //todo refactor to switch or somtehing for overlays
-  var layerGroup = isHeightLayer ? 'HeightLayers' : 'ColorLayers';
   var layerIdentifier = layer.replaceAll('.', "").replaceAll(" ", "");
-  var layerURL = "https://trek.nasa.gov/";
-  layerURL += globe.toLowerCase() + "/#v=0.1&x=0&y=0&z=1&p=";
-  layerURL += projection + "&d=&l=" + layer + "%2Ctrue%2C1&b=" + globe.toLowerCase();
-  layerURL += "&e=-180.0%2C-90.0%2C180.0%2C90.0&sfv=&w=";
+  // var layerURL = "https://trek.nasa.gov/";
+  // layerURL += globe.toLowerCase() + "/#v=0.1&x=0&y=0&z=1&p=";
+  // layerURL += projection + "&d=&l=" + layerid + "%2Ctrue%2C1&b=" + globe.toLowerCase();
+  // layerURL += "&e=-180.0%2C-90.0%2C180.0%2C90.0&sfv=&w=";
   if (description == undefined) {
     description = "";
   }
-  var assetFileString = `local globeIdentifier = asset.require("${openspacepath}").${globe}.Identifier
 
-local layer = {
+  var layerString = `local treks_${layerIdentifier} = {
   Identifier = "${layerIdentifier}",
   Name = [[${title}]],
-  FilePath = asset.localResource("${layer}.vrt"),
+  FilePath = asset.localResource("${folder}/${layer}.vrt"),
   Description = [[${description}]]
-}
+}`;
   
-asset.onInitialize(function()
-  openspace.globebrowsing.addLayer(globeIdentifier, "${layerGroup}", layer)
-end)
-  
-asset.onDeinitialize(function()
-  openspace.globebrowsing.deleteLayer(globeIdentifier, "${layerGroup}", layer.Identifier)
-end)
-  
-asset.export("layer", layer)
 
+  if (folderMap[folder] == undefined) {
+    folderMap[folder] = {};
+  }
+  var layerGroup = isHeightLayer ? "HeightLayers" : "ColorLayers"
+  folderMap[folder][layerIdentifier] = {"lua": layerString, "group": layerGroup};
 
-asset.meta = {
-  Name = [[${title}]],
-  Version = "1.0",
-  Author = "NASA/Treks",
-  URL = "${layerURL}",
-  License = "NASA/Treks",
-  Description = [[${title} layer from NASA/Treks for ${globe}]]
-}
-`;
-  assetList.push(folder);
-  fs.writeFileSync("./" + globe + "/" + folder + "/" + folder + ".asset", assetFileString);
 }
 
 async function processProduct(globe, product) {
@@ -258,10 +230,37 @@ async function processProduct(globe, product) {
     }
   }
 
-  var folder = product.title.replaceAll(" ", "_");
-  folder = folder.replaceAll(",", "");
-  folder = folder.replaceAll("/", "");
-  folder = folder.replaceAll("\\", "");
+
+  var title = product.title;
+  var titleSplit = title.split(',');
+
+
+  //console.log("product:", product);
+  var folder = "";
+  var layer = "";
+  if (titleSplit.length > 1) {
+      folder = titleSplit[0].replaceAll(" ", "_");
+      folder = folder.replaceAll(",", "");
+      folder = folder.replaceAll("/", "");
+      folder = folder.replaceAll("\\", "");
+
+      layer = titleSplit[1].trim().replaceAll(" ", "_");
+
+    } else {
+      folder = "Global"
+      layer = titleSplit[0].trim().replaceAll(" ", "_");
+    }
+
+    layer = layer.replaceAll(",", "");
+    layer = layer.replaceAll("/", "");
+    layer = layer.replaceAll("\\", "");
+    layer = layer.replaceAll("(", "");
+    layer = layer.replaceAll(")", "");
+
+      // console.log("layerId:", layerId);
+      // console.log("Product:", product.title);
+      // console.log("Folder:", folder);
+      // console.log("layer:", layer);
 
   var coverage = product.coverage;
   if (globe == 'Mars') {
@@ -283,16 +282,16 @@ async function processProduct(globe, product) {
     }
   }
   if (projection) {
-    if (useExistingCache && fs.existsSync("./"+globe+"/"+folder+"/"+layerId+".wms")) {
+    if (useExistingCache && fs.existsSync("./"+globe+"/"+folder+"/"+layer+".wms")) {
       process.stdout.write(".");
       assetList.push(folder);
     } else {
       var levelCount = await getLevelCountFromCapabilities(globe, layerId);
       if (levelCount > 0) {
         process.stdout.write("-");
-        await createWMSFromTemplate(globe, layerId, folder, boundsArray, projection, bands, levelCount, coverage);
-        await createVRT(globe, layerId, folder);
-        await createAsset(globe, layerId, product.title, product.description, product.trekProjection, isHeightLayer, folder);
+        await createWMSFromTemplate(globe, layerId, layer, folder, boundsArray, projection, bands, levelCount, coverage);
+        await createVRT(globe, layer, folder);
+        await createLayer(globe, layerId, product.title, product.description, product.trekProjection, isHeightLayer, folder);
       } else {
         //capabilities didnt contain TileMatrixSet
       }
@@ -325,15 +324,63 @@ async function showPageOfData(globe, data) {
   if (start + rows < numResults) {
     await getPageOfResults(globe.toLowerCase());
   } else {
-    console.log("write asset", assetList.length);
-    //write meta asset
-    var assetString = "";
-    for (let index = 0; index < assetList.length; index++) {
-      const folder = assetList[index];
-      assetString += "asset.require(\"./" + folder + "/" + folder + "\")\n";
+    //write assets per folder
+    var openspacepath = 'scene/solarsystem/';
+    switch (globe) {
+      case "Moon":
+        openspacepath += "/planets/earth/moon/moon";
+        break;
+        case "Mars":
+          openspacepath += "/planets/mars/mars"
+          break;
+        case "Mercury":
+          openspacepath += "/planets/mercury/mercury"
+          break; 
     }
-    fs.writeFileSync("./" + globe + "/all_treks_layers.asset", assetString);
-    assetList = [];
+
+    for (let folderName in folderMap) {
+      let folder = folderMap[folderName];
+      //asset for folder
+      var assetFileString = `local globeIdentifier = asset.require("${openspacepath}").${globe}.Identifier\n`;
+      //print each layer
+      for (let layerId in folder) {
+        let layer = folder[layerId];
+        assetFileString += "\n" + layer.lua + "\n";
+      }
+      //now print the asset boilerplate
+      assetFileString += "\nasset.onInitialize(function()\n";
+      for (let layerId in folder) {
+        let layer = folder[layerId];
+        assetFileString += `\topenspace.globebrowsing.addLayer(globeIdentifier, "${layer.group}", treks_${layerId})\n`
+      }
+      assetFileString += `end)\n`;
+
+      assetFileString += "\nasset.onDeinitialize(function()\n";
+      for (let layerId in folder) {
+        let layer = folder[layerId];
+        assetFileString += `\topenspace.globebrowsing.deleteLayer(globeIdentifier, "${layer.group}", "treks_${layerId}")\n`
+      }
+      assetFileString += `end)\n\n`;
+
+      for (let layerId in folder) {
+        let layer = folder[layerId];
+        assetFileString += `asset.export("${layerId}", ${layerId})\n`;
+      }
+
+      assetFileString += `
+
+asset.meta = {
+  Name = [[NASA Treks Layers for ${globe} ${folderName}],
+  Version = "1.0",
+  Author = "NASA/Treks",
+  URL = "https://trek.nasa.gov/${globe.toLowerCase()}",
+  License = "NASA/Treks",
+  Description = [[${folderName} layers from NASA/Treks for ${globe}]]
+}
+`;
+
+      fs.writeFileSync("./" + globe + "/" + folderName + ".asset", assetFileString);
+    }
   }
 
 }
