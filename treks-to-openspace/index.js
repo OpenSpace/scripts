@@ -129,6 +129,9 @@ async function createLayer(globe, layer, title, description, projection, isHeigh
     description = "";
   }
 
+  description.replace(/’/g, "'");
+
+
   var layerString = `local treks_${layerIdentifier} = {
   Identifier = "${layerIdentifier}",
   Name = [[${title}]],
