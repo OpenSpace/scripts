@@ -341,10 +341,17 @@ async function showPageOfData(globe, data) {
           break; 
     }
 
+    const Header =
+'-- This file was automatically generated using a script found at\n' +
+'-- https://github.com/OpenSpace/scripts/treks-to-openspace. See the README.md file\n' +
+'-- in that repository for more information on how to run the script to update these\n' +
+'-- files. In particular in the case of errors, prefer to change that script rather\n' +
+'-- than the individual files\n';
+
     for (let folderName in folderMap) {
       let folder = folderMap[folderName];
       //asset for folder
-      var assetFileString = `local globeIdentifier = asset.require("${openspacepath}").${globe}.Identifier\n`;
+      var assetFileString = `${Header}\nlocal globeIdentifier = asset.require("${openspacepath}").${globe}.Identifier\n`;
       //print each layer
       for (let layerId in folder) {
         let layer = folder[layerId];
