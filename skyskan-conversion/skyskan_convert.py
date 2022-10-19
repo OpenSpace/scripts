@@ -288,21 +288,21 @@ with open(configuration_name, 'w') as f:
     for n in nodes:
         f.write('  <!-- Node #{} -->\n'.format(current_idx))
         f.write('  <Node address="{}" port="{}">\n'.format(n['ip_address'], starting_port + current_idx))
-        f.write('    <Window fullScreen="true" name="#{}">\n'.format(current_idx))
-        f.write('      <Pos x="0" y="0" />\n')
-        f.write('      <Size x="{}" y="{}" />\n'.format(n['resolution_x'], n['resolution_y']))
         viewport_index = 0
-        for vp in node['viewports']:
-            viewport_size = 1.0 / (target_count / 2.0)
-            viewport_x = 0
+        for vp in n['viewports']:
+            
+            window_x = 0
             if (viewport_index % 2 == 1):
-                viewport_x = 0.5
-            viewport_y = 0
+                window_x = n['resolution_x']
+            window_y = 0
             if (viewport_index >= target_count/2):
-                viewport_y = 0.5
+                window_y = n['resolution_y']
+            f.write('    <Window fullScreen="true" name="#{}">\n'.format(current_idx))
+            f.write('      <Pos x="{}" y="{}" />\n'.format(window_x, window_y))
+            f.write('      <Size x="{}" y="{}" />\n'.format(n['resolution_x'], n['resolution_y']))
             f.write('      <Viewport mesh="{}">\n'.format(vp['obj_file']))
-            f.write('        <Pos x="{}" y="{}" />\n'.format(viewport_x, viewport_y))
-            f.write('        <Size x="{}" y="{}" />\n'.format(viewport_size, viewport_size))
+            f.write('        <Pos x="0.0" y="0.0" />\n')
+            f.write('        <Size x="1.0" y="1.0" />\n')
             f.write('        <PlanarProjection>\n')
 
             down = vp['down_fov']
@@ -317,8 +317,8 @@ with open(configuration_name, 'w') as f:
             f.write('          <Orientation heading="{}" pitch="{}" roll="{}" />\n'.format(heading, pitch, roll))
             f.write('        </PlanarProjection>\n')
             f.write('      </Viewport>\n')
+            f.write('    </Window>\n')
             viewport_index = viewport_index + 1
-        f.write('    </Window>\n')
         f.write('  </Node>\n\n')
 
         current_idx = current_idx + 1
