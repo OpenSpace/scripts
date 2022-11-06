@@ -1,0 +1,1404 @@
+local keyframes = {
+  ['1971-02-06 15:11:14'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = 0,
+    Longitude = 0,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:11:15'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.64586850558649,
+    Longitude = -17.471957029063308,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:11:15'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645896643199171,
+    Longitude = -17.471968949774826,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:11:23'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.64586850558649,
+    Longitude = -17.471946192052876,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:18:37'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645878830175393,
+    Longitude = -17.472008179598934,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:19:08'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645881003982383,
+    Longitude = -17.472057627474225,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:19:14'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645817079735854,
+    Longitude = -17.472078596913583,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:20:22'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645853450427845,
+    Longitude = -17.472073078640115,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:20:59'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645825896873306,
+    Longitude = -17.472091840770045,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:21:44'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645807160456219,
+    Longitude = -17.47204217630844,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:22:39'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645822590446761,
+    Longitude = -17.472046590927192,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:24:04'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645780709043863,
+    Longitude = -17.472084115187048,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:25:46'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.64584353114821,
+    Longitude = -17.472035554380263,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:26:16'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645811569024946,
+    Longitude = -17.472075285949543,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:26:20'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645768585479868,
+    Longitude = -17.472071974985404,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:27:36'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645790628323498,
+    Longitude = -17.472024517833226,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:28:11'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645781811186046,
+    Longitude = -17.472078596913583,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:28:34'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.64580716045622,
+    Longitude = -17.472099566352938,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:28:36'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.64575535977369,
+    Longitude = -17.47205210920076,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:30:07'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.64585069507239,
+    Longitude = -17.47204548727248,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:30:37'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645787872968044,
+    Longitude = -17.47207418229483,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:31:05'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645846286503664,
+    Longitude = -17.47204217630844,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:31:52'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645787872968044,
+    Longitude = -17.472073078640115,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:32:58'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645844082219301,
+    Longitude = -17.472041072653727,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:33:03'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645806058314039,
+    Longitude = -17.472075285949543,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:34:30'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645823692588944,
+    Longitude = -17.4720057557033,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:34:54'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645764176911142,
+    Longitude = -17.4720554201648,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:35:23'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645846873245142,
+    Longitude = -17.47203319398794,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:35:41'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645791176677758,
+    Longitude = -17.47207070954905,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:37:18'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645980721169274,
+    Longitude = -17.471859938148448,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:38:57'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.646000557220712,
+    Longitude = -17.47183786784472,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:42:33'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.64596844939337,
+    Longitude = -17.47177748896765,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:43:13'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645930621800799,
+    Longitude = -17.471673622835205,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:45:03'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645065658638303,
+    Longitude = -17.470496320600837,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:45:24'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.644913416209082,
+    Longitude = -17.47035896468852,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:45:43'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.644891389480177,
+    Longitude = -17.470337348552935,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:47:35'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.644688767255452,
+    Longitude = -17.470036937925855,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:47:42'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.644551062830856,
+    Longitude = -17.469790699706678,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:48:05'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.644218605005849,
+    Longitude = -17.469386869027428,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:49:04'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.6440718184445,
+    Longitude = -17.46912353718062,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:49:33'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643869403383578,
+    Longitude = -17.468802692308717,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:49:59'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643449005834137,
+    Longitude = -17.4685501076205,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:50:54'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643344820354492,
+    Longitude = -17.468002383215385,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:51:21'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643048714254449,
+    Longitude = -17.46759261946847,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:52:23'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643065164593341,
+    Longitude = -17.467067545320514,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:53:47'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643027123184653,
+    Longitude = -17.46696870783382,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:54:09'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.642793862519906,
+    Longitude = -17.4672399961436,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:56:57'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.64302840836738,
+    Longitude = -17.46696278788032,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:57:17'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.642911585257554,
+    Longitude = -17.46711233105642,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 15:58:34'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.64302930799528,
+    Longitude = -17.466963045269225,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:00:28'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.642790778081364,
+    Longitude = -17.467237937029296,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:01:51'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643024295782657,
+    Longitude = -17.466963302658844,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:04:55'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.642791292154453,
+    Longitude = -17.467242570036532,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:07:22'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643032006879012,
+    Longitude = -17.46696793566598,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:09:28'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.642804658054803,
+    Longitude = -17.467238966586446,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:11:23'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643027765776017,
+    Longitude = -17.466964589605208,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:15:12'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.642925208194455,
+    Longitude = -17.46695918442993,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:21:28'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.642945771118074,
+    Longitude = -17.466885571093737,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:21:41'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.642961964420424,
+    Longitude = -17.46689046149029,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:21:45'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.642966591078238,
+    Longitude = -17.46689741100105,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:22:42'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.642957851835701,
+    Longitude = -17.46690049967251,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:25:28'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.642968390334055,
+    Longitude = -17.466901529229762,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:25:43'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.642951425922069,
+    Longitude = -17.466885828483154,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:32:45'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.641509707939841,
+    Longitude = -17.460456758839744,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:33:33'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.641385302251946,
+    Longitude = -17.460448522382517,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:37:13'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.641496342039488,
+    Longitude = -17.46045881795405,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:37:53'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.641514848670745,
+    Longitude = -17.46048867511149,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:40:43'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.641455216192251,
+    Longitude = -17.457369116937127,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:41:38'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.641515876816926,
+    Longitude = -17.45736191003705,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:42:23'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.641461385069336,
+    Longitude = -17.457095254734412,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:46:55'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.640822906290969,
+    Longitude = -17.451205158260677,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:48:13'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.640858891407302,
+    Longitude = -17.45115573951733,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:52:29'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.640816737413885,
+    Longitude = -17.4511377222672,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:53:13'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.64019265268205,
+    Longitude = -17.446263283925205,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 16:56:03'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.640129541129683,
+    Longitude = -17.446749076930168,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:11:58'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.633704793243743,
+    Longitude = -17.431995166117023,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:13:13'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.63375620055279,
+    Longitude = -17.432207254890653,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:21:11'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631991387633199,
+    Longitude = -17.428335605215935,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:24:21'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631629994250598,
+    Longitude = -17.428127119892288,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:25:08'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631669063805473,
+    Longitude = -17.42814771103535,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:26:09'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631661866782207,
+    Longitude = -17.42812300166368,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:26:51'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631609431326979,
+    Longitude = -17.428033430191363,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:27:07'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631632050542959,
+    Longitude = -17.4281137356493,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:27:28'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631653641612759,
+    Longitude = -17.428080789820402,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:27:58'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631560080310293,
+    Longitude = -17.42805711000588,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:28:32'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.632001669095008,
+    Longitude = -17.428340753001702,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:29:33'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631553397360116,
+    Longitude = -17.42828309780113,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:31:10'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631967740271036,
+    Longitude = -17.428339723444548,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:32:14'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631992415779379,
+    Longitude = -17.42836546237337,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:32:31'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631999612802645,
+    Longitude = -17.428337149551613,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:39:31'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631059373120172,
+    Longitude = -17.43007967503341,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:39:43'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631108724136857,
+    Longitude = -17.430098207062166,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:41:48'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631110780429219,
+    Longitude = -17.43005908389035,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:43:12'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631146251472462,
+    Longitude = -17.4303123549501,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:43:13'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631183264734976,
+    Longitude = -17.430207340120493,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:43:39'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631130829279748,
+    Longitude = -17.430329857421704,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:44:48'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.631178124004072,
+    Longitude = -17.43033500520747,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:50:54'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.634447628859474,
+    Longitude = -17.435841076863014,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:52:01'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.634527824261588,
+    Longitude = -17.435610456060733,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:54:39'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.636390825141461,
+    Longitude = -17.438526161918688,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:54:43'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.636479245713022,
+    Longitude = -17.438548812176055,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:57:13'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643202293590219,
+    Longitude = -17.44952800965835,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:58:05'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643249588314542,
+    Longitude = -17.44957536928739,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 17:59:53'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643234166121828,
+    Longitude = -17.449570221501627,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:03:13'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.64601118895656,
+    Longitude = -17.45620777646858,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:03:34'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.646085215481587,
+    Longitude = -17.456277786354992,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:04:25'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.646839874778403,
+    Longitude = -17.45967326584637,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:06:01'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.646850670313302,
+    Longitude = -17.45963774612464,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:06:58'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.646818283708603,
+    Longitude = -17.45988123639139,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:07:31'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.64684758587476,
+    Longitude = -17.459650100810478,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:08:01'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.646866606579108,
+    Longitude = -17.459668118060605,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:08:11'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.646854268824936,
+    Longitude = -17.45967789885351,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:09:50'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647328758287442,
+    Longitude = -17.463618014078957,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:14:33'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647393145942023,
+    Longitude = -17.46352033484402,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:16:13'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647402399257651,
+    Longitude = -17.46352033484402,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:16:38'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647393145942023,
+    Longitude = -17.46351621661541,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:19:08'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647315520905361,
+    Longitude = -17.463613509766425,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:23:33'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647181347828748,
+    Longitude = -17.46359446295904,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:25:10'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647193685582919,
+    Longitude = -17.46359600729472,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:26:48'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647409796013191,
+    Longitude = -17.463877775705605,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:29:14'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647177492280567,
+    Longitude = -17.463607332423503,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:30:48'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647201910752366,
+    Longitude = -17.463583652608882,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:30:48'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647179034499838,
+    Longitude = -17.46359446295904,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:32:50'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647303954260823,
+    Longitude = -17.463632556573703,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:39:23'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647369755616404,
+    Longitude = -17.463809640404133,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:39:48'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647425789583265,
+    Longitude = -17.463628438345093,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:39:53'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.64739854370947,
+    Longitude = -17.463629467902244,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:40:03'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647410881463641,
+    Longitude = -17.463621231445018,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:40:13'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647394431124746,
+    Longitude = -17.46364182258808,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:40:28'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647392888905475,
+    Longitude = -17.463650573823934,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:40:47'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647406254805827,
+    Longitude = -17.463650059045303,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:44:45'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.647326573476803,
+    Longitude = -17.46362432011648,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:48:06'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645929322816899,
+    Longitude = -17.46752222349865,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:48:23'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645969420517957,
+    Longitude = -17.467521193941497,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:49:15'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645953998325243,
+    Longitude = -17.467534063405964,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:49:27'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645965307933234,
+    Longitude = -17.46754950676326,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:49:58'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645893337700568,
+    Longitude = -17.46750780969851,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:53:18'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645732946896338,
+    Longitude = -17.472012894411872,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:53:33'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645719838032531,
+    Longitude = -17.471989214597453,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:55:18'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643569727331632,
+    Longitude = -17.47328156621385,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:55:58'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643546079969471,
+    Longitude = -17.4732475908278,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:56:08'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.64354402367711,
+    Longitude = -17.473272300199575,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:56:28'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643561502162185,
+    Longitude = -17.47326612285655,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:56:58'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643504440049143,
+    Longitude = -17.473351576100356,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:57:28'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643495700806604,
+    Longitude = -17.47333741968953,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:57:28'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643485933417886,
+    Longitude = -17.47332480761438,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:57:58'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643500841537509,
+    Longitude = -17.473345913535965,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:58:28'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643475908992622,
+    Longitude = -17.473394045332846,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 18:59:58'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643509580780047,
+    Longitude = -17.473351061321733,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:00:18'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.643517805949495,
+    Longitude = -17.473326094560846,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:03:19'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645523719148517,
+    Longitude = -17.47214828117755,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:03:30'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645729348384705,
+    Longitude = -17.471987670261672,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:04:30'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.64573397504252,
+    Longitude = -17.472012379633448,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:05:03'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645797720105739,
+    Longitude = -17.472032455997883,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:05:28'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645857352584233,
+    Longitude = -17.47202833776927,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:05:43'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645834219295162,
+    Longitude = -17.472001054504663,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:06:33'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645812628225362,
+    Longitude = -17.47201649786206,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:07:03'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645835247441343,
+    Longitude = -17.472009290961886,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:08:29'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645796177886467,
+    Longitude = -17.47201495352628,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:08:46'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645839360026067,
+    Longitude = -17.47201649786206,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:08:57'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645803888982825,
+    Longitude = -17.472012379633448,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:10:34'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645839874099158,
+    Longitude = -17.472010835297667,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:10:38'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645806459348277,
+    Longitude = -17.472003628397598,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:11:44'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645996666391752,
+    Longitude = -17.47216166542064,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:13:23'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645832163002801,
+    Longitude = -17.47199745105468,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:14:19'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645854782218781,
+    Longitude = -17.472031941219253,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:14:28'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645812114152272,
+    Longitude = -17.472052532362316,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:15:17'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645847071122424,
+    Longitude = -17.472027308212116,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:16:35'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645813656371543,
+    Longitude = -17.472020101312044,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:17:41'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645836789660615,
+    Longitude = -17.472009805740516,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:20:03'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645758136477772,
+    Longitude = -17.472040177676476,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:20:33'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645816740810087,
+    Longitude = -17.472042236790784,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:23:06'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645876887361672,
+    Longitude = -17.472061798376796,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:23:26'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645885112531119,
+    Longitude = -17.472037089005017,
+    Altitude = 0.25,
+    UseHeightmap = true
+  },
+  ['1971-02-06 19:28:06'] = {
+    Type = 'GlobeTranslation',
+    Globe = 'Moon',
+    Latitude = -3.645886397713846,
+    Longitude = -17.47195498182209,
+    Altitude = 0.25,
+    UseHeightmap = true
+  }
+}
+
+asset.export('keyframes', keyframes);

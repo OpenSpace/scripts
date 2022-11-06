@@ -1,0 +1,177 @@
+local traversal = asset.require('./apollo_14_eva2_lmp_mitchell_traversal')
+
+local sunTransforms = asset.require('scene/solarsystem/sun/transforms')
+
+local keyframeTranslation = {
+  Type = 'TimelineTranslation',
+  Keyframes = traversal.keyframes
+}
+
+local position = {
+  Identifier = 'apollo_14_eva2_lmp_mitchell_traversal-position',
+  Parent = 'Moon',
+  Transform = {
+    Translation = keyframeTranslation,
+  },
+  TimeFrame = {
+    Type = 'TimeFrameInterval',
+    Start = '1971-02-06 15:11:15'
+  },
+  GUI = {
+    Name = 'apollo_14_eva2_lmp_mitchell_traversal Position',
+    Path = '/Scene/Missions/Apollo/14'
+  }
+}
+
+local suit_holder = {
+  Identifier = 'apollo_14_eva2_lmp_mitchell_traversal_suit_holder',
+  Parent = position.Identifier,
+  Transform = {
+    Rotation = {
+      Type = 'StaticRotation',
+      Rotation = {0.0,1.35,-1.81}
+    }
+  },
+  TimeFrame = {
+    Type = 'TimeFrameInterval',
+    Start = '1971-02-06 15:11:15',
+    End = '1971-02-06 19:49:10'
+  },
+  GUI = {
+    Name = 'apollo_14_eva2_lmp_mitchell_traversal Suit Holder',
+    Path = '/Scene/Missions/Apollo/14',
+  }
+}
+
+local hardsurfdecimatedobj = {
+  Identifier = 'apollo_14_eva2_lmp_mitchell_traversalhardsurfdecimatedobj',
+  Parent = suit_holder.Identifier,
+  Renderable = {
+    Type = 'RenderableModel',
+    GeometryFile = asset.localResource('suit/hard_surf_decimated.obj'),
+    ModelScale = 'Millimeter',
+    PerformShading = true,
+    LightSources = {{
+        Type = 'SceneGraphLightSource',
+        Identifier = 'Sun',
+        Node = sunTransforms.SolarSystemBarycenter.Identifier,
+        Intensity = 1.0
+      }
+    }
+  },
+  GUI = {
+    Name = 'apollo_14_eva2_lmp_mitchell_traversal Suit hardsurfdecimatedobj',
+    Path = '/Scene/Missions/Apollo/14',
+  }
+}
+
+local suitextpart01highobj = {
+  Identifier = 'apollo_14_eva2_lmp_mitchell_traversalsuitextpart01highobj',
+  Parent = suit_holder.Identifier,
+  Renderable = {
+    Type = 'RenderableModel',
+    GeometryFile = asset.localResource('suit/suit_ext-part_01-high.obj'),
+    ModelScale = 'Millimeter',
+    PerformShading = true,
+    LightSources = {{
+        Type = 'SceneGraphLightSource',
+        Identifier = 'Sun',
+        Node = sunTransforms.SolarSystemBarycenter.Identifier,
+        Intensity = 1.0
+      }
+    }
+  },
+  GUI = {
+    Name = 'apollo_14_eva2_lmp_mitchell_traversal Suit suitextpart01highobj',
+    Path = '/Scene/Missions/Apollo/14',
+  }
+}
+
+local suitextpart02highobj = {
+  Identifier = 'apollo_14_eva2_lmp_mitchell_traversalsuitextpart02highobj',
+  Parent = suit_holder.Identifier,
+  Renderable = {
+    Type = 'RenderableModel',
+    GeometryFile = asset.localResource('suit/suit_ext-part_02-high.obj'),
+    ModelScale = 'Millimeter',
+    PerformShading = true,
+    LightSources = {{
+        Type = 'SceneGraphLightSource',
+        Identifier = 'Sun',
+        Node = sunTransforms.SolarSystemBarycenter.Identifier,
+        Intensity = 1.0
+      }
+    }
+  },
+  GUI = {
+    Name = 'apollo_14_eva2_lmp_mitchell_traversal Suit suitextpart02highobj',
+    Path = '/Scene/Missions/Apollo/14',
+  }
+}
+
+local suitextpart03highobj = {
+  Identifier = 'apollo_14_eva2_lmp_mitchell_traversalsuitextpart03highobj',
+  Parent = suit_holder.Identifier,
+  Renderable = {
+    Type = 'RenderableModel',
+    GeometryFile = asset.localResource('suit/suit_ext-part_03-high.obj'),
+    ModelScale = 'Millimeter',
+    PerformShading = true,
+    LightSources = {{
+        Type = 'SceneGraphLightSource',
+        Identifier = 'Sun',
+        Node = sunTransforms.SolarSystemBarycenter.Identifier,
+        Intensity = 1.0
+      }
+    }
+  },
+  GUI = {
+    Name = 'apollo_14_eva2_lmp_mitchell_traversal Suit suitextpart03highobj',
+    Path = '/Scene/Missions/Apollo/14',
+  }
+}
+
+local trail = {
+  Identifier = 'apollo_14_eva2_lmp_mitchell_traversal-trail',
+  Parent = 'Moon',
+  Renderable = {
+      Type = 'RenderableTrailTrajectory',
+      Translation = keyframeTranslation,
+      Color = { 1.0, 0.71, 0.55 },
+      StartTime = '1971-02-06 15:11:14',
+      EndTime = '1971-02-06 19:49:10',
+      SampleInterval = 20,
+      Fade = 8,
+      EnableFade = true,
+      ShowFullTrail = false,
+      Enabled = true,
+      BoundingSphere = 55000,
+  },
+  GUI = {
+      Name = 'apollo_14_eva2_lmp_mitchell_traversal Trail',
+      Path = '/Scene/Missions/Apollo/14'
+  }
+}
+
+asset.onInitialize(function()
+  openspace.addSceneGraphNode(position)
+  openspace.addSceneGraphNode(suit_holder)
+  openspace.addSceneGraphNode(hardsurfdecimatedobj)
+  openspace.addSceneGraphNode(suitextpart01highobj)
+  openspace.addSceneGraphNode(suitextpart02highobj)
+  openspace.addSceneGraphNode(suitextpart03highobj)
+  openspace.addSceneGraphNode(trail)
+end)
+
+asset.onDeinitialize(function()
+  openspace.removeSceneGraphNode(trail)
+  openspace.removeSceneGraphNode(hardsurfdecimatedobj)
+  openspace.removeSceneGraphNode(suitextpart01highobj)
+  openspace.removeSceneGraphNode(suitextpart02highobj)
+  openspace.removeSceneGraphNode(suitextpart03highobj)
+  openspace.removeSceneGraphNode(suit_holder)
+  openspace.removeSceneGraphNode(position)
+end)
+
+asset.export('position', position)
+asset.export('trail', trail)
