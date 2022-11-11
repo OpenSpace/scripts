@@ -361,14 +361,14 @@ async function showPageOfData(globe, data) {
       assetFileString += "\nasset.onInitialize(function()\n";
       for (let layerId in folder) {
         let layer = folder[layerId];
-        assetFileString += `\topenspace.globebrowsing.addLayer(globeIdentifier, "${layer.group}", treks_${layerId})\n`
+        assetFileString += `  openspace.globebrowsing.addLayer(globeIdentifier, "${layer.group}", treks_${layerId})\n`
       }
       assetFileString += `end)\n`;
 
       assetFileString += "\nasset.onDeinitialize(function()\n";
       for (let layerId in folder) {
         let layer = folder[layerId];
-        assetFileString += `\topenspace.globebrowsing.deleteLayer(globeIdentifier, "${layer.group}", "treks_${layerId}")\n`
+        assetFileString += `  openspace.globebrowsing.deleteLayer(globeIdentifier, "${layer.group}", "treks_${layerId}")\n`
       }
       assetFileString += `end)\n\n`;
 
