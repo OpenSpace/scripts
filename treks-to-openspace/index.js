@@ -117,10 +117,10 @@ async function createVRT(globe, layer, folder)  {
  
 };
 
-async function createLayer(globe, layer, title, description, projection, isHeightLayer, folder) {
+async function createLayer(globe, layer, layershort, title, description, projection, isHeightLayer, folder) {
 
   //todo refactor to switch or somtehing for overlays
-  var layerIdentifier = layer.replaceAll('.', "").replaceAll(" ", "");
+  var layerIdentifier = layer.replaceAll('.', "").replaceAll(" ", "").replaceAll("-", "");
   // var layerURL = "https://trek.nasa.gov/";
   // layerURL += globe.toLowerCase() + "/#v=0.1&x=0&y=0&z=1&p=";
   // layerURL += projection + "&d=&l=" + layerid + "%2Ctrue%2C1&b=" + globe.toLowerCase();
@@ -135,7 +135,7 @@ async function createLayer(globe, layer, title, description, projection, isHeigh
   var layerString = `local treks_${layerIdentifier} = {
   Identifier = "${layerIdentifier}",
   Name = [[${title}]],
-  FilePath = asset.localResource("${folder}/${layer}.vrt"),
+  FilePath = asset.localResource("${folder}/${layershort}.vrt"),
   Description = [[${description}]]
 }`;
   
@@ -294,7 +294,7 @@ async function processProduct(globe, product) {
         process.stdout.write("-");
         await createWMSFromTemplate(globe, layerId, layer, folder, boundsArray, projection, bands, levelCount, coverage);
         await createVRT(globe, layer, folder);
-        await createLayer(globe, layerId, product.title, product.description, product.trekProjection, isHeightLayer, folder);
+        await createLayer(globe, layerId, layer, product.title, product.description, product.trekProjection, isHeightLayer, folder);
       } else {
         //capabilities didnt contain TileMatrixSet
       }
@@ -374,7 +374,7 @@ async function showPageOfData(globe, data) {
 
       for (let layerId in folder) {
         let layer = folder[layerId];
-        assetFileString += `asset.export("${layerId}", ${layerId})\n`;
+        assetFileString += `asset.export("${layerId}", treks_${layerId})\n`;
       }
 
       assetFileString += `
@@ -445,7 +445,7 @@ var numResults = 9999;
   //currently must the script for each globe individually.
 getPageOfResults('moon');
 // getPageOfResults('mars');
-// getPageOfResults('mercury');
+//  getPageOfResults('mercury');
 
 
 //testing code with local file
