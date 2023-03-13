@@ -7,7 +7,9 @@ python makeopenspacebuild.py "source_dir" "destination_dir"
 
 ### Steps
 **Includes folders**: bin, config, data, modules, scripts, shaders
-**Includes diles in main folder**: openspace.cfg and all markdown files
+
+**Includes files in main folder**: openspace.cfg and all markdown files
+
 **Cleans up bin directory**: Removes .dmp and .pdb files, and moves all files out of `bin/RelWithDebInfo` to just `bin`
 
 ### TODO:
