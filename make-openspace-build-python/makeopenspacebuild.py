@@ -15,7 +15,7 @@ QT_VERSION = "6"
 source_dir = sys.argv[1]
 destination_dir = sys.argv[2]
 
-print("Copying filed from OpenSpace folder: '" + source_dir + "' to target folder '" + destination_dir + "'")
+print("Copying files from OpenSpace folder: '" + source_dir + "' to target folder '" + destination_dir + "'")
 
 if (not os.path.isdir(destination_dir)):
     os.mkdir(destination_dir)
