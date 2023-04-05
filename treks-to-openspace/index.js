@@ -45,7 +45,7 @@ async function createWMSFromTemplate(globe, layerid, layer, folder, bounds, proj
     <BandsCount>${bands}</BandsCount>
     <MaxConnections>10</MaxConnections>
     <DataValues NoData="0" Min="1" Max="255"/>
-    <ZeroBlockHttpCodes>${zeroblock}</ZeroBlockHttpCodes>    
+    <ZeroBlockHttpCodes>${zeroblock}</ZeroBlockHttpCodes>
   </GDAL_WMS>
 `;
 
