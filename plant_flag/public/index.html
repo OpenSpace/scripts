@@ -1,0 +1,294 @@
+<html>
+
+<head>
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <script src="openspace-api.js"></script>
+
+<style>
+
+
+body {
+    background:  #000;
+    overflow-x: hidden;
+    width: 100%;
+    margin: 0px;
+}
+
+#image-button {
+    display: none;
+}
+
+#image-button img {
+    width: 100%;
+}
+
+#text-box {
+    color: azure;
+    font-size: 3em;
+}
+
+#container {
+    display: none;
+    background-color: rgb(68, 69, 68);
+    z-index: 99;
+}
+
+#red {
+    background-color: red;
+    color: red;
+}
+
+#green {
+    background-color: green;
+    color: green;
+}
+
+#blue {
+    background-color: blue;
+    color: blue;
+}
+
+#white {
+    background-color: white;
+    color: white;
+}
+
+#moon-map {
+    display: none;
+    width: 100%;
+}
+.color-button {
+    width: 80px;
+    height: 50px;
+}
+
+.button-holder {
+    align-content: center;
+    margin-bottom: 20px;
+    margin-left: 20px;
+}
+
+#canvas {
+    display: inline-block;
+    touch-action: none;
+    background-color: white;
+    padding-left: 0;
+    padding-right: 0;
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+    margin-right: auto;
+}
+
+#mini-flag {
+    display: none;
+    position: absolute;
+}
+
+</style>
+</head>
+    <div id="container">
+        <canvas id="canvas"></canvas>
+        <div class="button-holder">
+            <button class="color-button" id="red">red</button>
+            <button class="color-button" id="green">green</button>
+            <button class="color-button" id="blue">blue</button>
+            <button class="color-button" id="white">white</button>    
+        </div>
+        <div class="button-holder">
+            <input type="range" min="1" max="10" value="5" class="slider" id="drawingwidth">
+
+            <button class="color-button" id="restart">RESTART</button>
+            <button class="color-button" id="save">SAVE</button>
+        </div>
+    </div>
+    <div id="text-box">
+        Connecting to openspace
+    </div>
+    <div>
+        <img id="moon-map" src="rotlroc_color_poles_1k.jpg" alt="moon-map" />
+        <img id="mini-flag" src="" alt="my-flag" />
+    </div>
+    <div id="image-button">
+        <img src="AS16-113-18339.4web.png" alt='apollo landing with flag'/>
+    </div>
+<script>
+
+
+    var button = document.getElementById("image-button");
+    var textbox = document.getElementById("text-box");
+    var container = document.getElementById("container");
+    var canvas = document.getElementById('canvas');
+
+    button.onclick = function(e) {
+        var container = document.getElementById("container");
+        container.style.display = "block";
+    }
+
+    var api = window.openspaceApi(window.location.hostname, 4682);
+   
+    api.onConnect(async () => {
+        openspace = await api.library();
+        textbox.innerHTML = "Tap on the flag to create your own"
+        var button = document.getElementById("image-button");
+        button.style.display = "block";
+    });
+
+    api.onDisconnect(() => {
+        textbox.innerHTML = "Disconnected";
+    });
+
+    console.log(api);
+
+
+    api.connect();
+    //borrowed from https://stackoverflow.com/a/64771245
+    var ctx = canvas.getContext('2d');
+    var mouse = {x: 0, y: 0};
+
+    container.style.width = window.innerWidth;
+    container.style.height = window.innerHeight * (4/5);
+    canvas.style.width = window.innerWidth - 40;
+    canvas.style.height = window.innerWidth * (3/5);
+
+
+    canvas.addEventListener('pointermove', function(e) {
+        mouse.x = e.pageX - this.offsetLeft;
+        mouse.y = e.pageY - this.offsetTop;
+    }, false);
+
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 5;
+
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+    canvas.addEventListener('pointerdown', function(e) {
+        mouse.x = e.pageX - this.offsetLeft;
+        mouse.y = e.pageY - this.offsetTop;
+        ctx.beginPath();
+        ctx.moveTo(mouse.x, mouse.y);
+        canvas.addEventListener('pointermove', onPaint, false);
+    }, false);
+
+    canvas.addEventListener('pointerup', function() {
+        canvas.removeEventListener('pointermove', onPaint, false);
+    }, false);
+
+    var onPaint = function() {
+        ctx.lineTo(mouse.x, mouse.y);
+        ctx.stroke();
+    };
+
+    document.getElementById("red").onclick = function() {
+        ctx.strokeStyle = "#FF0000";
+    }
+    document.getElementById("green").onclick = function() {
+        ctx.strokeStyle = "#00FF00";
+    }
+    document.getElementById("blue").onclick = function() {
+        ctx.strokeStyle = "#0000FF";
+    }
+    document.getElementById("white").onclick = function() {
+        ctx.strokeStyle = "#FFFFFF";
+    }
+    document.getElementById("restart").onclick = function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    document.getElementById("drawingwidth").oninput = function() {
+        ctx.lineWidth = this.value;
+    }
+    var planted = false;
+    var plantFlag = function(lat, lon) {
+        if (planted) {
+            openspace.setPropertyValue('Scene.Flag-' + window.uuid + ".Translation.Latitude", lat);
+            openspace.setPropertyValue('Scene.Flag-' + window.uuid + ".Translation.Longitude", lon);
+        } else {
+            var node = {
+                Identifier : "Flag-" + window.uuid,
+                Parent : "Moon",
+                Transform : {
+                    Translation : {
+                        Type : "GlobeTranslation",
+                        Globe : "Moon",
+                        Latitude : lat,
+                        Longitude : lon,
+                        Altitude : 8000,
+                        UseHeightmap : true
+                    }
+                },
+                Renderable : {
+                    Type : "RenderablePlaneImageOnline",
+                    Size : 7000,
+                    Origin : "Center",
+                    Billboard : true,
+                    URL : window.location.host + "/" + window.flagpath
+                },
+                GUI : {
+                    Path : "/Other/Flags",
+                    Name : "Flag-" + uuid
+                }
+            };
+            openspace.addSceneGraphNode(node);
+            planted = true;
+          
+            
+        }
+    }
+
+    var moonmap = document.getElementById("moon-map");
+    moonmap.onclick = function(evt) {
+        var e = evt.target;
+        var dim = e.getBoundingClientRect();
+        var x = (evt.clientX - dim.left) / dim.width;
+        var y = (evt.clientY - dim.top) / dim.height;
+        console.log(x,y);
+
+        var lat = 180*x -90;
+        var lon = 360*y -180;
+
+        console.log(lat,lon);
+
+        var miniflag = document.getElementById('mini-flag');
+        miniflag.src = "http://" + window.location.host + "/" + window.flagpath;
+        miniflag.width = 5 * 10;
+        miniflag.height = 3 * 10;
+        miniflag.style.display = "block";
+        miniflag.style.left = evt.clientX - dim.left;
+        miniflag.style.top = evt.clientY;
+        console.log(evt.clientX, evt.clientY, dim);
+        plantFlag(lat, lon);
+    }
+
+    document.getElementById("save").onclick = async function() {
+        //save image
+
+        button.onclick = null;
+        container.style.display = "none";
+        textbox.innerHTML = "Forward To The Moon...";
+        var img_data = canvas.toDataURL('image/png'); 
+        
+        var response = await fetch('/upload', { 
+            method: 'POST', 
+            headers: { "content-type": "application/json"}, 
+            body: JSON.stringify({ file: img_data }) 
+        });
+
+        const data = await response.json();
+        console.log("data", data);
+        window.flagpath = data.path;
+        window.uuid = data.path.substring(data.path.lastIndexOf('/')+1,data.path.indexOf('.'))
+        console.log("window.uuid", window.uuid);
+        textbox.innerHTML = "Tap to plant your flag";
+        moonmap.style.display = 'block';
+        button.style.display = 'none';
+    }
+
+
+</script>
+</html>

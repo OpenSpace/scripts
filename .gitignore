@@ -5,7 +5,7 @@ session-recording-easeinout/node_modules
 Moon/
 Mars/
 Mercury/
-
+.DS_Store
 loc-analyzer/loc-codegen/*
 loc-analyzer/loc-ghoul/*
 loc-analyzer/loc-openspace/*
@@ -25,3 +25,4 @@ loc-analyzer/loc-codegen.csv
 loc-analyzer/loc-ghoul.csv
 loc-analyzer/loc-openspace.csv
 loc-analyzer/loc-sgct.csv
+plant_flag/images/*
