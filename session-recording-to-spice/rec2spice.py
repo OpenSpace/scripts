@@ -1,14 +1,17 @@
 #rec2spice.py
+import sys
+import textwrap
 
 #read the recording file into Lines array
-import sys
 filename = sys.argv[1]
 file = open(filename, 'r')
 Lines = file.readlines()
 
 #string in file that represents switching targets
 SWITCHSTR = 'openspace.setPropertyValueSingle("NavigationHandler.OrbitalNavigator.Anchor'
-
+#our made up ID for the camera
+SPICE_ID = -20010024
+#mapping of naif codes to openspace identifiers
 NAIF_CODES = {
     'Moon': 301,
     'Earth': 399,
@@ -38,6 +41,9 @@ for line in Lines:
         frames = []
     count += 1
 masterFrames.append(frames) #add final list of frames to master list
+
+et_start = masterFrames[0][0]['et']
+et_end = masterFrames[-1][-1]['et']
 
 #loop throu master list and add velocities 
 for frames in masterFrames:
@@ -79,34 +85,91 @@ for frames in masterFrames:
         print("Existing due to error looking up naif id for " + focus)
         exit(-1)
     with open(focus+".mkspk", 'w') as f:
-        mkspk = """\\begindata\n\
-            INPUT_DATA_TYPE   = 'STATES'\n\
-            DATA_ORDER        = 'epoch x y z vx vy vz '\n\
-            DATA_DELIMITER    = ','\n\
-            LINES_PER_RECORD  = 1\n\
-            PRODUCER_ID       = 'OpenSpace (rec2spice)'\n\
-            OUTPUT_SPK_TYPE   = 9\n\
-            INPUT_DATA_UNITS  = ('DISTANCES=METERS')\n\
-            OBJECT_ID         = -20010024\n\
-            CENTER_ID         = %s\n\
-            REF_FRAME_NAME    = 'J2000'\n\
-            LEAPSECONDS_FILE  = 'naif0012.tls'\n\
-            INPUT_DATA_FILE   = '%s'\n\
-            OUTPUT_SPK_FILE   = '%s.bsp'\n\
-            COMMENT_FILE      = 'commnt.txt'\n\
-            POLYNOM_DEGREE    = 9\n\
-            TIME_WRAPPER      = '# ETSECONDS'\n\
-            APPEND_TO_OUTPUT  = 'YES'\n\
-        \\begintext\n""" % (str(center_id), focus + '_pos.dat', filename)
+        mkspk = """\\begindata\n
+            INPUT_DATA_TYPE   = 'STATES'
+            DATA_ORDER        = 'epoch x y z vx vy vz '
+            DATA_DELIMITER    = ','
+            LINES_PER_RECORD  = 1
+            PRODUCER_ID       = 'OpenSpace (rec2spice)'
+            OUTPUT_SPK_TYPE   = 12
+            INPUT_DATA_UNITS  = ('DISTANCES=METERS')
+            OBJECT_ID         = %s
+            CENTER_ID         = %s
+            REF_FRAME_NAME    = 'J2000'
+            LEAPSECONDS_FILE  = 'naif0012.tls'
+            INPUT_DATA_FILE   = '%s'
+            OUTPUT_SPK_FILE   = '%s.bsp'
+            COMMENT_FILE      = 'commnt.txt'
+            POLYNOM_DEGREE    = 9
+            TIME_WRAPPER      = '# ETSECONDS'
+            APPEND_TO_OUTPUT  = 'YES'
+        \\begintext\n""" % (str(center_id), SPICE_ID, focus + '_pos.dat', filename)
+        textwrap.dedent(mkspk)
         f.write(mkspk)
         f.close()
 
-# with open(focus+".mkspk", 'w') as f:
-#         mkspk = """\\begindata\n\
-#             INPUT_DATA_TYPE   = '%s'\n\
-#             APPEND_TO_OUTPUT  = 'YES'\n\
-#         \\begintext\n""" % (str(center_id), focus + '_pos.dat', filename)
-#         f.write(mkspk)
-#         f.close()
+    with open(filename+".asset", 'w') as f:
+        asset_str = """        local name = '%s'
+        local pos = {
+            Identifier = name .. '_pos',
+            Parent = 'Sun',
+            Transform = {
+                Translation = {
+                    Type = "SpiceTranslation",
+                    Target = "%s",
+                    Observer = 'SUN',
+                    Frame = "J2000"
+                }
+            },
+            GUI = {
+                Path = '/SS7',
+                Name = name .. " position"
+            }
+        }
+
+        local trail = {
+            Identifier = name .. '_trail',
+            Parent = "Sun",
+            Renderable = {
+                Type = "RenderableTrailTrajectory",
+                Translation = {
+                    Type = "SpiceTranslation",
+                    Target = "%s",
+                    Observer = 'SUN',
+                    Frame = "J2000"
+                },
+                Color = { 0.9, 0.9, 0.0 },
+                StartTime = %s,
+                EndTime = %s,
+                SampleInterval = 1,
+                TimeStampSubsampleFactor = 1,
+                EnableFade = false,
+                ShowFullTrail = true
+            },
+            GUI = {
+                Path = '/SS7',
+                Name = name .. " trail"
+            }
+        }
+
+        local kernel = asset.localResource(name .. '.osrectxt.bsp')
+
+        asset.onInitialize(function()
+            openspace.spice.loadKernel(kernel)
+            openspace.addSceneGraphNode(pos)
+            openspace.addSceneGraphNode(trail)
+        end)
+
+        asset.onDeinitialize(function()
+            openspace.removeSceneGraphNode(pos)
+            openspace.removeSceneGraphNode(trail)
+            openspace.spice.unloadKernel(kernel)
+        end)
+
+
+        """ % (filename, SPICE_ID, SPICE_ID, et_start, et_end)
+        textwrap.dedent(asset_str)
+        f.write(asset_str)
+        f.close()
 
 

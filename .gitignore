@@ -26,3 +26,7 @@ loc-analyzer/loc-ghoul.csv
 loc-analyzer/loc-openspace.csv
 loc-analyzer/loc-sgct.csv
 plant_flag/images/*
+**/*.bsp
+session-recording-to-spice/*.dat
+session-recording-to-spice/*.mkspk
+session-recording-to-spice/*.asset
