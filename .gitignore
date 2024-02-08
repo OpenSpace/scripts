@@ -30,3 +30,5 @@ plant_flag/images/*
 session-recording-to-spice/*.dat
 session-recording-to-spice/*.mkspk
 session-recording-to-spice/*.asset
+session-recording-to-spice/*.osrectxt
+session-recording-to-spice/*.glb
