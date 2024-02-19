@@ -7,6 +7,8 @@ from astropy.time import TimeDelta, Time
 from astropy import units as u
 import spiceypy
 
+spiceypy.spiceypy.furnsh('naif0012.tls')
+
 #read the recording file into Lines array
 filename = sys.argv[1]
 if (filename[0:2] == ".\\"):
@@ -32,13 +34,19 @@ NAIF_CODES = {
     'Mars': 499,
 }
 
+IFRAMES = {
+    'Moon': 'IAU_MOON',
+    'Earth': 'IAU_EARTH',
+}
+
 #loop thru lines of file to create 'frames' for each segment of the recording based on target
 count = 0
 masterFrames = []
 frames = []
+focus = ''
+
 for line in Lines:
     components = line.split(" ")
-    focus = ''
     if (components[0] == 'camera'):
         frames.append({'et':float(components[3]),
                         'x': float(components[4]),
@@ -49,26 +57,16 @@ for line in Lines:
                         'k': float(components[9]),
                         'l': float(components[10]),
                         'focus': components[-1].strip()})
+        focus = components[-1].strip()
     elif (SWITCHSTR in line):
-        #focus is switched, add frames to master list and create new list
-        masterFrames.append(frames)
-        frames = []
+        newfocus = line[line.rindex(',')+3: -3]
+        if (focus != newfocus):
+            #focus is switched, add frames to master list and create new list
+            masterFrames.append(frames)
+            frames = []
+            focus = newfocus
     count += 1
 masterFrames.append(frames) #add final list of frames to master list
-
-et_start = masterFrames[0][0]['et']
-et_end = masterFrames[-1][-1]['et']
-
-#astropy conver
-#iso_start = (Time(2000, format='jyear') + TimeDelta(et_start*u.s)).iso
-#iso_end = (Time(2000, format='jyear') + TimeDelta(et_end*u.s)).iso
-
-#spicepyconvert
-spiceypy.spiceypy.furnsh('naif0012.tls')
-iso_start = spiceypy.spiceypy.et2utc(et_start, 'ISOC', 8)
-iso_end = spiceypy.spiceypy.et2utc(et_end, 'ISOC', 8)
-
-print(f"start {iso_start} | end {iso_end}")
 
 #loop throu master list and add velocities 
 for frames in masterFrames:
@@ -110,7 +108,7 @@ for frames in masterFrames:
         print("Existing due to error looking up naif id for " + focus)
         exit(-1)
     with open(focus+".mkspk", 'w') as f:
-        mkspk = """\\begindata\n
+        mkspk = """\\begindata
             INPUT_DATA_TYPE   = 'STATES'
             DATA_ORDER        = 'epoch x y z vx vy vz '
             DATA_DELIMITER    = ','
@@ -125,14 +123,15 @@ for frames in masterFrames:
             INPUT_DATA_FILE   = '%s'
             OUTPUT_SPK_FILE   = '%s.bsp'
             COMMENT_FILE      = 'commnt.txt'
-            POLYNOM_DEGREE    = 9
+            POLYNOM_DEGREE    = 11
             TIME_WRAPPER      = '# ETSECONDS'
             APPEND_TO_OUTPUT  = 'YES'
         \\begintext\n""" % (str(center_id), SPICE_ID, focus + '_pos.dat', newname)
         textwrap.dedent(mkspk)
         f.write(mkspk)
         f.close()
-        os.system(f"mkspk.exe -setup {focus}.mkspk")
+        mkcmd =  "mkspk.exe" if platform.system() == 'Windows' else "mkspk"
+        os.system(f"{mkcmd} -setup {focus}.mkspk >/dev/null 2>&1")
 
 with open(newname+".asset", 'w') as f:
     asset_str = """    
@@ -141,71 +140,98 @@ with open(newname+".asset", 'w') as f:
     local kernel = asset.localResource(name .. '.bsp')
     local pos = {
         Identifier = name .. '_pos',
-        Parent = 'Moon',
+        Parent = 'SolarSystemBarycenter',
         Transform = {
             Translation = {
                 Type = "SpiceTranslation",
                 Target = "%s",
-                Observer = '301',
-                Frame = "IAU_MOON"
+                Observer = '0',
+                Frame = "GALACTIC"
+            },
+            Scale = {
+                Type = "StaticScale",
+                Scale = 25000
             }
         },
         Renderable = {
-            Type="RenderableModel",
-            GeometryFile = asset.localResource('xwing.glb'),
-            LightSources = {
-                {
-                    Type = "CameraLightSource",
-                    Intensity = 0.6
-                }
-            }
+            Type="RenderableSphericalGrid",
+            Size = {1500, 25000},
+            Color = {0.4, 0.8, 0}
         },
         GUI = {
             Path = '/SS7',
             Name = name .. " position"
         }
     }
-    """ % (newname, SPICE_ID)
 
-    asset_str += """local trail = {
-        Identifier = name .. '_trail',
-        Parent = "Moon",
-        Renderable = {
-            Type = "RenderableTrailTrajectory",
-            Translation = {
-                Type = "SpiceTranslation",
-                Target = "%s",
-                Observer = '301',
-                Frame = "IAU_MOON"
+    local trails = {}
+    """ % (newname, SPICE_ID)
+    # print("num : %s" % len(masterFrames))
+    for frames in masterFrames:
+        et_start = frames[0]['et']
+        et_end = frames[-1]['et']
+        iso_start = spiceypy.spiceypy.et2utc(et_start, 'ISOC', 8)
+        iso_end = spiceypy.spiceypy.et2utc(et_end, 'ISOC', 8)
+
+        focus = frames[0]['focus']
+        asset_str += """local %s_trail = {
+            Identifier = '%s_trail',
+            Parent = "%s",
+            Renderable = {
+                Type = "RenderableTrailTrajectory",
+                Translation = {
+                    Type = "SpiceTranslation",
+                    Target = "%s",
+                    Observer = '%s',
+                    Frame = "%s"
+                },
+                Color = { 0.9, 0.9, 0.0 },
+                StartTime = '%s',
+                EndTime = '%s',
+                SampleInterval = 1,
+                TimeStampSubsampleFactor = 1,
+                EnableFade = false,
+                ShowFullTrail = true
             },
-            Color = { 0.9, 0.9, 0.0 },
-            StartTime = '%s',
-            EndTime = '%s',
-            SampleInterval = 1,
-            TimeStampSubsampleFactor = 1,
-            EnableFade = false,
-            ShowFullTrail = true
-        },
-        GUI = {
-            Path = '/SS7',
-            Name = name .. " trail"
-        }
-    }
-    """ % (SPICE_ID, iso_start, iso_end)
+            GUI = {
+                Path = '/SS7',
+                Name = name .. "_%s trail"
+            }
+        }\n
+        table.insert(trails, %s_trail)
+        """ % (focus, focus, focus, SPICE_ID,  NAIF_CODES[focus], IFRAMES[focus], iso_start, iso_end, focus, focus)
 
     asset_str += """
     asset.onInitialize(function()
         openspace.spice.loadKernel(kernel)
         openspace.addSceneGraphNode(pos)
-        openspace.addSceneGraphNode(trail)
+        for _, n in ipairs(trails) do
+            openspace.addSceneGraphNode(n);
+        end
     end)
 
     asset.onDeinitialize(function()
         openspace.removeSceneGraphNode(pos)
-        openspace.removeSceneGraphNode(trail)
+        for _, n in ipairs(trails) do
+            openspace.removeSceneGraphNode(n);
+        end
         openspace.spice.unloadKernel(kernel)
     end)
     """
     asset_str = textwrap.dedent(asset_str)
     f.write(asset_str)
     f.close()
+
+
+
+
+###########END
+#astropy conver
+#iso_start = (Time(2000, format='jyear') + TimeDelta(et_start*u.s)).iso
+#iso_end = (Time(2000, format='jyear') + TimeDelta(et_end*u.s)).iso
+
+#spicepyconvert
+# iso_start = spiceypy.spiceypy.et2utc(et_start, 'ISOC', 8)
+# iso_end = spiceypy.spiceypy.et2utc(et_end, 'ISOC', 8)
+
+# print(f"start {iso_start} | end {iso_end}")
