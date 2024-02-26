@@ -18,15 +18,28 @@ Lines = file.readlines()
 
 newname = filename.split(".")[0]
 
-myfile = newname + ".bsp"
+shot = sys.argv[2]
+version = sys.argv[3]
+SPICE_ID = f"-7{shot.zfill(2)}{version}"
+SPICE_ID_POS = SPICE_ID[1:]
+bspfile = newname + ".bsp"
+ckfile = newname + ".bsp"
+sclkfile = "ss7_" + SPICE_ID_POS + ".sclk"
+fkfile = SPICE_ID_POS + ".tf"
 # If file exists, delete it.
-if os.path.isfile(myfile):
-    os.remove(myfile)
+if os.path.isfile(bspfile):
+    os.remove(bspfile)
+if os.path.isfile(ckfile):
+    os.remove(ckfile)
+if os.path.isfile(sclkfile):
+    os.remove(sclkfile)
+if os.path.isfile(fkfile):
+    os.remove(fkfile)
 
 #string in file that represents switching targets
 SWITCHSTR = 'openspace.setPropertyValueSingle("NavigationHandler.OrbitalNavigator.Anchor'
 #our made up ID for the camera
-SPICE_ID = -20010024
+
 #mapping of naif codes to openspace identifiers
 NAIF_CODES = {
     'Moon': 301,
@@ -121,23 +134,82 @@ for frames in masterFrames:
             REF_FRAME_NAME    = 'GALACTIC'
             LEAPSECONDS_FILE  = 'naif0012.tls'
             INPUT_DATA_FILE   = '%s'
-            OUTPUT_SPK_FILE   = '%s.bsp'
+            OUTPUT_SPK_FILE   = 'ss7_%s.bsp'
             COMMENT_FILE      = 'commnt.txt'
             POLYNOM_DEGREE    = 11
             TIME_WRAPPER      = '# ETSECONDS'
             APPEND_TO_OUTPUT  = 'YES'
-        \\begintext\n""" % (str(center_id), SPICE_ID, focus + '_pos.dat', newname)
+        \\begintext\n""" % (str(center_id), SPICE_ID, focus + '_pos.dat', SPICE_ID[1:])
         textwrap.dedent(mkspk)
         f.write(mkspk)
         f.close()
         mkcmd =  "mkspk.exe" if platform.system() == 'Windows' else "mkspk"
         os.system(f"{mkcmd} -setup {focus}.mkspk >/dev/null 2>&1")
+    #generate ss7_SPICEID.fk
+    FRAME_NAME = f"SS7_SHOT_{shot}_VERSION_{version}"
+    with open(f"ss7_{SPICE_ID[1:]}.tf", 'w') as f:
+        fkfile = """
+        \\begindata
+            FRAME_%s     = %s000
+            FRAME_%s000_NAME        = '%s'
+            FRAME_%s000_CLASS       = 3
+            FRAME_%s000_CLASS_ID    = %s000
+            FRAME_%s000_CENTER      = %s
+            CK_%s000_SCLK           = %s
+            CK_%s000_SPK            = %s
+        \\begintext
+        """ % (FRAME_NAME, SPICE_ID, SPICE_ID, FRAME_NAME, 
+               SPICE_ID, SPICE_ID, SPICE_ID,
+               SPICE_ID, SPICE_ID, SPICE_ID,
+               SPICE_ID, SPICE_ID, SPICE_ID)
+        f.write(fkfile)
+        f.close()
+    #generate setup.msopck
+    SCLK_STR = "MAKE_FAKE_SCLK"
+    if os.path.isfile(sclkfile):
+        SCLK_STR = "SCLK_FILE_NAME"
+    with open(focus+".msopck", 'w') as f:
+        msopck = """
+        \\begindata
+ 
+        LSK_FILE_NAME           = 'naif0012.tls'
+        %s          = '%s'
+        FRAMES_FILE_NAME        = 'ss7_%s.tf'
+    
+        INTERNAL_FILE_NAME      = '%s'
+        COMMENTS_FILE_NAME      = 'commnt.txt'
+    
+        CK_TYPE                 = 3
+        CK_SEGMENT_ID           = 'CAMERA ROTATION'
+        INSTRUMENT_ID           = %s
+        REFERENCE_FRAME_NAME    = '%s'
+        ANGULAR_RATE_PRESENT    = 'NO'
 
-with open(newname+".asset", 'w') as f:
+        INPUT_TIME_TYPE         = 'ET'
+        INPUT_DATA_TYPE         = 'MSOP QUATERNIONS',
+        
+        PRODUCER_ID             = 'rec2spice.py'
+ 
+        \\begintext
+        """ % (SCLK_STR, sclkfile, SPICE_ID_POS, focus + '_ori.dat', f"{SPICE_ID}000", IFRAMES[focus])
+        textwrap.dedent(mkspk)
+        f.write(msopck)
+        f.close()
+        mkcmd =  "msopck.exe" if platform.system() == 'Windows' else "msopck"
+        syscmd = f"{mkcmd} {focus}.msopck {focus}_ori.dat ss7_{SPICE_ID_POS}.bc >/dev/null 2>&1"
+        os.system(syscmd)
+
+with open(f"ss7_{SPICE_ID_POS}.asset", 'w') as f:
     asset_str = """    
     local sun = asset.require("scene/solarsystem/sun/sun")
     local name = '%s'
-    local kernel = asset.localResource(name .. '.bsp')
+    local Kernels = {
+        asset.localResource('ss7_%s' .. '.sclk'),
+        asset.localResource('ss7_%s' .. '.tf'),
+        asset.localResource('ss7_%s' .. '.bsp'),
+        asset.localResource('ss7_%s' .. '.bc')
+    }
+    
     local pos = {
         Identifier = name .. '_pos',
         Parent = 'SolarSystemBarycenter',
@@ -148,15 +220,11 @@ with open(newname+".asset", 'w') as f:
                 Observer = '0',
                 Frame = "GALACTIC"
             },
-            Scale = {
-                Type = "StaticScale",
-                Scale = 25000
+            Rotation = {
+                Type = "SpiceRotation",
+                SourceFrame = "%s",
+                DestinationFrame = 'GALACTIC',
             }
-        },
-        Renderable = {
-            Type="RenderableSphericalGrid",
-            Size = {1500, 25000},
-            Color = {0.4, 0.8, 0}
         },
         GUI = {
             Path = '/SS7',
@@ -164,8 +232,22 @@ with open(newname+".asset", 'w') as f:
         }
     }
 
+    local renderable = {
+        Identifier = '%s_visual',
+        Parent = pos.Identifier,
+        Renderable = {
+            Type="RenderableSphericalGrid",
+            Size = {1500, 25000},
+            Color = {0.4, 0.8, 0}
+        },
+        GUI = {
+            Path = '/SS7',
+            Name = name .. " visual"
+        }
+    }
+
     local trails = {}
-    """ % (newname, SPICE_ID)
+    """ % (newname,SPICE_ID_POS,SPICE_ID_POS, SPICE_ID_POS, SPICE_ID_POS, SPICE_ID, f"SS7_SHOT_{shot}_VERSION_{version}", SPICE_ID_POS)
     # print("num : %s" % len(masterFrames))
     for frames in masterFrames:
         et_start = frames[0]['et']
@@ -203,19 +285,21 @@ with open(newname+".asset", 'w') as f:
 
     asset_str += """
     asset.onInitialize(function()
-        openspace.spice.loadKernel(kernel)
+        openspace.spice.loadKernel(Kernels)
         openspace.addSceneGraphNode(pos)
+        openspace.addSceneGraphNode(renderable)
         for _, n in ipairs(trails) do
             openspace.addSceneGraphNode(n);
         end
     end)
 
     asset.onDeinitialize(function()
+        openspace.removeSceneGraphNode(renderable)
         openspace.removeSceneGraphNode(pos)
         for _, n in ipairs(trails) do
             openspace.removeSceneGraphNode(n);
         end
-        openspace.spice.unloadKernel(kernel)
+        openspace.spice.unloadKernel(Kernels)
     end)
     """
     asset_str = textwrap.dedent(asset_str)
