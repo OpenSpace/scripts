@@ -22,10 +22,13 @@ shot = sys.argv[2]
 version = sys.argv[3]
 SPICE_ID = f"-7{shot.zfill(2)}{version}"
 SPICE_ID_POS = SPICE_ID[1:]
-bspfile = "ss7_" + SPICE_ID_POS + ".bsp"
-ckfile = "ss7_" + SPICE_ID_POS + ".bc"
-sclkfile = "ss7_" + SPICE_ID_POS + ".sclk"
-fkfile = SPICE_ID_POS + ".tf"
+SS7 = f"ss7_{SPICE_ID_POS}"
+FRAME_NAME = f"ASS7_SHOT_{shot}_VERSION_{version}"
+bspfile = SS7 + ".bsp"
+ckfile = SS7 + ".bc"
+sclkfile = SS7 + ".sclk"
+fkfile = SS7 + ".tf"
+
 # If file exists, delete it.
 if os.path.isfile(bspfile):
     os.remove(bspfile)
@@ -134,19 +137,18 @@ for frames in masterFrames:
             REF_FRAME_NAME    = 'GALACTIC'
             LEAPSECONDS_FILE  = 'naif0012.tls'
             INPUT_DATA_FILE   = '%s'
-            OUTPUT_SPK_FILE   = 'ss7_%s.bsp'
+            OUTPUT_SPK_FILE   = '%s.bsp'
             COMMENT_FILE      = 'commnt.txt'
             POLYNOM_DEGREE    = 11
             TIME_WRAPPER      = '# ETSECONDS'
             APPEND_TO_OUTPUT  = 'YES'
-        \\begintext\n""" % (str(center_id), SPICE_ID, focus + '_pos.dat', SPICE_ID[1:])
+        \\begintext\n""" % (str(center_id), SPICE_ID, focus + '_pos.dat', SS7)
         textwrap.dedent(mkspk)
         f.write(mkspk)
         f.close()
         mkcmd =  "mkspk.exe" if platform.system() == 'Windows' else "mkspk"
         os.system(f"{mkcmd} -setup {focus}.mkspk >/dev/null 2>&1")
     #generate ss7_SPICEID.fk
-    FRAME_NAME = f"SS7_SHOT_{shot}_VERSION_{version}"
     with open(f"ss7_{SPICE_ID[1:]}.tf", 'w') as f:
         fkfile = """
         \\begindata
@@ -174,7 +176,7 @@ for frames in masterFrames:
  
         LSK_FILE_NAME           = 'naif0012.tls'
         %s          = '%s'
-        FRAMES_FILE_NAME        = 'ss7_%s.tf'
+        FRAMES_FILE_NAME        = '%s.tf'
     
         INTERNAL_FILE_NAME      = '%s'
         COMMENTS_FILE_NAME      = 'commnt.txt'
@@ -191,14 +193,26 @@ for frames in masterFrames:
         PRODUCER_ID             = 'rec2spice.py'
  
         \\begintext
-        """ % (SCLK_STR, sclkfile, SPICE_ID_POS, focus + '_ori.dat', f"{SPICE_ID}000", IFRAMES[focus])
+        """ % (SCLK_STR, sclkfile, SS7, focus + '_ori.dat', f"{SPICE_ID}000", IFRAMES[focus])
         textwrap.dedent(mkspk)
         f.write(msopck)
         f.close()
         mkcmd =  "msopck.exe" if platform.system() == 'Windows' else "msopck"
-        syscmd = f"{mkcmd} {focus}.msopck {focus}_ori.dat ss7_{SPICE_ID_POS}.bc >/dev/null 2>&1"
+        syscmd = f"{mkcmd} {focus}.msopck {focus}_ori.dat {SS7}.bc >/dev/null 2>&1"
         os.system(syscmd)
 
+with open (f"{SS7}.tm", 'w') as f:
+
+    metakernel = """
+    \\begindata
+    KERNELS_TO_LOAD = ( '%s',
+                        '%s',
+                        '%s',
+                        '%s')  
+    \\begintext
+    """ % (fkfile, sclkfile, bspfile, ckfile)
+    f.write(metakernel)
+    f.close()
 with open(f"ss7_{SPICE_ID_POS}.asset", 'w') as f:
     asset_str = """    
     local sun = asset.require("scene/solarsystem/sun/sun")
@@ -248,7 +262,7 @@ with open(f"ss7_{SPICE_ID_POS}.asset", 'w') as f:
     }
 
     local trails = {}
-    """ % (newname,SPICE_ID_POS,SPICE_ID_POS, SPICE_ID_POS, SPICE_ID_POS, SPICE_ID, f"SS7_SHOT_{shot}_VERSION_{version}", SPICE_ID_POS)
+    """ % (newname,SPICE_ID_POS,SPICE_ID_POS, SPICE_ID_POS, SPICE_ID_POS, SPICE_ID, FRAME_NAME, SPICE_ID_POS)
     # print("num : %s" % len(masterFrames))
     for frames in masterFrames:
         et_start = frames[0]['et']
