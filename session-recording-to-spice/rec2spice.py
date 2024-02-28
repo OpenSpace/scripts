@@ -22,8 +22,8 @@ shot = sys.argv[2]
 version = sys.argv[3]
 SPICE_ID = f"-7{shot.zfill(2)}{version}"
 SPICE_ID_POS = SPICE_ID[1:]
-bspfile = newname + ".bsp"
-ckfile = newname + ".bsp"
+bspfile = "ss7_" + SPICE_ID_POS + ".bsp"
+ckfile = "ss7_" + SPICE_ID_POS + ".bc"
 sclkfile = "ss7_" + SPICE_ID_POS + ".sclk"
 fkfile = SPICE_ID_POS + ".tf"
 # If file exists, delete it.
@@ -183,7 +183,7 @@ for frames in masterFrames:
         CK_SEGMENT_ID           = 'CAMERA ROTATION'
         INSTRUMENT_ID           = %s
         REFERENCE_FRAME_NAME    = '%s'
-        ANGULAR_RATE_PRESENT    = 'NO'
+        ANGULAR_RATE_PRESENT    = 'MAKE UP/NO AVERAGING'
 
         INPUT_TIME_TYPE         = 'ET'
         INPUT_DATA_TYPE         = 'MSOP QUATERNIONS',
@@ -236,9 +236,10 @@ with open(f"ss7_{SPICE_ID_POS}.asset", 'w') as f:
         Identifier = '%s_visual',
         Parent = pos.Identifier,
         Renderable = {
-            Type="RenderableSphericalGrid",
-            Size = {1500, 25000},
-            Color = {0.4, 0.8, 0}
+            Type="RenderableModel",
+            GeometryFile = asset.localResource("xwing.glb"),
+            BoundingSphere = 30,
+            InteractionSphere = 1
         },
         GUI = {
             Path = '/SS7',
