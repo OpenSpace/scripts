@@ -24,6 +24,7 @@ SPICE_ID = f"-7{shot.zfill(2)}{version}"
 SPICE_ID_POS = SPICE_ID[1:]
 SS7 = f"ss7_{SPICE_ID_POS}"
 FRAME_NAME = f"ASS7_SHOT_{shot}_VERSION_{version}"
+GALACTIC_CK_FRAME = "GALACTIC"
 bspfile = SS7 + ".bsp"
 ckfile = SS7 + ".bc"
 sclkfile = SS7 + ".sclk"
@@ -48,11 +49,13 @@ NAIF_CODES = {
     'Moon': 301,
     'Earth': 399,
     'Mars': 499,
+    'Gaia': -123,
 }
 
 IFRAMES = {
     'Moon': 'IAU_MOON',
     'Earth': 'IAU_EARTH',
+    'Gaia': 'GAIA_SPACECRAFT',
 }
 
 #loop thru lines of file to create 'frames' for each segment of the recording based on target
@@ -103,6 +106,67 @@ for frames in masterFrames:
     frames.pop(-1)
 
 for frames in masterFrames:
+    with open('ori' + '.dat', 'w') as f:
+        for frame in frames:
+            line = "{}, {}, {}, {}, {}\n".format(
+                frame['et'], frame['i'], frame['j'], frame['k'], frame['l'])
+            f.write(line)
+        f.close()
+#generate ss7_SPICEID.fk
+with open(f"ss7_{SPICE_ID[1:]}.tf", 'w') as f:
+    fkfile = """
+    \\begindata
+        FRAME_%s     = %s000
+        FRAME_%s000_NAME        = '%s'
+        FRAME_%s000_CLASS       = 3
+        FRAME_%s000_CLASS_ID    = %s000
+        FRAME_%s000_CENTER      = %s
+        CK_%s000_SCLK           = %s
+        CK_%s000_SPK            = %s
+    \\begintext
+    """ % (FRAME_NAME, SPICE_ID, SPICE_ID, FRAME_NAME,
+            SPICE_ID, SPICE_ID, SPICE_ID,
+            SPICE_ID, SPICE_ID, SPICE_ID,
+            SPICE_ID, SPICE_ID, SPICE_ID)
+    f.write(fkfile)
+    f.close()
+#generate setup.msopck
+SCLK_STR = "MAKE_FAKE_SCLK"
+if os.path.isfile(sclkfile):
+    SCLK_STR = "SCLK_FILE_NAME"
+with open(SS7+".msopck", 'w') as f:
+    msopck = """
+    \\begindata
+
+    LSK_FILE_NAME           = 'naif0012.tls'
+    %s          = '%s'
+    FRAMES_FILE_NAME        = '%s.tf'
+
+    INTERNAL_FILE_NAME      = '%s'
+    COMMENTS_FILE_NAME      = 'commnt.txt'
+
+    CK_TYPE                 = 3
+    CK_SEGMENT_ID           = 'CAMERA ROTATION'
+    INSTRUMENT_ID           = %s
+    REFERENCE_FRAME_NAME    = '%s'
+    ANGULAR_RATE_PRESENT    = 'MAKE UP/NO AVERAGING'
+
+    INPUT_TIME_TYPE         = 'ET'
+    INPUT_DATA_TYPE         = 'MSOP QUATERNIONS',
+
+    PRODUCER_ID             = 'rec2spice.py'
+
+    \\begintext
+    """ % (SCLK_STR, sclkfile, SS7, 'ori.dat', f"{SPICE_ID}000", GALACTIC_CK_FRAME)
+    textwrap.dedent(msopck)
+    f.write(msopck)
+    f.close()
+    mkcmd =  "msopck.exe" if platform.system() == 'Windows' else "msopck"
+    syscmd = f"{mkcmd} {SS7}.msopck ori.dat {SS7}.bc"
+    os.system(syscmd)
+
+
+for frames in masterFrames:
     focus = frames[0]['focus']
     #create .dat _position files formatted for spice with one lines per frame
     with open(focus + '_pos' + '.dat', 'w') as f:
@@ -111,13 +175,7 @@ for frames in masterFrames:
                 frame['et'], frame['x'], frame['y'], frame['z'], frame['vx'], frame['vy'], frame['vz'])
             f.write(line)
         f.close()
-    #create .dat _orientation files formatted for spice with one lines per frame
-    with open(focus + '_ori' + '.dat', 'w') as f:
-        for frame in frames:
-            line = "{}, {}, {}, {}, {}\n".format(
-                frame['et'], frame['i'], frame['j'], frame['k'], frame['l'])
-            f.write(line)
-        f.close()
+
     #generate setup.mkspk
     center_id = NAIF_CODES[focus]
     if (not center_id):
@@ -134,7 +192,7 @@ for frames in masterFrames:
             INPUT_DATA_UNITS  = ('DISTANCES=METERS')
             CENTER_ID         = %s
             OBJECT_ID         = %s
-            REF_FRAME_NAME    = 'GALACTIC'
+            REF_FRAME_NAME    = '%s'
             LEAPSECONDS_FILE  = 'naif0012.tls'
             INPUT_DATA_FILE   = '%s'
             OUTPUT_SPK_FILE   = '%s.bsp'
@@ -142,64 +200,13 @@ for frames in masterFrames:
             POLYNOM_DEGREE    = 11
             TIME_WRAPPER      = '# ETSECONDS'
             APPEND_TO_OUTPUT  = 'YES'
-        \\begintext\n""" % (str(center_id), SPICE_ID, focus + '_pos.dat', SS7)
+        \\begintext\n""" % (str(center_id), SPICE_ID, GALACTIC_CK_FRAME , focus + '_pos.dat', SS7)
         textwrap.dedent(mkspk)
         f.write(mkspk)
         f.close()
         mkcmd =  "mkspk.exe" if platform.system() == 'Windows' else "mkspk"
         os.system(f"{mkcmd} -setup {focus}.mkspk >/dev/null 2>&1")
-    #generate ss7_SPICEID.fk
-    with open(f"ss7_{SPICE_ID[1:]}.tf", 'w') as f:
-        fkfile = """
-        \\begindata
-            FRAME_%s     = %s000
-            FRAME_%s000_NAME        = '%s'
-            FRAME_%s000_CLASS       = 3
-            FRAME_%s000_CLASS_ID    = %s000
-            FRAME_%s000_CENTER      = %s
-            CK_%s000_SCLK           = %s
-            CK_%s000_SPK            = %s
-        \\begintext
-        """ % (FRAME_NAME, SPICE_ID, SPICE_ID, FRAME_NAME, 
-               SPICE_ID, SPICE_ID, SPICE_ID,
-               SPICE_ID, SPICE_ID, SPICE_ID,
-               SPICE_ID, SPICE_ID, SPICE_ID)
-        f.write(fkfile)
-        f.close()
-    #generate setup.msopck
-    SCLK_STR = "MAKE_FAKE_SCLK"
-    if os.path.isfile(sclkfile):
-        SCLK_STR = "SCLK_FILE_NAME"
-    with open(focus+".msopck", 'w') as f:
-        msopck = """
-        \\begindata
- 
-        LSK_FILE_NAME           = 'naif0012.tls'
-        %s          = '%s'
-        FRAMES_FILE_NAME        = '%s.tf'
     
-        INTERNAL_FILE_NAME      = '%s'
-        COMMENTS_FILE_NAME      = 'commnt.txt'
-    
-        CK_TYPE                 = 3
-        CK_SEGMENT_ID           = 'CAMERA ROTATION'
-        INSTRUMENT_ID           = %s
-        REFERENCE_FRAME_NAME    = '%s'
-        ANGULAR_RATE_PRESENT    = 'MAKE UP/NO AVERAGING'
-
-        INPUT_TIME_TYPE         = 'ET'
-        INPUT_DATA_TYPE         = 'MSOP QUATERNIONS',
-        
-        PRODUCER_ID             = 'rec2spice.py'
- 
-        \\begintext
-        """ % (SCLK_STR, sclkfile, SS7, focus + '_ori.dat', f"{SPICE_ID}000", IFRAMES[focus])
-        textwrap.dedent(mkspk)
-        f.write(msopck)
-        f.close()
-        mkcmd =  "msopck.exe" if platform.system() == 'Windows' else "msopck"
-        syscmd = f"{mkcmd} {focus}.msopck {focus}_ori.dat {SS7}.bc >/dev/null 2>&1"
-        os.system(syscmd)
 
 with open (f"{SS7}.tm", 'w') as f:
 
