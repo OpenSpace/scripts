@@ -105,13 +105,13 @@ for frames in masterFrames:
     frames.pop(0)
     frames.pop(-1)
 
-for frames in masterFrames:
-    with open('ori' + '.dat', 'w') as f:
+with open('ori' + '.dat', 'w') as f:
+    for frames in masterFrames:
         for frame in frames:
             line = "{}, {}, {}, {}, {}\n".format(
                 frame['et'], frame['i'], frame['j'], frame['k'], frame['l'])
             f.write(line)
-        f.close()
+    f.close()
 #generate ss7_SPICEID.fk
 with open(f"ss7_{SPICE_ID[1:]}.tf", 'w') as f:
     fkfile = """
@@ -166,7 +166,7 @@ with open(SS7+".msopck", 'w') as f:
     os.system(syscmd)
 
 
-for frames in masterFrames:
+for i, frames in enumerate(masterFrames):
     focus = frames[0]['focus']
     #create .dat _position files formatted for spice with one lines per frame
     with open(focus + '_pos' + '.dat', 'w') as f:
@@ -240,11 +240,6 @@ with open(f"ss7_{SPICE_ID_POS}.asset", 'w') as f:
                 Target = "%s",
                 Observer = '0',
                 Frame = "GALACTIC"
-            },
-            Rotation = {
-                Type = "SpiceRotation",
-                SourceFrame = "%s",
-                DestinationFrame = 'GALACTIC',
             }
         },
         GUI = {
@@ -256,11 +251,18 @@ with open(f"ss7_{SPICE_ID_POS}.asset", 'w') as f:
     local renderable = {
         Identifier = '%s_visual',
         Parent = pos.Identifier,
+        BoundingSphere = 30,
+        InteractionSphere = 1,
         Renderable = {
             Type="RenderableModel",
             GeometryFile = asset.localResource("xwing.glb"),
-            BoundingSphere = 30,
-            InteractionSphere = 1
+        },
+        Transform = {
+            Rotation = {
+                Type = "SpiceRotation",
+                SourceFrame = "%s",
+                DestinationFrame = 'GALACTIC',
+            }
         },
         GUI = {
             Path = '/SS7',
@@ -269,7 +271,7 @@ with open(f"ss7_{SPICE_ID_POS}.asset", 'w') as f:
     }
 
     local trails = {}
-    """ % (newname,SPICE_ID_POS,SPICE_ID_POS, SPICE_ID_POS, SPICE_ID_POS, SPICE_ID, FRAME_NAME, SPICE_ID_POS)
+    """ % (newname,SPICE_ID_POS,SPICE_ID_POS, SPICE_ID_POS, SPICE_ID_POS, SPICE_ID, SPICE_ID_POS, FRAME_NAME)
     # print("num : %s" % len(masterFrames))
     for frames in masterFrames:
         et_start = frames[0]['et']
