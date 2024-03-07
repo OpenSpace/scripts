@@ -1,0 +1,7 @@
+\begindata
+    SITES         = ( 'MAUNA_KEA' )
+    MAUNA_KEA_CENTER = 399
+    MAUNA_KEA_FRAME  = 'IAU_EARTH'
+    MAUNA_KEA_IDCODE = 399701
+    MAUNA_KEA_LATLON = (  19.8212 -155.4749  4.9906  )
+\begintext

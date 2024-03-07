@@ -7,7 +7,7 @@ from astropy.time import TimeDelta, Time
 from astropy import units as u
 import spiceypy
 
-spiceypy.spiceypy.furnsh('naif0012.tls')
+spiceypy.spiceypy.furnsh('static/naif0012.tls')
 
 #read the recording file into Lines array
 filename = sys.argv[1]
@@ -50,12 +50,14 @@ NAIF_CODES = {
     'Earth': 399,
     'Mars': 499,
     'Gaia': -123,
+    'MaunaKeaPoition': 399701,
 }
 
 IFRAMES = {
     'Moon': 'IAU_MOON',
     'Earth': 'IAU_EARTH',
     'Gaia': 'GAIA_SPACECRAFT',
+    'MaunaKeaPoition': 'MAUNA_KEA',
 }
 
 #loop thru lines of file to create 'frames' for each segment of the recording based on target
@@ -138,12 +140,12 @@ with open(SS7+".msopck", 'w') as f:
     msopck = """
     \\begindata
 
-    LSK_FILE_NAME           = 'naif0012.tls'
+    LSK_FILE_NAME           = 'static/naif0012.tls'
     %s          = '%s'
     FRAMES_FILE_NAME        = '%s.tf'
 
     INTERNAL_FILE_NAME      = '%s'
-    COMMENTS_FILE_NAME      = 'commnt.txt'
+    COMMENTS_FILE_NAME      = 'static/commnt.txt'
 
     CK_TYPE                 = 3
     CK_SEGMENT_ID           = 'CAMERA ROTATION'
@@ -193,10 +195,10 @@ for i, frames in enumerate(masterFrames):
             CENTER_ID         = %s
             OBJECT_ID         = %s
             REF_FRAME_NAME    = '%s'
-            LEAPSECONDS_FILE  = 'naif0012.tls'
+            LEAPSECONDS_FILE  = 'static/naif0012.tls'
             INPUT_DATA_FILE   = '%s'
             OUTPUT_SPK_FILE   = '%s.bsp'
-            COMMENT_FILE      = 'commnt.txt'
+            COMMENT_FILE      = 'static/commnt.txt'
             POLYNOM_DEGREE    = 11
             TIME_WRAPPER      = '# ETSECONDS'
             APPEND_TO_OUTPUT  = 'YES'
@@ -205,7 +207,7 @@ for i, frames in enumerate(masterFrames):
         f.write(mkspk)
         f.close()
         mkcmd =  "mkspk.exe" if platform.system() == 'Windows' else "mkspk"
-        os.system(f"{mkcmd} -setup {focus}.mkspk >/dev/null 2>&1")
+        os.system(f"{mkcmd} -setup {focus}.mkspk")
     
 
 with open (f"{SS7}.tm", 'w') as f:
