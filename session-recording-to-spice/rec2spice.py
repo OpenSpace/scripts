@@ -6,6 +6,7 @@ import platform
 from astropy.time import TimeDelta, Time
 from astropy import units as u
 import spiceypy
+import shutil 
 
 spiceypy.spiceypy.furnsh('static/naif0012.tls')
 
@@ -39,6 +40,10 @@ if os.path.isfile(sclkfile):
     os.remove(sclkfile)
 if os.path.isfile(fkfile):
     os.remove(fkfile)
+
+shutil.rmtree("output")
+os.makedirs("output")
+
 
 #string in file that represents switching targets
 SWITCHSTR = 'openspace.setPropertyValueSingle("NavigationHandler.OrbitalNavigator.Anchor'
@@ -107,7 +112,7 @@ for frames in masterFrames:
     frames.pop(0)
     frames.pop(-1)
 
-with open('ori' + '.dat', 'w') as f:
+with open('output/ori' + '.dat', 'w') as f:
     for frames in masterFrames:
         for frame in frames:
             line = "{}, {}, {}, {}, {}\n".format(
@@ -115,7 +120,7 @@ with open('ori' + '.dat', 'w') as f:
             f.write(line)
     f.close()
 #generate ss7_SPICEID.fk
-with open(f"ss7_{SPICE_ID[1:]}.tf", 'w') as f:
+with open(f"output/ss7_{SPICE_ID[1:]}.tf", 'w') as f:
     fkfile = """
     \\begindata
         FRAME_%s     = %s000
@@ -136,13 +141,13 @@ with open(f"ss7_{SPICE_ID[1:]}.tf", 'w') as f:
 SCLK_STR = "MAKE_FAKE_SCLK"
 if os.path.isfile(sclkfile):
     SCLK_STR = "SCLK_FILE_NAME"
-with open(SS7+".msopck", 'w') as f:
+with open("output/" + SS7 + ".msopck", 'w') as f:
     msopck = """
     \\begindata
 
     LSK_FILE_NAME           = 'static/naif0012.tls'
-    %s          = '%s'
-    FRAMES_FILE_NAME        = '%s.tf'
+    %s          = 'output/%s'
+    FRAMES_FILE_NAME        = 'output/%s.tf'
 
     INTERNAL_FILE_NAME      = '%s'
     COMMENTS_FILE_NAME      = 'static/commnt.txt'
@@ -164,14 +169,14 @@ with open(SS7+".msopck", 'w') as f:
     f.write(msopck)
     f.close()
     mkcmd =  "msopck.exe" if platform.system() == 'Windows' else "msopck"
-    syscmd = f"{mkcmd} {SS7}.msopck ori.dat {SS7}.bc"
+    syscmd = f"{mkcmd} output/{SS7}.msopck output/ori.dat output/{SS7}.bc"
     os.system(syscmd)
 
 
 for i, frames in enumerate(masterFrames):
     focus = frames[0]['focus']
     #create .dat _position files formatted for spice with one lines per frame
-    with open(focus + '_pos' + '.dat', 'w') as f:
+    with open("output/" + focus + '_pos' + '.dat', 'w') as f:
         for frame in frames:
             line = "{}, {}, {}, {}, {}, {}, {}\n".format(
                 frame['et'], frame['x'], frame['y'], frame['z'], frame['vx'], frame['vy'], frame['vz'])
@@ -183,7 +188,7 @@ for i, frames in enumerate(masterFrames):
     if (not center_id):
         print("Existing due to error looking up naif id for " + focus)
         exit(-1)
-    with open(focus+".mkspk", 'w') as f:
+    with open("output/" + focus+".mkspk", 'w') as f:
         mkspk = """\\begindata
             INPUT_DATA_TYPE   = 'STATES'
             DATA_ORDER        = 'epoch x y z vx vy vz '
@@ -202,15 +207,15 @@ for i, frames in enumerate(masterFrames):
             POLYNOM_DEGREE    = 11
             TIME_WRAPPER      = '# ETSECONDS'
             APPEND_TO_OUTPUT  = 'YES'
-        \\begintext\n""" % (str(center_id), SPICE_ID, GALACTIC_CK_FRAME , focus + '_pos.dat', SS7)
+        \\begintext\n""" % (str(center_id), SPICE_ID, GALACTIC_CK_FRAME , "output/" + focus + '_pos.dat', "output/" + SS7)
         textwrap.dedent(mkspk)
         f.write(mkspk)
         f.close()
         mkcmd =  "mkspk.exe" if platform.system() == 'Windows' else "mkspk"
-        os.system(f"{mkcmd} -setup {focus}.mkspk")
+        os.system(f"{mkcmd} -setup output/{focus}.mkspk")
     
 
-with open (f"{SS7}.tm", 'w') as f:
+with open (f"output/{SS7}.tm", 'w') as f:
 
     metakernel = """
     \\begindata
@@ -222,7 +227,7 @@ with open (f"{SS7}.tm", 'w') as f:
     """ % (fkfile, sclkfile, bspfile, ckfile)
     f.write(metakernel)
     f.close()
-with open(f"ss7_{SPICE_ID_POS}.asset", 'w') as f:
+with open(f"output/ss7_{SPICE_ID_POS}.asset", 'w') as f:
     asset_str = """    
     local sun = asset.require("scene/solarsystem/sun/sun")
     local name = '%s'
