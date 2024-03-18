@@ -55,6 +55,7 @@ NAIF_CODES = {
     'Earth': 399,
     'Mars': 499,
     'Gaia': -123,
+    'Sun': 10,
     'MaunaKeaPoition': 399701,
 }
 
@@ -63,6 +64,7 @@ IFRAMES = {
     'Earth': 'IAU_EARTH',
     'Gaia': 'GAIA_SPACECRAFT',
     'MaunaKeaPoition': 'MAUNA_KEA',
+    'Sun': 'IAU_SUN'
 }
 
 #loop thru lines of file to create 'frames' for each segment of the recording based on target
@@ -112,6 +114,7 @@ for frames in masterFrames:
     frames.pop(0)
     frames.pop(-1)
 
+#create orientation frames
 with open('output/ori' + '.dat', 'w') as f:
     for frames in masterFrames:
         for frame in frames:
@@ -137,16 +140,14 @@ with open(f"output/ss7_{SPICE_ID[1:]}.tf", 'w') as f:
             SPICE_ID, SPICE_ID, SPICE_ID)
     f.write(fkfile)
     f.close()
+
 #generate setup.msopck
-SCLK_STR = "MAKE_FAKE_SCLK"
-if os.path.isfile(sclkfile):
-    SCLK_STR = "SCLK_FILE_NAME"
 with open("output/" + SS7 + ".msopck", 'w') as f:
     msopck = """
     \\begindata
 
     LSK_FILE_NAME           = 'static/naif0012.tls'
-    %s          = 'output/%s'
+    MAKE_FAKE_SCLK          = 'output/%s'
     FRAMES_FILE_NAME        = 'output/%s.tf'
 
     INTERNAL_FILE_NAME      = '%s'
@@ -164,7 +165,7 @@ with open("output/" + SS7 + ".msopck", 'w') as f:
     PRODUCER_ID             = 'rec2spice.py'
 
     \\begintext
-    """ % (SCLK_STR, sclkfile, SS7, 'ori.dat', f"{SPICE_ID}000", GALACTIC_CK_FRAME)
+    """ % (sclkfile, SS7, 'ori.dat', f"{SPICE_ID}000", GALACTIC_CK_FRAME)
     textwrap.dedent(msopck)
     f.write(msopck)
     f.close()
@@ -172,7 +173,7 @@ with open("output/" + SS7 + ".msopck", 'w') as f:
     syscmd = f"{mkcmd} output/{SS7}.msopck output/ori.dat output/{SS7}.bc"
     os.system(syscmd)
 
-
+#generate spk
 for i, frames in enumerate(masterFrames):
     focus = frames[0]['focus']
     #create .dat _position files formatted for spice with one lines per frame
@@ -181,6 +182,17 @@ for i, frames in enumerate(masterFrames):
             line = "{}, {}, {}, {}, {}, {}, {}\n".format(
                 frame['et'], frame['x'], frame['y'], frame['z'], frame['vx'], frame['vy'], frame['vz'])
             f.write(line)
+        if i < (len(masterFrames)-1):
+            print(f"{i}!!! add conection to spk {len(masterFrames)}")
+            connectionLine = "{}, {}, {}, {}, {}, {}, {}\n".format(
+                masterFrames[i+1][0]['et'], 
+                masterFrames[i][-1]['x'],
+                masterFrames[i][-1]['y'],
+                masterFrames[i][-1]['z'],
+                masterFrames[i][-1]['vx'],
+                masterFrames[i][-1]['vy'],
+                masterFrames[i][-1]['vz'])
+            f.write(connectionLine)
         f.close()
 
     #generate setup.mkspk
@@ -214,7 +226,7 @@ for i, frames in enumerate(masterFrames):
         mkcmd =  "mkspk.exe" if platform.system() == 'Windows' else "mkspk"
         os.system(f"{mkcmd} -setup output/{focus}.mkspk")
     
-
+#create meta kernel --TODO fix
 with open (f"output/{SS7}.tm", 'w') as f:
 
     metakernel = """
@@ -227,6 +239,8 @@ with open (f"output/{SS7}.tm", 'w') as f:
     """ % (fkfile, sclkfile, bspfile, ckfile)
     f.write(metakernel)
     f.close()
+
+#create openspace asset
 with open(f"output/ss7_{SPICE_ID_POS}.asset", 'w') as f:
     asset_str = """    
     local sun = asset.require("scene/solarsystem/sun/sun")
@@ -247,8 +261,18 @@ with open(f"output/ss7_{SPICE_ID_POS}.asset", 'w') as f:
                 Target = "%s",
                 Observer = '0',
                 Frame = "GALACTIC"
+            },
+            Rotation = {
+                Type = "SpiceRotation",
+                SourceFrame = "%s",
+                DestinationFrame = 'GALACTIC',
             }
         },
+        Renderable = {
+            Type = "RenderableCartesianAxes"
+        },
+        BoundingSphere = 10,
+        InteractionSphere = 5,
         GUI = {
             Path = '/SS7',
             Name = name .. " position"
@@ -262,14 +286,8 @@ with open(f"output/ss7_{SPICE_ID_POS}.asset", 'w') as f:
         InteractionSphere = 1,
         Renderable = {
             Type="RenderableModel",
-            GeometryFile = asset.localResource("xwing.glb"),
-        },
-        Transform = {
-            Rotation = {
-                Type = "SpiceRotation",
-                SourceFrame = "%s",
-                DestinationFrame = 'GALACTIC',
-            }
+            GeometryFile = asset.localResource("../model/xwing.glb"),
+            RotationVector = {0, 180, 0}
         },
         GUI = {
             Path = '/SS7',
@@ -278,7 +296,7 @@ with open(f"output/ss7_{SPICE_ID_POS}.asset", 'w') as f:
     }
 
     local trails = {}
-    """ % (newname,SPICE_ID_POS,SPICE_ID_POS, SPICE_ID_POS, SPICE_ID_POS, SPICE_ID, SPICE_ID_POS, FRAME_NAME)
+    """ % (newname,SPICE_ID_POS,SPICE_ID_POS, SPICE_ID_POS, SPICE_ID_POS, SPICE_ID, FRAME_NAME, SPICE_ID_POS)
     # print("num : %s" % len(masterFrames))
     for frames in masterFrames:
         et_start = frames[0]['et']
