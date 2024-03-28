@@ -3,6 +3,7 @@ import os
 import sys
 import textwrap
 import platform
+import json
 from astropy.time import TimeDelta, Time
 from astropy import units as u
 import spiceypy
@@ -10,44 +11,56 @@ import shutil
 
 spiceypy.spiceypy.furnsh('static/naif0012.tls')
 
+if len(sys.argv) < 5:
+    print("python rec2pice.py file.osrectxt shot# version# name")
+    exit()
+
 #read the recording file into Lines array
-filename = sys.argv[1]
-if (filename[0:2] == ".\\"):
-    filename = filename[2:]
-file = open(filename, 'r')
+filepath = sys.argv[1]
+filename = os.path.basename(sys.argv[1])
+folderpath = os.path.dirname(sys.argv[1])
+
+# windows
+# if (filename[0:2] == ".\\"):
+#     filename = filename[2:]
+file = open(filepath, 'r')
 Lines = file.readlines()
 
-newname = filename.split(".")[0]
+newname = sys.argv[4]
 
 shot = sys.argv[2]
 version = sys.argv[3]
-SPICE_ID = f"-7{shot.zfill(2)}{version}"
+SPICE_ID = f"-7{shot.zfill(2)}{version.zfill(2)}"
 SPICE_ID_POS = SPICE_ID[1:]
 SS7 = f"ss7_{SPICE_ID_POS}"
-FRAME_NAME = f"ASS7_SHOT_{shot}_VERSION_{version}"
+FRAME_NAME = f"ASS7_SHOT_{shot}_V_{version}"
 GALACTIC_CK_FRAME = "GALACTIC"
 bspfile = SS7 + ".bsp"
 ckfile = SS7 + ".bc"
 sclkfile = SS7 + ".sclk"
 fkfile = SS7 + ".tf"
+# # If file exists, delete it.
+# if os.path.isfile(bspfile):
+#     os.remove(bspfile)
+# if os.path.isfile(ckfile):
+#     os.remove(ckfile)
+# if os.path.isfile(sclkfile):
+#     os.remove(sclkfile)
+# if os.path.isfile(fkfile):
+#     os.remove(fkfile)
 
-# If file exists, delete it.
-if os.path.isfile(bspfile):
-    os.remove(bspfile)
-if os.path.isfile(ckfile):
-    os.remove(ckfile)
-if os.path.isfile(sclkfile):
-    os.remove(sclkfile)
-if os.path.isfile(fkfile):
-    os.remove(fkfile)
-
-shutil.rmtree("output")
-os.makedirs("output")
+dirpath = f"{folderpath}/{newname}_output/"
+if os.path.exists(dirpath) and os.path.isdir(dirpath):
+    shutil.rmtree(dirpath)
+os.makedirs(dirpath)
 
 
 #string in file that represents switching targets
 SWITCHSTR = 'openspace.setPropertyValueSingle("NavigationHandler.OrbitalNavigator.Anchor'
-#our made up ID for the camera
+
+#string in file that represents switching targets
+DELTA_TIME = 'DeltaTime'
+
 
 #mapping of naif codes to openspace identifiers
 NAIF_CODES = {
@@ -72,6 +85,7 @@ count = 0
 masterFrames = []
 frames = []
 focus = ''
+deltaTimes = []
 
 for line in Lines:
     components = line.split(" ")
@@ -86,6 +100,7 @@ for line in Lines:
                         'l': float(components[10]),
                         'focus': components[-1].strip()})
         focus = components[-1].strip()
+        shotLength = components[2]
     elif (SWITCHSTR in line):
         newfocus = line[line.rindex(',')+3: -3]
         if (focus != newfocus):
@@ -93,7 +108,17 @@ for line in Lines:
             masterFrames.append(frames)
             frames = []
             focus = newfocus
+    elif (DELTA_TIME in line):
+        script = components[-1]
+        dt = script[script.index('(')+1 : script.index(')')]
+        timeChange = {
+            "frameTime": components[2],
+            "et": components[3],
+            "deltaTime": dt
+        }
+        deltaTimes.append(timeChange)
     count += 1
+
 masterFrames.append(frames) #add final list of frames to master list
 
 #loop throu master list and add velocities 
@@ -115,7 +140,7 @@ for frames in masterFrames:
     frames.pop(-1)
 
 #create orientation frames
-with open('output/ori' + '.dat', 'w') as f:
+with open(dirpath + 'ori' + '.dat', 'w') as f:
     for frames in masterFrames:
         for frame in frames:
             line = "{}, {}, {}, {}, {}\n".format(
@@ -123,7 +148,7 @@ with open('output/ori' + '.dat', 'w') as f:
             f.write(line)
     f.close()
 #generate ss7_SPICEID.fk
-with open(f"output/ss7_{SPICE_ID[1:]}.tf", 'w') as f:
+with open(f"{dirpath}ss7_{SPICE_ID[1:]}.tf", 'w') as f:
     fkfile = """
     \\begindata
         FRAME_%s     = %s000
@@ -133,22 +158,29 @@ with open(f"output/ss7_{SPICE_ID[1:]}.tf", 'w') as f:
         FRAME_%s000_CENTER      = %s
         CK_%s000_SCLK           = %s
         CK_%s000_SPK            = %s
-    \\begintext
+    \\begintext\n\n
     """ % (FRAME_NAME, SPICE_ID, SPICE_ID, FRAME_NAME,
             SPICE_ID, SPICE_ID, SPICE_ID,
             SPICE_ID, SPICE_ID, SPICE_ID,
             SPICE_ID, SPICE_ID, SPICE_ID)
+
+    fkfile += """\\begindata
+      NAIF_BODY_NAME += ( '%s' )
+      NAIF_BODY_CODE += ( %s )
+    \\begintext
+    """ % (newname, SPICE_ID)
+
     f.write(fkfile)
     f.close()
 
 #generate setup.msopck
-with open("output/" + SS7 + ".msopck", 'w') as f:
+with open(dirpath + SS7 + ".msopck", 'w') as f:
     msopck = """
     \\begindata
 
     LSK_FILE_NAME           = 'static/naif0012.tls'
-    MAKE_FAKE_SCLK          = 'output/%s'
-    FRAMES_FILE_NAME        = 'output/%s.tf'
+    MAKE_FAKE_SCLK          = '%s%s'
+    FRAMES_FILE_NAME        = '%s%s.tf'
 
     INTERNAL_FILE_NAME      = '%s'
     COMMENTS_FILE_NAME      = 'static/commnt.txt'
@@ -165,19 +197,19 @@ with open("output/" + SS7 + ".msopck", 'w') as f:
     PRODUCER_ID             = 'rec2spice.py'
 
     \\begintext
-    """ % (sclkfile, SS7, 'ori.dat', f"{SPICE_ID}000", GALACTIC_CK_FRAME)
+    """ % (dirpath, sclkfile, dirpath, SS7, 'ori.dat', f"{SPICE_ID}000", GALACTIC_CK_FRAME)
     textwrap.dedent(msopck)
     f.write(msopck)
     f.close()
     mkcmd =  "msopck.exe" if platform.system() == 'Windows' else "msopck"
-    syscmd = f"{mkcmd} output/{SS7}.msopck output/ori.dat output/{SS7}.bc"
+    syscmd = f"{mkcmd} {dirpath}{SS7}.msopck {dirpath}ori.dat {dirpath}{SS7}.bc"
     os.system(syscmd)
 
 #generate spk
 for i, frames in enumerate(masterFrames):
     focus = frames[0]['focus']
     #create .dat _position files formatted for spice with one lines per frame
-    with open("output/" + focus + '_pos' + '.dat', 'w') as f:
+    with open(dirpath + focus + '_pos' + '.dat', 'w') as f:
         for frame in frames:
             line = "{}, {}, {}, {}, {}, {}, {}\n".format(
                 frame['et'], frame['x'], frame['y'], frame['z'], frame['vx'], frame['vy'], frame['vz'])
@@ -200,7 +232,7 @@ for i, frames in enumerate(masterFrames):
     if (not center_id):
         print("Existing due to error looking up naif id for " + focus)
         exit(-1)
-    with open("output/" + focus+".mkspk", 'w') as f:
+    with open(dirpath + focus+".mkspk", 'w') as f:
         mkspk = """\\begindata
             INPUT_DATA_TYPE   = 'STATES'
             DATA_ORDER        = 'epoch x y z vx vy vz '
@@ -219,15 +251,15 @@ for i, frames in enumerate(masterFrames):
             POLYNOM_DEGREE    = 11
             TIME_WRAPPER      = '# ETSECONDS'
             APPEND_TO_OUTPUT  = 'YES'
-        \\begintext\n""" % (str(center_id), SPICE_ID, GALACTIC_CK_FRAME , "output/" + focus + '_pos.dat', "output/" + SS7)
+        \\begintext\n""" % (str(center_id), SPICE_ID, GALACTIC_CK_FRAME , dirpath + focus + '_pos.dat', dirpath + SS7)
         textwrap.dedent(mkspk)
         f.write(mkspk)
         f.close()
         mkcmd =  "mkspk.exe" if platform.system() == 'Windows' else "mkspk"
-        os.system(f"{mkcmd} -setup output/{focus}.mkspk")
+        os.system(f"{mkcmd} -setup {dirpath}{focus}.mkspk")
     
 #create meta kernel --TODO fix
-with open (f"output/{SS7}.tm", 'w') as f:
+with open (f"{dirpath}{SS7}.tm", 'w') as f:
 
     metakernel = """
     \\begindata
@@ -241,7 +273,7 @@ with open (f"output/{SS7}.tm", 'w') as f:
     f.close()
 
 #create openspace asset
-with open(f"output/ss7_{SPICE_ID_POS}.asset", 'w') as f:
+with open(f"{dirpath}ss7_{SPICE_ID_POS}.asset", 'w') as f:
     asset_str = """    
     local sun = asset.require("scene/solarsystem/sun/sun")
     local name = '%s'
@@ -269,7 +301,9 @@ with open(f"output/ss7_{SPICE_ID_POS}.asset", 'w') as f:
             }
         },
         Renderable = {
-            Type = "RenderableCartesianAxes"
+            Type="RenderableModel",
+            GeometryFile = asset.localResource("xwing.glb"),
+            RotationVector = {0, 180, 0}
         },
         BoundingSphere = 10,
         InteractionSphere = 5,
@@ -286,7 +320,7 @@ with open(f"output/ss7_{SPICE_ID_POS}.asset", 'w') as f:
         InteractionSphere = 1,
         Renderable = {
             Type="RenderableModel",
-            GeometryFile = asset.localResource("../model/xwing.glb"),
+            GeometryFile = asset.localResource("xwing.glb"),
             RotationVector = {0, 180, 0}
         },
         GUI = {
@@ -356,6 +390,31 @@ with open(f"output/ss7_{SPICE_ID_POS}.asset", 'w') as f:
     f.close()
 
 
+with open (f"{dirpath}{newname}.json", 'w') as f:
+    dataobject = {
+        "name": newname,
+        "shot": shot,
+        "take": version,
+        "osrecording": filename,
+        "shotLength": float(shotLength),
+        "shotStart": masterFrames[0][0]['et'],
+        "shotEnd": masterFrames[-1][-1]['et'],
+        "deltaTimes": deltaTimes,
+        "kernels": ["naif0012.tls",
+        "pck00011.tpc",
+        "de430.bsp",
+        "mar097.bsp",
+        "jup365.bsp",
+        "sat441.bsp",
+        "ura111.bsp",
+        "nep097.bsp",
+        "nep101xl-802.bsp",
+        "NavPE_de433_od122.bsp",
+        "NavSE_plu047_od122.bsp",
+        "ssd_jpl_nasa_gov_plu043.bsp"]
+    }
+    f.write(json.dumps(dataobject, indent=4))
+    f.close()
 
 
 ###########END
