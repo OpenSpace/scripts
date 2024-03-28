@@ -54,7 +54,8 @@ if os.path.exists(dirpath) and os.path.isdir(dirpath):
     shutil.rmtree(dirpath)
 os.makedirs(dirpath)
 
-
+os.system(f"cp static/commnt.txt {dirpath}")
+os.system(f"cp static/naif0012.tls {dirpath}")
 #string in file that represents switching targets
 SWITCHSTR = 'openspace.setPropertyValueSingle("NavigationHandler.OrbitalNavigator.Anchor'
 
@@ -79,6 +80,7 @@ IFRAMES = {
     'MaunaKeaPoition': 'MAUNA_KEA',
     'Sun': 'IAU_SUN'
 }
+
 
 #loop thru lines of file to create 'frames' for each segment of the recording based on target
 count = 0
@@ -178,12 +180,12 @@ with open(dirpath + SS7 + ".msopck", 'w') as f:
     msopck = """
     \\begindata
 
-    LSK_FILE_NAME           = 'static/naif0012.tls'
-    MAKE_FAKE_SCLK          = '%s%s'
-    FRAMES_FILE_NAME        = '%s%s.tf'
+    LSK_FILE_NAME           = 'naif0012.tls'
+    MAKE_FAKE_SCLK          = '%s'
+    FRAMES_FILE_NAME        = '%s.tf'
 
     INTERNAL_FILE_NAME      = '%s'
-    COMMENTS_FILE_NAME      = 'static/commnt.txt'
+    COMMENTS_FILE_NAME      = 'commnt.txt'
 
     CK_TYPE                 = 3
     CK_SEGMENT_ID           = 'CAMERA ROTATION'
@@ -197,12 +199,13 @@ with open(dirpath + SS7 + ".msopck", 'w') as f:
     PRODUCER_ID             = 'rec2spice.py'
 
     \\begintext
-    """ % (dirpath, sclkfile, dirpath, SS7, 'ori.dat', f"{SPICE_ID}000", GALACTIC_CK_FRAME)
+    """ % (sclkfile, SS7, 'ori.dat', f"{SPICE_ID}000", GALACTIC_CK_FRAME)
     textwrap.dedent(msopck)
     f.write(msopck)
     f.close()
     mkcmd =  "msopck.exe" if platform.system() == 'Windows' else "msopck"
     syscmd = f"{mkcmd} {dirpath}{SS7}.msopck {dirpath}ori.dat {dirpath}{SS7}.bc"
+    os.chdir(dirpath)
     os.system(syscmd)
 
 #generate spk
@@ -244,18 +247,19 @@ for i, frames in enumerate(masterFrames):
             CENTER_ID         = %s
             OBJECT_ID         = %s
             REF_FRAME_NAME    = '%s'
-            LEAPSECONDS_FILE  = 'static/naif0012.tls'
+            LEAPSECONDS_FILE  = 'naif0012.tls'
             INPUT_DATA_FILE   = '%s'
             OUTPUT_SPK_FILE   = '%s.bsp'
-            COMMENT_FILE      = 'static/commnt.txt'
+            COMMENT_FILE      = 'commnt.txt'
             POLYNOM_DEGREE    = 11
             TIME_WRAPPER      = '# ETSECONDS'
             APPEND_TO_OUTPUT  = 'YES'
-        \\begintext\n""" % (str(center_id), SPICE_ID, GALACTIC_CK_FRAME , dirpath + focus + '_pos.dat', dirpath + SS7)
+        \\begintext\n""" % (str(center_id), SPICE_ID, GALACTIC_CK_FRAME , focus + '_pos.dat', SS7)
         textwrap.dedent(mkspk)
         f.write(mkspk)
         f.close()
         mkcmd =  "mkspk.exe" if platform.system() == 'Windows' else "mkspk"
+        os.chdir(dirpath)
         os.system(f"{mkcmd} -setup {dirpath}{focus}.mkspk")
     
 #create meta kernel --TODO fix
