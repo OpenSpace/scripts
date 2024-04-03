@@ -39,15 +39,6 @@ bspfile = SS7 + ".bsp"
 ckfile = SS7 + ".bc"
 sclkfile = SS7 + ".sclk"
 fkfile = SS7 + ".tf"
-# # If file exists, delete it.
-# if os.path.isfile(bspfile):
-#     os.remove(bspfile)
-# if os.path.isfile(ckfile):
-#     os.remove(ckfile)
-# if os.path.isfile(sclkfile):
-#     os.remove(sclkfile)
-# if os.path.isfile(fkfile):
-#     os.remove(fkfile)
 
 dirpath = f"{folderpath}/{newname}_output/"
 if os.path.exists(dirpath) and os.path.isdir(dirpath):
@@ -71,16 +62,57 @@ NAIF_CODES = {
     'Gaia': -123,
     'Sun': 10,
     'MaunaKeaPoition': 399701,
+    'MilkyWayVolume': 1401000,
 }
 
 IFRAMES = {
     'Moon': 'IAU_MOON',
     'Earth': 'IAU_EARTH',
+    'Mars': 'IAU_MARS',
     'Gaia': 'GAIA_SPACECRAFT',
     'MaunaKeaPoition': 'MAUNA_KEA',
-    'Sun': 'IAU_SUN'
+    'Sun': 'IAU_SUN',
+    'MilkyWayVolume': '1401000'
 }
 
+KERNELS = {
+    'OpenSpace': [
+        "naif0012.tls",
+        "pck00011.tpc",
+        "de430.bsp",
+        "mar097.bsp",
+        "jup365.bsp",
+        "sat441.bsp",
+        "ura111.bsp",
+        "nep097.bsp",
+        "nep101xl-802.bsp",
+        "NavPE_de433_od122.bsp",
+        "NavSE_plu047_od122.bsp",
+        "ssd_jpl_nasa_gov_plu043.bsp"
+    ],
+    'MaunaKeaPosition': ['mauna_kea.bsp'],
+    'MilkyWayVolume': ['milkyway.spk'],
+    'OrionShell': ['orion.bsp'],
+    'Gaia': [
+        'gaia_fict_20191030.tsc',
+        'gaia_pre_20240226_20260913_v01.bsp',
+        'gaia_rec_20131219_20240101_v01.bsp',
+        'gaia_rec_20240101_20240226_v01.bsp',
+        'gaia_sc_ssm_20131219_20150101_f20191030_v01.bc',
+        'gaia_sc_ssm_20150101_20160101_f20191030_v01.bc',
+        'gaia_sc_ssm_20160101_20170101_f20191030_v01.bc',
+        'gaia_sc_ssm_20170101_20180101_f20191030_v01.bc',
+        'gaia_sc_ssm_20180101_20190101_f20191030_v01.bc',
+        'gaia_sc_ssm_20190101_20200101_f20191030_v01.bc',
+        'gaia_sc_ssm_20200101_20210101_f20191030_v01.bc',
+        'gaia_sc_ssm_20210101_20220101_f20191030_v01.bc',
+        'gaia_sc_ssm_20220101_20230101_f20191030_v01.bc',
+        'gaia_sc_ssm_20230101_20240101_f20191030_v01.bc',
+        'gaia_sc_ssm_20240101_20240204_f20191030_v01.bc',
+        'gaia_sc_ssp_20240101_20240204_f20191030_v01.bc',
+        'gaia_v01.tf'
+    ]
+}
 
 #loop thru lines of file to create 'frames' for each segment of the recording based on target
 count = 0
@@ -88,6 +120,7 @@ masterFrames = []
 frames = []
 focus = ''
 deltaTimes = []
+focusList = []
 
 for line in Lines:
     components = line.split(" ")
@@ -102,14 +135,14 @@ for line in Lines:
                         'l': float(components[10]),
                         'focus': components[-1].strip()})
         focus = components[-1].strip()
+        focusList.append(focus)
         shotLength = components[2]
     elif (SWITCHSTR in line):
         newfocus = line[line.rindex(',')+3: -3]
-        if (focus != newfocus):
-            #focus is switched, add frames to master list and create new list
-            masterFrames.append(frames)
-            frames = []
-            focus = newfocus
+        #focus is switched, add frames to master list and create new list
+        masterFrames.append(frames)
+        frames = []
+        focus = newfocus
     elif (DELTA_TIME in line):
         script = components[-1]
         dt = script[script.index('(')+1 : script.index(')')]
@@ -119,6 +152,8 @@ for line in Lines:
             "deltaTime": dt
         }
         deltaTimes.append(timeChange)
+    # else:
+    #     print(f"unhandled script line: {line}")
     count += 1
 
 masterFrames.append(frames) #add final list of frames to master list
@@ -204,7 +239,7 @@ with open(dirpath + SS7 + ".msopck", 'w') as f:
     f.write(msopck)
     f.close()
     mkcmd =  "msopck.exe" if platform.system() == 'Windows' else "msopck"
-    syscmd = f"{mkcmd} {dirpath}{SS7}.msopck {dirpath}ori.dat {dirpath}{SS7}.bc"
+    syscmd = f"{mkcmd} {SS7}.msopck ori.dat {SS7}.bc"
     os.chdir(dirpath)
     os.system(syscmd)
 
@@ -218,7 +253,6 @@ for i, frames in enumerate(masterFrames):
                 frame['et'], frame['x'], frame['y'], frame['z'], frame['vx'], frame['vy'], frame['vz'])
             f.write(line)
         if i < (len(masterFrames)-1):
-            print(f"{i}!!! add conection to spk {len(masterFrames)}")
             connectionLine = "{}, {}, {}, {}, {}, {}, {}\n".format(
                 masterFrames[i+1][0]['et'], 
                 masterFrames[i][-1]['x'],
@@ -335,7 +369,6 @@ with open(f"{dirpath}ss7_{SPICE_ID_POS}.asset", 'w') as f:
 
     local trails = {}
     """ % (newname,SPICE_ID_POS,SPICE_ID_POS, SPICE_ID_POS, SPICE_ID_POS, SPICE_ID, FRAME_NAME, SPICE_ID_POS)
-    # print("num : %s" % len(masterFrames))
     for frames in masterFrames:
         et_start = frames[0]['et']
         et_end = frames[-1]['et']
@@ -393,6 +426,15 @@ with open(f"{dirpath}ss7_{SPICE_ID_POS}.asset", 'w') as f:
     f.write(asset_str)
     f.close()
 
+focusList = list(set(focusList))
+
+fullKernelList = KERNELS['OpenSpace']
+for focus in focusList:
+    try:
+        ker = KERNELS[focus]
+        fullKernelList = fullKernelList + KERNELS[focus]
+    except:
+        print(f"{focus} handled by OpenSpace kernels")
 
 with open (f"{dirpath}{newname}.json", 'w') as f:
     dataobject = {
@@ -404,18 +446,7 @@ with open (f"{dirpath}{newname}.json", 'w') as f:
         "shotStart": masterFrames[0][0]['et'],
         "shotEnd": masterFrames[-1][-1]['et'],
         "deltaTimes": deltaTimes,
-        "kernels": ["naif0012.tls",
-        "pck00011.tpc",
-        "de430.bsp",
-        "mar097.bsp",
-        "jup365.bsp",
-        "sat441.bsp",
-        "ura111.bsp",
-        "nep097.bsp",
-        "nep101xl-802.bsp",
-        "NavPE_de433_od122.bsp",
-        "NavSE_plu047_od122.bsp",
-        "ssd_jpl_nasa_gov_plu043.bsp"]
+        "kernels": fullKernelList
     }
     f.write(json.dumps(dataobject, indent=4))
     f.close()
