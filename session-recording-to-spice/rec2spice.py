@@ -9,7 +9,7 @@ from astropy import units as u
 import spiceypy
 import shutil 
 
-spiceypy.spiceypy.furnsh('static/naif0012.tls')
+spiceypy.spiceypy.furnsh('kernelbuilding/naif0012.tls')
 
 if len(sys.argv) < 5:
     print("python rec2pice.py file.osrectxt shot# version# name")
@@ -45,8 +45,8 @@ if os.path.exists(dirpath) and os.path.isdir(dirpath):
     shutil.rmtree(dirpath)
 os.makedirs(dirpath)
 
-os.system(f"cp static/commnt.txt {dirpath}")
-os.system(f"cp static/naif0012.tls {dirpath}")
+os.system(f"cp kernelbuilding/commnt.txt {dirpath}")
+os.system(f"cp kernelbuilding/naif0012.tls {dirpath}")
 #string in file that represents switching targets
 SWITCHSTR = 'openspace.setPropertyValueSingle("NavigationHandler.OrbitalNavigator.Anchor'
 
