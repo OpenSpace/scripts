@@ -136,6 +136,7 @@ async function createLayer(globe, layer, layershort, title, description, project
   Identifier = "${layerIdentifier}",
   Name = [[${title}]],
   FilePath = asset.localResource("${folder}/${layershort}.vrt"),
+  ZIndex = 30,
   Description = [[${description}]]
 }`;
   
