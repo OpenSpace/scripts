@@ -381,8 +381,7 @@ async function showPageOfData(globe, data) {
       assetFileString += `
 
 asset.meta = {
-  Name = [[NASA Treks Layers for ${globe} ${folderName}],
-  Version = "1.0",
+  Name = [[NASA Treks Layers for ${globe} ${folderName}]],
   Author = "NASA/Treks",
   URL = "https://trek.nasa.gov/${globe.toLowerCase()}",
   License = "NASA/Treks",
