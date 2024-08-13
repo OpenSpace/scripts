@@ -352,14 +352,14 @@ async function showPageOfData(globe, data) {
     for (let folderName in folderMap) {
       let folder = folderMap[folderName];
       //asset for folder
-      var assetFileString = `${Header}\nlocal globeIdentifier = asset.require("${openspacepath}").${globe}.Identifier\n`;
+      var assetFileString = `${Header}\nlocal globeIdentifier = asset.require("${openspacepath}").${globe}.Identifier\n\n\n`;
       //print each layer
       for (let layerId in folder) {
         let layer = folder[layerId];
         assetFileString += "\n" + layer.lua + "\n";
       }
       //now print the asset boilerplate
-      assetFileString += "\nasset.onInitialize(function()\n";
+      assetFileString += "\n\nasset.onInitialize(function()\n";
       for (let layerId in folder) {
         let layer = folder[layerId];
         assetFileString += `  openspace.globebrowsing.addLayer(globeIdentifier, "${layer.group}", treks_${layerId})\n`
@@ -379,6 +379,7 @@ async function showPageOfData(globe, data) {
       }
 
       assetFileString += `
+
 
 asset.meta = {
   Name = [[NASA Treks Layers for ${globe} ${folderName}]],
