@@ -369,7 +369,7 @@ async function showPageOfData(globe, data) {
       assetFileString += "\nasset.onDeinitialize(function()\n";
       for (let layerId in folder) {
         let layer = folder[layerId];
-        assetFileString += `  openspace.globebrowsing.deleteLayer(globeIdentifier, "${layer.group}", "treks_${layerId}")\n`
+        assetFileString += `  openspace.globebrowsing.deleteLayer(globeIdentifier, "${layer.group}", treks_${layerId})\n`
       }
       assetFileString += `end)\n\n`;
 
