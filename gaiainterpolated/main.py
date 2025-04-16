@@ -1,5 +1,8 @@
 import sys
 
+if len(sys.argv == 1):
+    print("usage: python main.py <datafile> <scalefactor>")
+
 filename = sys.argv[1]
 if (len(sys.argv) > 2):
     scaleFactor = int(sys.argv[2])
