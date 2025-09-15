@@ -1,0 +1,108 @@
+asset.require("./symmetric_trails")
+local transform = asset.require("./holder")
+
+local HostGalaxy = {
+  Identifier = "GravLensing_HostGalaxy",
+  Parent = transform.GravLensingHolder.Identifier,
+  Transform = {
+    Translation = {
+      Type = "StaticTranslation",
+      Position = { 20.0, 2.0, 1.0 }
+    },
+    Rotation = {
+      Type = "StaticRotation",
+      Rotation = { 0.0, math.pi / 2.0, 0.0 }
+    }
+  },
+  Renderable = {
+    Type = "RenderablePlaneImageLocal",
+    Size = 5,
+    Texture = asset.resource("host_galaxy.png")
+  },
+  GUI = {
+    Name = "Host Galaxy",
+    Path = "/SpaceNight/2025-09/Gravitational Lensing",
+    Focusable = false
+  }
+}
+
+local LensingGalaxy = {
+  Identifier = "GravLensing_LensingGalaxy",
+  Parent = transform.GravLensingHolder.Identifier,
+  Transform = {
+    Rotation = {
+      Type = "StaticRotation",
+      Rotation = { 0.0, math.pi / 2.0, 0.0 }
+    }
+  },
+  Renderable = {
+    Type = "RenderablePlaneImageLocal",
+    Size = 5,
+    Texture = asset.resource("lensing_galaxy.jpg"),
+    BlendMode = "Additive"
+  },
+  GUI = {
+    Name = "Lensing Galaxy",
+    Path = "/SpaceNight/2025-09/Gravitational Lensing",
+    Focusable = false
+  }
+}
+
+local Earth = {
+  Identifier = "GravLensing_Earth",
+  Parent = transform.GravLensingHolder.Identifier,
+  Transform = {
+    Translation = {
+      Type = "StaticTranslation",
+      Position = { -20.0, 0.0, 0.0 }
+    }
+  },
+  Renderable = {
+    Type = "RenderableSphereImageLocal",
+    Texture = asset.resource("earth.jpg")
+  },
+  GUI = {
+    Name = "Observer",
+    Path = "/SpaceNight/2025-09/Gravitational Lensing",
+    Focusable = false
+  }
+}
+
+local Flash = {
+  Identifier = "GravLensing_Glare",
+  Parent = HostGalaxy.Identifier,
+  Transform = {
+    Translation = {
+      Type = "StaticTranslation",
+      Position = { 1.0, -2.0, -0.1 }
+    }
+  },
+  Renderable = {
+    Type = "RenderablePlaneImageLocal",
+    Size = 2.0,
+    Origin = "Center",
+    Texture = asset.resource("supernova.png"),
+    BlendMode = "Additive",
+    Opacity = 1.0
+  },
+  GUI = {
+    Name = "SN Glare",
+    Path = "/SpaceNight/2025-09/Gravitational Lensing",
+    Focusable = false
+  }
+}
+
+
+asset.onInitialize(function()
+  openspace.addSceneGraphNode(HostGalaxy)
+  openspace.addSceneGraphNode(LensingGalaxy)
+  openspace.addSceneGraphNode(Earth)
+  openspace.addSceneGraphNode(Flash)
+end)
+
+asset.onDeinitialize(function()
+  openspace.removeSceneGraphNode(Flash)
+  openspace.removeSceneGraphNode(Earth)
+  openspace.removeSceneGraphNode(LensingGalaxy)
+  openspace.removeSceneGraphNode(HostGalaxy)
+end)

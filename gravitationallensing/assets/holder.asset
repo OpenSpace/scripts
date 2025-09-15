@@ -1,0 +1,29 @@
+local Parsec = 0.308567756E17
+
+local GravLensingHolder = {
+  Identifier = "GravLensingHolder",
+  Transform = {
+    Translation = {
+      Type = "StaticTranslation",
+      Position = { 1000000 * Parsec, 0.0, 0.0 }
+    },
+    Scale = {
+      Type = "StaticScale",
+      Scale = 1000000000
+    }
+  },
+  GUI = {
+    Name = "Holder",
+    Path = "/SpaceNight/2025-09/Gravitational Lensing"
+  }
+}
+
+asset.onInitialize(function()
+  openspace.addSceneGraphNode(GravLensingHolder)
+end)
+
+asset.onDeinitialize(function()
+  openspace.removeSceneGraphNode(GravLensingHolder)
+end)
+
+asset.export(GravLensingHolder)
