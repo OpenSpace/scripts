@@ -117,7 +117,7 @@ function writeMainAsset(rays: Ray[], baseName: string) {
 
   asset = `${asset}asset.onDeinitialize(function()\n`;
   for (let r of rays) {
-    asset = `${asset}  openspace.addSceneGraphNode(Trail${r.name})\n`;
+    asset = `${asset}  openspace.removeSceneGraphNode(Trail${r.name})\n`;
   }
   asset = `${asset}end)\n\n`
 
@@ -134,7 +134,7 @@ const Source: Vector = { x: 20.0, y: 0.0, z: 0.0 };
 // Main
 //
 const ForceConstant = 0.008;
-let rays = [
+let symmetricRays = [
   {
     name: "00",
     direction: { x: -0.025, y: -0.020, z: 0.0 },
@@ -166,23 +166,44 @@ let rays = [
     // source: add(Source, { x: 0.0, y: 0.5, z: 0.5 }),
     force: ForceConstant,
     color: { x: 0.85, y: 0.65, z: 0.05 }
-  },
-  {
-    name: "asym00",
-    direction: { x: -0.025, y: -0.125, z: 0.0 },
-    source: Source,
-    force: ForceConstant * 39.125,
-    color: { x: 0.85, y: 0.05, z: 0.65 }
-  },
-  {
-    name: "asym01",
-    direction: { x: -0.025, y:  0.0045, z: 0.0 },
-    source: Source,
-    force: ForceConstant / 20,
-    color: { x: 0.05, y: 0.85, z: 0.35 }
   }
 ];
 
-writeDataAsset(rays, "symmetric");
-writeMainAsset(rays, "symmetric");
+writeDataAsset(symmetricRays, "symmetric");
+writeMainAsset(symmetricRays, "symmetric");
+
+
+
+let asymmetricRays = [
+  {
+    name: "00",
+    direction: { x: -0.025, y: -0.020, z: 0.0 },
+    source: add(Source, { x: 0.0, y: -5, z: -5 }),
+    force: ForceConstant * 1.65,
+    color: { x: 0.85, y: 0.65, z: 0.05 }
+  },
+  {
+    name: "01",
+    direction: { x: -0.015, y:  0.010, z: 0.0 },
+    source: add(Source, { x: 0.0, y: -5, z: -5 }),
+    force: ForceConstant / 5.5,
+    color: { x: 0.85, y: 0.65, z: 0.05 }
+  },
+  {
+    name: "10",
+    direction: { x: -0.02, y: -0.01, z: -0.020 },
+    source: add(Source, { x: 0.0, y: -5, z: -5 }),
+    force: ForceConstant * 1.85,
+    color: { x: 0.85, y: 0.65, z: 0.05 }
+  },
+  {
+    name: "11",
+    direction: { x: -0.015, y: -0.01, z: 0.020 },
+    source: add(Source, { x: 0.0, y: -5, z: -5 }),
+    force: ForceConstant ,
+    color: { x: 0.85, y: 0.65, z: 0.05 }
+  }
+];
+writeDataAsset(asymmetricRays, "asymmetric");
+writeMainAsset(asymmetricRays, "asymmetric");
 

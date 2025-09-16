@@ -1,4 +1,5 @@
 asset.require("./symmetric_trails")
+asset.require("./asymmetric_trails")
 local transform = asset.require("./holder")
 
 local HostGalaxy = {
@@ -17,7 +18,8 @@ local HostGalaxy = {
   Renderable = {
     Type = "RenderablePlaneImageLocal",
     Size = 5,
-    Texture = asset.resource("host_galaxy.png")
+    Texture = asset.resource("host_galaxy.png"),
+    BlendMode = "Additive"
   },
   GUI = {
     Name = "Host Galaxy",
@@ -37,7 +39,7 @@ local LensingGalaxy = {
   },
   Renderable = {
     Type = "RenderablePlaneImageLocal",
-    Size = 5,
+    Size = 20,
     Texture = asset.resource("lensing_galaxy.jpg"),
     BlendMode = "Additive"
   },
