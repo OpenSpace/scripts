@@ -223,10 +223,11 @@ writeMainAsset(symmetricRays, "symmetric");
 let asymmetricRays = [
   {
     name: "00",
-    direction: { x: -0.015, y: -0.018, z: -0.01175 },
+    direction: { x: -0.015, y: -0.0145, z: -0.01165 },
     source: add(Source, { x: 0.0, y: -5, z: -5 }),
     target: { x: -Source.x, y: Source.x, z: Source.z },
-    force: ForceConstant * 1.65,
+    extra_force: { x: 0.0, y: -0.00000035, z: -0.00000025 },
+    force: ForceConstant * 1.325,
     color: { x: 0.85, y: 0.65, z: 0.05 }
   },
   {
@@ -240,11 +241,11 @@ let asymmetricRays = [
   },
   {
     name: "10",
-    direction: { x: -0.02, y: -0.01, z: -0.01925 },
+    direction: { x: -0.02, y: -0.01, z: -0.01900 },
     source: add(Source, { x: 0.0, y: -5, z: -5 }),
     target: { x: -Source.x, y: Source.x, z: Source.z },
     force: ForceConstant * 1.85,
-    extra_force: { x: 0.0, y: -0.00000125, z: 0.0 },
+    extra_force: { x: 0.0, y: -0.0000015, z: 0.0 },
     color: { x: 0.85, y: 0.65, z: 0.05 }
   },
   {
@@ -253,7 +254,7 @@ let asymmetricRays = [
     source: add(Source, { x: 0.0, y: -5, z: -5 }),
     target: { x: -Source.x, y: Source.x, z: Source.z },
     force: ForceConstant * 1.85,
-    extra_force: { x: 0.0, y: -0.00000115, z: -0.0000165 },
+    extra_force: { x: 0.0, y: -0.00000095, z: -0.0000155 },
     color: { x: 0.85, y: 0.65, z: 0.05 }
   }
 ];
