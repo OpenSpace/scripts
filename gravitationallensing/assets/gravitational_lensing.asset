@@ -18,7 +18,7 @@ local HostGalaxy = {
   Renderable = {
     Type = "RenderablePlaneImageLocal",
     Size = 5,
-    Texture = asset.resource("host_galaxy.png"),
+    Texture = asset.resource("host_galaxy_filter.png"),
     BlendMode = "Additive"
   },
   GUI = {
@@ -40,7 +40,7 @@ local LensingGalaxy = {
   Renderable = {
     Type = "RenderablePlaneImageLocal",
     Size = 20,
-    Texture = asset.resource("lensing_galaxy.jpg"),
+    Texture = asset.resource("lensing_galaxy_filter.png"),
     BlendMode = "Additive"
   },
   GUI = {
@@ -61,7 +61,8 @@ local Earth = {
   },
   Renderable = {
     Type = "RenderableSphereImageLocal",
-    Texture = asset.resource("earth.jpg")
+    Texture = asset.resource("earth.jpg"),
+    Size = 2.5
   },
   GUI = {
     Name = "Observer",
@@ -72,18 +73,22 @@ local Earth = {
 
 local Flash = {
   Identifier = "GravLensing_Glare",
-  Parent = HostGalaxy.Identifier,
+  Parent = transform.GravLensingHolder.Identifier,
   Transform = {
     Translation = {
       Type = "StaticTranslation",
-      Position = { 1.0, -2.0, -0.1 }
+      Position = { 21.0, 0.0, 0.975 }
+    },
+    Rotation = {
+      Type = "StaticRotation",
+      Rotation = { 0.0, math.pi / 2.0, 0.0 }
     }
   },
   Renderable = {
     Type = "RenderablePlaneImageLocal",
     Size = 2.0,
     Origin = "Center",
-    Texture = asset.resource("supernova.png"),
+    Texture = asset.resource("supernova_filter.png"),
     BlendMode = "Additive",
     Opacity = 1.0
   },
