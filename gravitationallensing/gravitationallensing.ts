@@ -36,7 +36,7 @@ function mult(a: Vector, b: number): Vector {
 }
 
 function raymarch(source: Vector, direction: Vector, forceConstant: number, extra_force: Vector): Vector[] {
-  const MaxSteps = 3000;
+  const MaxSteps = 5000;
   let result: Vector[] = [];
   let position = source;
   let dir = direction;
@@ -223,7 +223,7 @@ writeMainAsset(symmetricRays, "symmetric");
 let asymmetricRays = [
   {
     name: "00",
-    direction: { x: -0.015, y: -0.018, z: -0.0115 },
+    direction: { x: -0.015, y: -0.018, z: -0.01175 },
     source: add(Source, { x: 0.0, y: -5, z: -5 }),
     target: { x: -Source.x, y: Source.x, z: Source.z },
     force: ForceConstant * 1.65,
@@ -231,18 +231,20 @@ let asymmetricRays = [
   },
   {
     name: "01",
-    direction: { x: -0.01, y: 0.009, z: 0.0075 },
+    direction: { x: -0.01, y: 0.003, z: 0.003 },
     source: add(Source, { x: 0.0, y: -5, z: -5 }),
     target: { x: -Source.x, y: Source.x, z: Source.z },
-    force: ForceConstant / 5,
+    force: ForceConstant / 250,
+    // extra_force: { x: 0.0, y: -0.0000015, z: 0.0000005 },
     color: { x: 0.85, y: 0.65, z: 0.05 }
   },
   {
     name: "10",
-    direction: { x: -0.02, y: -0.01, z: -0.019 },
+    direction: { x: -0.02, y: -0.01, z: -0.01925 },
     source: add(Source, { x: 0.0, y: -5, z: -5 }),
     target: { x: -Source.x, y: Source.x, z: Source.z },
     force: ForceConstant * 1.85,
+    extra_force: { x: 0.0, y: -0.00000125, z: 0.0 },
     color: { x: 0.85, y: 0.65, z: 0.05 }
   },
   {
@@ -251,7 +253,7 @@ let asymmetricRays = [
     source: add(Source, { x: 0.0, y: -5, z: -5 }),
     target: { x: -Source.x, y: Source.x, z: Source.z },
     force: ForceConstant * 1.85,
-    extra_force: { x: 0.0, y: 0.0, z: -0.00001 },
+    extra_force: { x: 0.0, y: -0.00000115, z: -0.0000165 },
     color: { x: 0.85, y: 0.65, z: 0.05 }
   }
 ];
