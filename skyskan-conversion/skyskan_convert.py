@@ -4,27 +4,33 @@ import sys
 import math
 
 # Convert DS/DM geometry to OpenSpace
-Latest_Version = 2
 master_resolution = [1280, 720]
 master_fov = { 'left': 30, 'right': 30, 'up': 16.875, 'down': 16.875}
 starting_port = 20400
 
 # Usage information and default values
 if len(sys.argv) < 2:
-    print('Usage: skyskan_convert.py <folder with Display Target Table files> [number of targets per node] [version]')
+    print('Usage: skyskan_convert.py <folder with Display Target Table files> [number of targets per node] [ascending_ips] [default_resolution_x default_resolution_y]')
     exit()
 
 directory = sys.argv[1]
 
-if len(sys.argv) == 3:
+if len(sys.argv) >= 3:
     target_count = int(sys.argv[2])
 else:
     target_count = 1
 
-if len(sys.argv) == 4:
-    version = int(sys.argv[2])
+if len(sys.argv) >= 4:
+    ascending_ips = bool(sys.argv[3])
 else:
-    version = Latest_Version
+    ascending_ips = False
+
+if len(sys.argv) == 6:
+    default_resolution_x = int(sys.argv[4])
+    default_resolution_y = int(sys.argv[5])
+    reuse_resolution = True
+else:
+    reuse_resolution = False
 
 # Parse the passed directory to find all .txt files and only accept those that start with
 # the line
@@ -45,9 +51,9 @@ files.sort()
 
 print('\n')
 try:
-    configuration_name = input('Enter the file name of the XML file that is to be created (default: skyskan.xml)\n') or 'skyskan.xml'
+    configuration_name = input('Enter the file name of the JSON file that is to be created (default: ' + directory + '.json)\n') or directory
 except SyntaxError:
-    configuration_name = 'skyskan.xml'
+    configuration_name = directory + '.json'
 
 print('\n\n')
 while True:
@@ -86,9 +92,9 @@ while True:
 
 
 try:
-    master_ip = input('Enter the IP address of the master node (default: localhost)\n')
+    master_ip = input('Enter the IP address of the master node (default: 192.168.1.100)\n') or '192.168.1.100'
 except SyntaxError:
-    master_ip = 'localhost'
+    master_ip = '192.168.1.100'
 
 print('Master IP: ' + master_ip + '\n')
 
@@ -99,25 +105,34 @@ print('\n\n')
 for node_index in range(node_count):
     node = {}
     print('Node (' + str(node_index) + ')')
-    try:
-        node['ip_address'] = input('Enter IP address (default: localhost): \n') or 'localhost'
-    except SyntaxError:
-        node['ip_address'] = 'localhost'
+    if ascending_ips:
+        ipsplit = master_ip.split('.')
+        last_octet = int(ipsplit[3]) + node_index + 1
+        node['ip_address'] = ipsplit[0] + '.' + ipsplit[1] + '.' + ipsplit[2] + '.' + str(last_octet)
+        print('Assigned IP address: ' + node['ip_address'])
+    else:
+        try:
+            node['ip_address'] = input('Enter IP address (default: localhost): \n') or 'localhost'
+        except SyntaxError:
+            node['ip_address'] = 'localhost'
 
-    try:
-        node['resolutions'] = input('Enter resolution separated by space (default: 2048 1200): \n') or '2048 1200'
-    except SyntaxError:
-        node['resolutions'] = '2048 1200'
-
+    if reuse_resolution:
+        node['resolutions'] = str(default_resolution_x) + ' ' + str(default_resolution_y)
+        print('Reusing resolution: ' + node['resolutions'])
+    else:
+        try:
+            node['resolutions'] = input('Enter resolution separated by space (default: 2048 1200): \n') or '2048 1200'
+        except SyntaxError:
+            node['resolutions'] = '2048 1200'
     resolutions = node['resolutions'].split()
     node['resolution_x'] = int(resolutions[0])
     node['resolution_y'] = int(resolutions[1])
-    node['viewports'] = [];
-    print(node_index)
+    node['viewports'] = []
+    # print(node_index)
     for target_index in range(target_count):
-        print(target_index)
+        # print(target_index)
         file_index = (node_index * target_count) + target_index
-        print(file_index)
+        # print(file_index)
         file = files[file_index]
         print('file (' + file + ')')
         viewport = {}
@@ -197,6 +212,7 @@ for node_index in range(node_count):
             uv_coords = []
             for mesh_line in mesh_data:
                 i = mesh_line.split()
+                # print(mesh_line)
                 if len(i) > 0:
                     vertices.append([i[0], i[1]])
                     uv_coords.append([i[4], str(1.0 - float(i[5]))])
@@ -254,76 +270,96 @@ for node_index in range(node_count):
     nodes.append(node)
     print('------')
 
-current_idx = 0
-# Writing the XML configuration file
-with open(configuration_name, 'w') as f:
-    f.write('<?xml version="1.0" ?>\n')
-    f.write('<Cluster masterAddress="{}">\n'.format(master_ip))
-    f.write('  <!-- Header information -->\n')
-    f.write('  <Settings>\n')
-    f.write('    <Display swapInterval="0" />\n')
-    f.write('  </Settings>\n\n')
-
-    f.write('  <!-- Master Node -->\n')
-    f.write('  <Node address="{}" port="{}">\n'.format(master_ip, starting_port))
-    f.write('    <Window fullScreen="false" name="OpenSpace">\n')
-    f.write('      <Pos x="0" y="0" />\n')
-    f.write('      <Size x="{}" y="{}" />\n'.format(master_resolution[0], master_resolution[1]))
-    f.write('      <Viewport>\n')
-    f.write('        <Pos x="0.0" y="0.0" />\n')
-    f.write('        <Size x="1.0" y="1.0" />\n')
-    f.write('        <PlanarProjection>\n')
-    down = master_fov['down']
-    left = master_fov['left']
-    right = master_fov['right']
-    up = master_fov['up']
-    f.write('          <FOV down="{}" left="{}" right="{}" up="{}" />\n'.format(down, left, right, up))
-    f.write('          <Orientation heading="0.0" pitch="0.0" roll="0.0" />\n')
-    f.write('        </PlanarProjection>\n')
-    f.write('      </Viewport>\n')
-    f.write('    </Window>\n')
-    f.write('  </Node>\n\n')
-
+# Create the JSON configuration file
+json_name = configuration_name + '.json'
+with open(json_name, 'w') as f:
+    #convert xml to json
+    f.write('{\n')
+    f.write('  "Cluster": {\n')
+    f.write('    "masterAddress": "' + master_ip + '",\n')
+    f.write('    "Settings": {\n')
+    f.write('      "Display": {\n')
+    f.write('        "swapInterval": 0\n')
+    f.write('      }\n')
+    f.write('    },\n')
+    f.write('    "Nodes": [\n')
+    f.write('      {\n')
+    f.write('        "address": "' + master_ip + '",\n')
+    f.write('        "port": ' + str(starting_port) + ',\n')
+    f.write('        "windows": [\n')
+    f.write('          {\n')
+    f.write('           "fullscreen": false,\n')
+    f.write('           "border": false,\n')
+    f.write('           "name": "OpenSpace",\n')
+    f.write('           "pos": {"x": 0,"y": 0},\n')
+    f.write('           "size": {"x": ' + str(master_resolution[0]) + ',"y": ' + str(master_resolution[1]) + '},\n')
+    f.write('           "viewports": [\n')
+    f.write('              {\n')
+    f.write('               "pos": {"x": 0.0,"y": 0.0},\n')
+    f.write('               "size": {"x": 1.0,"y": 1.0},\n')
+    f.write('               "FOV": {\n')
+    f.write('                    "down": ' + str(master_fov['down']) + ',\n')
+    f.write('                    "left": ' + str(master_fov['left']) + ',\n')
+    f.write('                    "right": ' + str(master_fov['right']) + ',\n')
+    f.write('                    "up": ' + str(master_fov['up']) + '\n')
+    f.write('               },\n')
+    f.write('               "Orientation": {"heading": 0.0,"pitch": 0.0,"roll": 0.0}\n')
+    f.write('              }\n')
+    f.write('           ]\n')
+    f.write('          }\n')
+    f.write('        ]\n')
+    f.write('      },\n')
     current_idx = 1
     for n in nodes:
-        f.write('  <!-- Node #{} -->\n'.format(current_idx))
-        f.write('  <Node address="{}" port="{}">\n'.format(n['ip_address'], starting_port + current_idx))
+        f.write('      {\n')
+        f.write('        "address": "' + n['ip_address'] + '",\n')
+        f.write('        "port": ' + str(starting_port + current_idx) + ',\n')
+        f.write('        "windows": [\n')
+        f.write('          {\n')
+        f.write('           "fullscreen": false,\n')
+        f.write('           "border": false,\n')
+        f.write('           "name": "#' + str(current_idx) + '",\n')
+        f.write('           "pos": {"x": 0,"y": 0},\n')
+        f.write('           "size": {"x": ' + str(n['resolution_x']) + ',"y": ' + str(n['resolution_y']) + '},\n')
+        f.write('           "viewports": [\n')
         viewport_index = 0
         for vp in n['viewports']:
-            
-            window_x = 0
-            if (viewport_index % 2 == 1):
-                window_x = n['resolution_x']
-            window_y = 0
-            if (viewport_index >= target_count/2):
-                window_y = n['resolution_y']
-            f.write('    <Window fullScreen="true" name="#{}">\n'.format(current_idx))
-            f.write('      <Pos x="{}" y="{}" />\n'.format(window_x, window_y))
-            f.write('      <Size x="{}" y="{}" />\n'.format(n['resolution_x'], n['resolution_y']))
-            f.write('      <Viewport mesh="{}">\n'.format(vp['obj_file']))
-            f.write('        <Pos x="0.0" y="0.0" />\n')
-            f.write('        <Size x="1.0" y="1.0" />\n')
-            f.write('        <PlanarProjection>\n')
-
-            down = vp['down_fov']
-            up = vp['up_fov']
-            left = vp['left_fov']
-            right = vp['right_fov']
-            f.write('          <FOV down="{}" left="{}" right="{}" up="{}" />\n'.format(down, left, right, up))
-
-            heading = vp['azimuth']
-            pitch = vp['elevation']
-            roll = 0.0
-            f.write('          <Orientation heading="{}" pitch="{}" roll="{}" />\n'.format(heading, pitch, roll))
-            f.write('        </PlanarProjection>\n')
-            f.write('      </Viewport>\n')
-            f.write('    </Window>\n')
+            mesh = vp['obj_file']
+            mesh = mesh.replace('\\', '/')
+            f.write('              {\n')
+            f.write('               "mesh": "' + mesh + '",\n')
+            f.write('               "pos": {"x": 0.0,"y": 0.0},\n')
+            f.write('               "size": {"x": 1.0,"y": 1.0},\n')
+            f.write('               "FOV": {\n')
+            f.write('                    "down": ' + str(vp['down_fov']) + ',\n')
+            f.write('                    "left": ' + str(vp['left_fov']) + ',\n')
+            f.write('                    "right": ' + str(vp['right_fov']) + ',\n')
+            f.write('                    "up": ' + str(vp['up_fov']) + '\n')
+            f.write('               },\n')
+            f.write('               "Orientation": {\n')
+            f.write('                    "heading": ' + str(vp['azimuth']) + ',\n')
+            f.write('                    "pitch": ' + str(vp['elevation']) + ',\n')
+            f.write('                    "roll": 0.0\n')
+            f.write('               }\n')
+            f.write('              }\n')
+            if viewport_index < len(n['viewports']) - 1:
+                f.write(',')
+                f.write('\n')
             viewport_index = viewport_index + 1
-        f.write('  </Node>\n\n')
+        f.write('            ]\n') #close viewports
+        f.write('          }\n') #close windows object
+        f.write('        ]\n') #close windows array
+        f.write('      }') #close node
 
+        if current_idx < len(nodes):
+            f.write(',')
+        f.write('\n')
         current_idx = current_idx + 1
-
-    f.write('  <User eyeSeparation="0.065">\n')
-    f.write('    <Pos x="0.0" y="0.0" z="0.0" />\n')
-    f.write('  </User>\n')
-    f.write('</Cluster>\n')
+    f.write('    ],\n')
+    f.write('    "User": {\n')
+    f.write('      "eyeSeparation": 0.065,\n')
+    f.write('      "Pos": {"x": 0.0,"y": 0.0,"z": 0.0}\n')
+    f.write('    }\n')
+    f.write('  }\n')
+    f.write('}\n')
+    print('Configuration file "' + json_name + '" created successfully.')
