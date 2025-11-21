@@ -315,15 +315,19 @@ with open(json_name, 'w') as f:
         f.write('        "address": "' + n['ip_address'] + '",\n')
         f.write('        "port": ' + str(starting_port + current_idx) + ',\n')
         f.write('        "windows": [\n')
-        f.write('          {\n')
-        f.write('           "fullscreen": false,\n')
-        f.write('           "border": false,\n')
-        f.write('           "name": "#' + str(current_idx) + '",\n')
-        f.write('           "pos": {"x": 0,"y": 0},\n')
-        f.write('           "size": {"x": ' + str(n['resolution_x']) + ',"y": ' + str(n['resolution_y']) + '},\n')
-        f.write('           "viewports": [\n')
         viewport_index = 0
         for vp in n['viewports']:
+            window_x = n['resolution_x']
+            window_y = 0
+            if (viewport_index >= target_count/2):
+                window_y = n['resolution_y']
+            f.write('          {\n')
+            f.write('           "fullscreen": false,\n')
+            f.write('           "border": false,\n')
+            f.write('           "name": "#' + str(current_idx) + '",\n')
+            f.write('           "pos": {"x": 0,"y": 0},\n')
+            f.write('           "size": {"x": ' + str(n['resolution_x']) + ',"y": ' + str(n['resolution_y']) + '},\n')
+            f.write('           "viewports": [\n')
             mesh = vp['obj_file']
             mesh = mesh.replace('\\', '/')
             f.write('              {\n')
@@ -342,12 +346,12 @@ with open(json_name, 'w') as f:
             f.write('                    "roll": 0.0\n')
             f.write('               }\n')
             f.write('              }\n')
-            if viewport_index < len(n['viewports']) - 1:
-                f.write(',')
-                f.write('\n')
             viewport_index = viewport_index + 1
-        f.write('            ]\n') #close viewports
-        f.write('          }\n') #close windows object
+            f.write('            ]\n') #close viewports
+            f.write('          }') #close windows object
+            if viewport_index < len(n['viewports']):
+                f.write(',')
+            f.write('\n')
         f.write('        ]\n') #close windows array
         f.write('      }') #close node
 
