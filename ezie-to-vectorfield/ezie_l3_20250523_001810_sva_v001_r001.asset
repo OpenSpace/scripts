@@ -1,0 +1,61 @@
+local colormaps = asset.require("util/default_colormaps")
+local earth = asset.require("scene/solarsystem/planets/earth/earth")
+
+local Node = {
+  Identifier = "ezie_l3_20250523_001810_sva_v001_r001_80km",
+  Parent = earth.Earth.Identifier,
+  Renderable = {
+    Type = "RenderableVectorField",
+    Mode = "Sparse",
+    VectorFieldScale = 8.0,
+    Sparse = {
+      FilePath = asset.resource("ezie_l3_20250523_001810_sva_v001_r001_80.csv")
+    },
+    Coloring = {
+      ColorMode = "Magnitude";
+      ColorMap = colormaps.Uniform.Viridis,
+      FixedColor = { 1.0, 0.7, 0.5, 1.0 }
+    },
+    RenderBinMode = "PostDeferredTransparent"
+  },
+  GUI = {
+    Name = "001810 SVA v001 r001 80km",
+    Path = "/EZIE L3/20250523",
+  }
+}
+
+local Node2 = {
+  Identifier = "ezie_l3_20250523_001810_sva_v001_r001_110km",
+  Parent = earth.Earth.Identifier,
+  Renderable = {
+    Type = "RenderableVectorField",
+    Mode = "Sparse",
+    VectorFieldScale = 8.0,
+    Sparse = {
+      FilePath = asset.resource("ezie_l3_20250523_001810_sva_v001_r001_110.csv")
+    },
+    Coloring = {
+      ColorMode = "Direction";
+      ColorMap = colormaps.Uniform.Viridis,
+      FixedColor = { 1.0, 0.7, 0.5, 1.0 }
+    },
+    RenderBinMode = "PostDeferredTransparent"
+  },
+  GUI = {
+    Name = "001810 SVA v001 r001 110km",
+    Path = "/EZIE L3/20250523",
+  }
+}
+
+
+asset.onInitialize(function()
+  openspace.addSceneGraphNode(Node)
+  openspace.addSceneGraphNode(Node2)
+end)
+
+asset.onDeinitialize(function()
+    openspace.removeSceneGraphNode(Node)
+    openspace.removeSceneGraphNode(Node2)
+end)
+
+
