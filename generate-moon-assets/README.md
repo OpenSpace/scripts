@@ -16,12 +16,12 @@ All objects are parented to `SaturnBarycenter` and placed under `/Solar System/P
 
 The script contains two ID blocks mapping provisional moon designations to SPICE kernel IDs:
 
-| Block | IDs | SPICE Kernel | Description |
-|-------|-----|--------------|-------------|
-| `id_block2` | 65094 -- 65157 | `kernels454` (SAT453) | May 2023 discoveries |
-| `id_block` | 65158 -- 65285 | `kernels455` | March 2025 discoveries |
+| Block       | IDs            | SPICE Kernel          | Description            |
+| ----------- | -------------- | --------------------- | ---------------------- |
+| `id_block2` | 65094 -- 65157 | `kernels454` (SAT453) | May 2023 discoveries   |
+| `id_block`  | 65158 -- 65285 | `kernels455`          | March 2025 discoveries |
 
-The active block (`id_block`, parsed on line 225) is split into two output files to keep asset sizes manageable (e.g. `march_2025_discoveries-1.asset` and `march_2025_discoveries-2.asset`). To switch batches, change line 225 to parse `id_block2` instead.
+The selected block is split into two output files to keep asset sizes manageable (e.g. `march_2025_discoveries-1.asset` and `march_2025_discoveries-2.asset`). To switch batches, update the `generate_assets` call at the bottom of the script to use `id_block2`, `kernels454`, `may2023`, and a matching output filename.
 
 ### `lookuptable.py`
 

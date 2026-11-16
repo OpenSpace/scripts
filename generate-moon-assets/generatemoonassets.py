@@ -201,8 +201,8 @@ id_block = """
 def may2023(kernel, nBodies):
   return f"""
 asset.meta = {{
-  Name = "Saturn Spice Kernels ({kernel} - May 2023 Discoveries)",
-  Description = [[{nBodies} newly discovered satellites [65094-65098], 65100-65157]
+  Name = "Saturn Moon Assets ({kernel} - May 2023 Discoveries)",
+  Description = [[Renderable assets for {nBodies} newly discovered Saturn moons [65094-65098], 65100-65157]
     based on the SAT453 solution from R. Jacobson (JPL).]],
   Author = "OpenSpace Team",
   URL = "https://naif.jpl.nasa.gov/pub/naif/pds/wgc/kernels/spk/",
@@ -213,16 +213,14 @@ asset.meta = {{
 def march2025(kernel, nBodies):
   return f"""
 asset.meta = {{
-  Name = \"Saturn Spice Kernels ({kernel} - March 2025 Discoveries)\",
-  Description = [[SPICE kernels for {nBodies} Saturn moons discovered and announced March 2025.
+  Name = \"Saturn Moon Assets ({kernel} - March 2025 Discoveries)\",
+  Description = [[Renderable assets for {nBodies} Saturn moons discovered and announced March 2025.
     (M. Brozović & R. A. Jacobson, JPL, Apr 2025)]],
   Author = "OpenSpace Team",
   URL = "https://naif.jpl.nasa.gov/pub/naif/pds/wgc/kernels/spk/",
   License = "NASA"
 }}
 """
-
-ids = dict(re.findall(r"(\w+)\s*=\s*(\d+)", id_block))
 
 def format_gui_name(name):
     match = re.match(r"S(\d{4})S0?(\d+)", name)
@@ -250,11 +248,11 @@ def get_radius(name):
 
 
 # ---- Body generator ----
-def generate_body(name, kernel, orbit_time, radius):
+def generate_body(name, spice_id, orbit_time, radius):
 
     group = get_group(name)
     gui_name = format_gui_name(name)
-    path = f"/Solar System/Planets/Saturn/Minor Moons/{group} Group/{name}"
+    path = f"/Solar System/Planets/Saturn/Minor Moons/{group} Group"
 
     return f"""
 local {name} = {{
@@ -263,7 +261,7 @@ local {name} = {{
   Transform = {{
     Translation = {{
       Type = "SpiceTranslation",
-      Target = {kernel}.ID.{name},
+      Target = {spice_id},
       Observer = coreKernels.ID.SaturnBarycenter
     }}
   }},
@@ -284,7 +282,7 @@ local {name}Trail = {{
     Type = "RenderableTrailOrbit",
     Translation = {{
       Type = "SpiceTranslation",
-      Target = {kernel}.ID.{name},
+      Target = {spice_id},
       Observer = coreKernels.ID.SaturnBarycenter
     }},
     Color = {{ 0.5, 0.3, 0.3 }},
@@ -332,10 +330,7 @@ def generate_deinitialize(name):
   openspace.removeSceneGraphNode({name})
 """
 
-kernel = "kernels454" if len(ids.keys()) <= 63 else "kernels455"
-nBodies = str(len(ids.keys()))
-
-def print_ids(selected_ids, filename):
+def write_asset_file(ids, selected_ids, filename, kernel, metadata):
     # ---- Write full asset file ----
     with open(filename + ".asset", "w", encoding="utf-8") as f:
         f.write(f"""
@@ -348,7 +343,7 @@ local coreKernels = asset.require("spice/core")
         for name in selected_ids:
             orbit_time = get_orbit_time(name)
             radius = get_radius(name)
-            f.write(generate_body(name, kernel, orbit_time, radius))
+            f.write(generate_body(name, ids[name], orbit_time, radius))
 
         # Kernel calls + export
         f.write(f"""
@@ -377,16 +372,23 @@ local coreKernels = asset.require("spice/core")
             f.write(f"asset.export({name}Trail)\n")
             f.write(f"asset.export({name}Label)\n\n")
 
-        metadata = may2023(kernel, nBodies) if ids.keys().__len__() <= 63 else march2025(kernel, nBodies)
-        f.write(metadata)
+        f.write(metadata(kernel, str(len(selected_ids))))
 
-filename = "may_2023_discoveries" if len(ids.keys()) <= 63 else "march_2025_discoveries"
+def generate_assets(id_block, kernel, metadata, filename):
+    ids = {
+        name: int(spice_id)
+        for name, spice_id in re.findall(r"(\w+)\s*=\s*(\d+)", id_block)
+    }
+    names = list(ids)
+    midpoint = len(names) // 2
+    batches = (names[:midpoint], names[midpoint:])
 
-keys_list = list(ids.keys())
-mid = len(keys_list) // 2
-print_ids(keys_list[:mid], filename + "-1")
-print_ids(keys_list[mid:], filename + "-2")
+    for index, selected_ids in enumerate(batches, start=1):
+        write_asset_file(ids, selected_ids, f"{filename}-{index}", kernel, metadata)
 
-print("Full asset file generated: " + filename)
-print("Generated bodies for:" + nBodies + " moons")
+    print(f"Full asset files generated: {filename}-1.asset and {filename}-2.asset")
+    print(f"Generated bodies for: {len(ids)} moons")
+
+if __name__ == "__main__":
+    generate_assets(id_block, "kernels455", march2025, "march_2025_discoveries")
 

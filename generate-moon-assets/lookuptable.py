@@ -287,9 +287,6 @@ saturn_moons = {
     "S/2020 S 2":   {"group": "Norse (Mundilfari)",           "orbital_period_days": -891.86,    "diameter_km": 3.0},
 }
 
-# Note: Negative orbital periods indicate retrograde orbits.
-# Diameter values are approximate for most irregular/provisional moons.
-
 if __name__ == "__main__":
     # Example lookup
     name = "Titan"
