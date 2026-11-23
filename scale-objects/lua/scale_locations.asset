@@ -1,0 +1,605 @@
+-- Shared runtime code and settings for every scale-location set (US states,
+-- countries, ...). A set is split into a few group assets (e.g. Northeast States) only
+-- to keep the number of asset files down.
+--
+-- A region (a state, a country) is a transform-only anchor node with up to three models
+-- as children: Fill, Grid and Outline. Which of them are shown is decided at runtime by
+-- three UserProperties, set through the actions below. The placement actions read
+-- these properties when they fade a region in, and the Enable/Disable actions update
+-- regions already on screen.
+--
+-- Group assets only hold data (their regions and look) and call `createRegions`, so
+-- all the logic lives here instead of being repeated in every group.
+
+local Parts = { "Fill", "Grid", "Outline" }
+
+local Settings = {
+  Fill = { Id = "ScaleLocationFills", Name = "Scale location fills" },
+  Grid = { Id = "ScaleLocationGrids", Name = "Scale location grids" },
+  Outline = { Id = "ScaleLocationOutlines", Name = "Scale location outlines" }
+}
+
+-- Regions currently shown, by anchor node identifier (e.g. "Scale_US_Texas"), so the
+-- Enable actions know where to fade a part in.
+local Shown = { Id = "ScaleLocationsShown", Name = "Scale locations shown" }
+
+-- Height of every region's anchor above the terrain at its center, in meters. Terrain
+-- higher than the anchor (mountains, Tharsis on Mars) hides parts of a region; raising
+-- the regions is the fix, since drawing them without depth testing would let them show
+-- through the planet.
+local Altitude = {
+  Id = "ScaleLocationAltitude",
+  Name = "Scale location height",
+  Default = 500.0,
+  Step = 2000.0
+}
+
+-- Whether regions are squashed vertically to follow the curvature of the globe they are
+-- placed on (true), or keep the curvature they were built with (scale 1, true to Earth).
+local Curvature = {
+  Id = "ScaleLocationFitCurvature",
+  Name = "Fit scale locations to globe curvature"
+}
+
+-- Radius (m) of the sphere every model is curved for (REFERENCE_RADIUS in generate.py).
+local ReferenceRadius = 6371008.8
+
+local GuiPath = "/Scale Objects/Settings"
+local Tag = "scale_location"
+local AnchorTag = "scale_location_anchor"
+
+local function settingUri(part)
+  return "UserProperties." .. Settings[part].Id
+end
+
+local ShownUri = "UserProperties." .. Shown.Id
+local AltitudeUri = "UserProperties." .. Altitude.Id
+local CurvatureUri = "UserProperties." .. Curvature.Id
+
+local function partTag(part)
+  return Tag .. "_" .. string.lower(part)
+end
+
+
+-- Moves every region anchor to the altitude setting (runs when the setting changes).
+local ApplyAltitude = string.format([[
+  local anchors = %q
+  if #openspace.property(anchors) > 0 then
+    openspace.setPropertyValue(anchors, openspace.propertyValue(%q), 0.5)
+  end
+]], "{" .. AnchorTag .. "}.Translation.Altitude", AltitudeUri)
+
+
+--------------------------------------------------------------------------------------
+-- Command builders. Actions run in the global scope, so everything a command needs is
+-- baked into its string.
+--------------------------------------------------------------------------------------
+
+-- Lua snippet that rewrites the shown list: drops every entry for which the Lua
+-- expression `dropExpr` (using the variable `v`) is true, then appends `addExpr`.
+local function updateShownSnippet(dropExpr, addExpr)
+  return string.format([[
+    do
+      local shown = {}
+      for _, v in ipairs(openspace.propertyValue(%q)) do
+        if not (%s) then
+          table.insert(shown, v)
+        end
+      end
+      %s
+      openspace.setPropertyValueSingle(%q, shown)
+    end
+  ]], ShownUri, dropExpr, addExpr and ("table.insert(shown, " .. addExpr .. ")") or "", ShownUri)
+end
+
+-- Command that moves a region onto a globe and fades in the parts enabled in the
+-- settings.
+--   base:            the region's anchor node identifier
+--   name:            display name, for warnings
+--   target:          Lua expression for the globe to show it on
+--   move:            Lua code that positions the anchor node
+--   referenceRadius: radius (m) of the sphere the models were curved for
+--
+-- The models are curved for `referenceRadius`. Scaling them vertically by
+-- referenceRadius / globe radius gives (very nearly) the globe's curvature, so the same
+-- models work on any RenderableGlobe. The globe radius comes from its interaction sphere.
+local function showCommand(base, name, target, move, referenceRadius)
+  local settings = {}
+  for _, part in ipairs(Parts) do
+    table.insert(settings, string.format("%s = %q", part, settingUri(part)))
+  end
+  return string.format([[
+    local base = %q
+    local target = %s
+    local typeUri = "Scene." .. tostring(target) .. ".Renderable.Type"
+    if not openspace.hasProperty(typeUri) or
+       openspace.propertyValue(typeUri) ~= "RenderableGlobe"
+    then
+      openspace.printWarning(%q .. " can only be placed on a globe, not " .. tostring(target))
+      return
+    end
+    %s
+    local squash = 1.0
+    if openspace.propertyValue(%q) then
+      squash = %f / openspace.interactionSphere(target)
+    end
+    openspace.setPropertyValueSingle("Scene." .. base .. ".Scale.Scale", { 1.0, squash, 1.0 })
+    local settings = { %s }
+    for part, setting in pairs(settings) do
+      local r = "Scene." .. base .. "_" .. part .. ".Renderable"
+      if openspace.hasProperty(r .. ".Enabled") then
+        if openspace.propertyValue(setting) then
+          openspace.fadeIn(r)
+        else
+          openspace.fadeOut(r)
+        end
+      end
+    end
+    %s
+  ]],
+    base, target, name, move, CurvatureUri, referenceRadius, table.concat(settings, ", "),
+    updateShownSnippet("v == base", "base")
+  )
+end
+
+-- Code that moves a region to the camera, turned so its north points to the top of the
+-- screen.
+--   lookAt = false: the point straight below the camera
+--   lookAt = true:  the point the center of the view is looking at
+--
+-- Everything comes from the navigation state, whose Position and Up are in the anchor's
+-- body-fixed frame. Its view direction is the "neutral" view (from the camera to the
+-- anchor's center, with Up) turned by Pitch (up) and Yaw (right). The view ray is
+-- intersected with a sphere through the ground below the camera, so the hit point is
+-- off by the difference in terrain height, which is small for a region-sized target.
+-- Latitudes from the body-fixed vectors are geocentric; the offset to the geodetic
+-- latitude the globe uses is taken from the camera's own position and applied to the
+-- target, which is exact enough near the camera even on Earth.
+--
+-- The heading is that of the camera's up vector at the target point. GlobeRotation's
+-- Angle turns the model's north towards the west, hence the minus sign.
+local function cameraMove(base, name, lookAt)
+  return string.format([[
+    local nav = openspace.navigation.getNavigationState()
+    local p, u = nav.Position, nav.Up
+    local function dot(a, b) return a[1] * b[1] + a[2] * b[2] + a[3] * b[3] end
+    local function scaled(a, s) return { a[1] * s, a[2] * s, a[3] * s } end
+    local function unit(a) return scaled(a, 1.0 / math.sqrt(dot(a, a))) end
+    local camLat, camLon, camAlt = table.unpack(
+      openspace.globebrowsing.geoPositionForCamera(false)
+    )
+    local lookAt = %s
+    local hasFrame = not nav.ReferenceFrame or nav.ReferenceFrame == nav.Anchor
+    local hasAim = nav.Aim and nav.Aim ~= "" and nav.Aim ~= nav.Anchor
+    if lookAt and (not p or not u or not hasFrame or hasAim) then
+      openspace.printWarning(
+        "Can't tell where the camera is looking; placing " .. %q .. " under the camera"
+      )
+      lookAt = false
+    end
+
+    local n = unit(p)
+    local lat = camLat
+    local lon = camLon
+    if lookAt then
+      local f = scaled(n, -1.0)
+      local up = unit({ u[1] - dot(u, f) * f[1], u[2] - dot(u, f) * f[2],
+                        u[3] - dot(u, f) * f[3] })
+      local right = { f[2] * up[3] - f[3] * up[2], f[3] * up[1] - f[1] * up[3],
+                      f[1] * up[2] - f[2] * up[1] }
+      local yaw, pitch = nav.Yaw or 0.0, nav.Pitch or 0.0
+      local cf = math.cos(pitch) * math.cos(yaw)
+      local cu = math.sin(pitch)
+      local cr = math.cos(pitch) * math.sin(yaw)
+      local d = { cf * f[1] + cu * up[1] + cr * right[1],
+                  cf * f[2] + cu * up[2] + cr * right[2],
+                  cf * f[3] + cu * up[3] + cr * right[3] }
+      local l = math.sqrt(dot(p, p))
+      local ground = l - camAlt
+      local b = dot(p, d)
+      local disc = b * b - (l * l - ground * ground)
+      local t = disc >= 0 and (-b - math.sqrt(disc)) or -1
+      if t <= 0 then
+        openspace.printWarning(
+          "The camera is not looking at the ground; " .. %q .. " was not moved"
+        )
+        do return end
+      end
+      local hit = unit({ p[1] + t * d[1], p[2] + t * d[2], p[3] + t * d[3] })
+      local function gcLat(v) return math.deg(math.asin(math.max(-1, math.min(1, v[3])))) end
+      lat = math.max(-89.999, math.min(89.999, gcLat(hit) + camLat - gcLat(n)))
+      lon = math.deg(math.atan(hit[2], hit[1]))
+      n = hit
+    end
+
+    local angle = 0.0
+    local h = math.sqrt(n[1] * n[1] + n[2] * n[2])
+    if u and h > 1e-6 then
+      local east = { -n[2] / h, n[1] / h, 0.0 }
+      local north = { -n[3] * n[1] / h, -n[3] * n[2] / h, h }
+      local ue, un = dot(u, east), dot(u, north)
+      if ue * ue + un * un > 1e-12 then
+        angle = -math.deg(math.atan(ue, un))
+      end
+    end
+    openspace.setPropertyValueSingle("Scene.%s.Rotation.Angle", angle)
+    openspace.globebrowsing.setNodePosition(%q, target, lat, lon)
+  ]], tostring(lookAt), name, name, base, base)
+end
+
+-- Command that hides one region.
+local function hideCommand(base)
+  return string.format([[
+    openspace.fadeOut(%q)
+    %s
+  ]], "Scene." .. base .. "_*.Renderable", updateShownSnippet(string.format("v == %q", base), nil))
+end
+
+--------------------------------------------------------------------------------------
+-- Region groups
+--------------------------------------------------------------------------------------
+
+-- Builds the scene graph nodes and actions for a group of regions. Groups only split a
+-- set into fewer, larger asset files; they have no runtime meaning. Call `addRegions`
+-- and `removeRegions` with the result from the group asset's onInitialize and
+-- onDeinitialize.
+--
+-- spec = {
+--   Prefix          -- start of every identifier in the set, e.g. "Scale_US"
+--   GuiPath         -- e.g. "/Scale Objects/US States"
+--   Globe           -- globe the regions start on (their real location)
+--   LightSource     -- light source for the models
+--   ReferenceRadius -- radius (m) of the sphere the models were curved for
+--   Resource        -- function(file) -> absolute path of a model file
+--   Parts           -- { Fill = {renderable settings}, Grid = {...}, Outline = {...} }
+--   Regions         -- { { Key, Name, Latitude, Longitude, Description,
+--                          Models = { Fill = file, Grid = file, Outline = file } }, ... }
+--   StartEnabled    -- optional, show the models right away (for testing)
+-- }
+local function createRegions(spec)
+  if math.abs(spec.ReferenceRadius - ReferenceRadius) > 1.0 then
+    openspace.printWarning(string.format(
+      "%s models are curved for %.1f m but the curvature actions assume %.1f m",
+      spec.Prefix, spec.ReferenceRadius, ReferenceRadius
+    ))
+  end
+  local nodes = {}
+  local actions = {}
+
+  for _, region in ipairs(spec.Regions) do
+    local base = spec.Prefix .. "_" .. region.Key
+    local guiPath = spec.GuiPath .. "/" .. region.Name
+
+    table.insert(nodes, {
+      Identifier = base,
+      Parent = spec.Globe,
+      Transform = {
+        Translation = {
+          Type = "GlobeTranslation",
+          Globe = spec.Globe,
+          Latitude = region.Latitude,
+          Longitude = region.Longitude,
+          Altitude = Altitude.Default,
+          UseHeightmap = true
+        },
+        Rotation = {
+          Type = "GlobeRotation",
+          Globe = spec.Globe,
+          Latitude = region.Latitude,
+          Longitude = region.Longitude
+        },
+        -- Y is up. Set from the target globe's radius whenever the region is placed.
+        Scale = {
+          Type = "NonUniformStaticScale",
+          Scale = { 1.0, 1.0, 1.0 }
+        }
+      },
+      Tag = { AnchorTag },
+      GUI = { Name = region.Name, Path = guiPath, Hidden = true }
+    })
+
+    for _, part in ipairs(Parts) do
+      local file = region.Models[part]
+      if file then
+        local renderable = {
+          Type = "RenderableModel",
+          GeometryFile = spec.Resource(file),
+          Enabled = spec.StartEnabled or false,
+          EnableFaceCulling = false,
+          LightSources = { spec.LightSource }
+        }
+        for k, v in pairs(spec.Parts[part] or {}) do
+          renderable[k] = v
+        end
+        table.insert(nodes, {
+          Identifier = base .. "_" .. part,
+          Parent = base,
+          Renderable = renderable,
+          Tag = { Tag, partTag(part) },
+          GUI = {
+            Name = region.Name .. " " .. part,
+            Description = region.Description,
+            Path = guiPath,
+            Focusable = false
+          }
+        })
+      end
+    end
+
+    table.insert(actions, {
+      Identifier = "os.scalelocations." .. base .. ".ShowUnderCamera",
+      Name = "Show " .. region.Name .. " under camera",
+      Command = showCommand(
+        base, region.Name,
+        "openspace.navigation.getNavigationState().Anchor",
+        cameraMove(base, region.Name, false),
+        spec.ReferenceRadius
+      ),
+      Documentation = "Moves " .. region.Name .. " to the point under the camera on the " ..
+        "globe the camera is anchored to, turned so its north is at the top of the " ..
+        "screen, and fades it in",
+      GuiPath = guiPath,
+      IsLocal = false
+    })
+    table.insert(actions, {
+      Identifier = "os.scalelocations." .. base .. ".ShowWhereLooking",
+      Name = "Show " .. region.Name .. " where the camera is looking",
+      Command = showCommand(
+        base, region.Name,
+        "openspace.navigation.getNavigationState().Anchor",
+        cameraMove(base, region.Name, true),
+        spec.ReferenceRadius
+      ),
+      Documentation = "Moves " .. region.Name .. " to the point in the center of the " ..
+        "view on the globe the camera is anchored to, turned so its north is at the top " ..
+        "of the screen, and fades it in. Does nothing if the view is not on the ground",
+      GuiPath = guiPath,
+      IsLocal = false
+    })
+    table.insert(actions, {
+      Identifier = "os.scalelocations." .. base .. ".ShowAtHome",
+      Name = "Show " .. region.Name .. " at its real location",
+      Command = showCommand(
+        base, region.Name,
+        string.format("%q", spec.Globe),
+        string.format(
+          [[openspace.setPropertyValueSingle("Scene.%s.Rotation.Angle", 0.0)
+          openspace.globebrowsing.setNodePosition(%q, %q, %f, %f)]],
+          base, base, spec.Globe, region.Latitude, region.Longitude
+        ),
+        spec.ReferenceRadius
+      ),
+      Documentation = "Moves " .. region.Name .. " back to its real location and fades it in",
+      GuiPath = guiPath,
+      IsLocal = false
+    })
+    table.insert(actions, {
+      Identifier = "os.scalelocations." .. base .. ".Hide",
+      Name = "Hide " .. region.Name,
+      Command = hideCommand(base),
+      Documentation = "Fades out " .. region.Name,
+      GuiPath = guiPath,
+      IsLocal = false
+    })
+  end
+
+  return { Nodes = nodes, Actions = actions }
+end
+
+local function addRegions(set)
+  local altitude = openspace.propertyValue(AltitudeUri)
+  for _, node in ipairs(set.Nodes) do
+    if node.Transform then
+      node.Transform.Translation.Altitude = altitude
+    end
+    openspace.addSceneGraphNode(node)
+  end
+  for _, action in ipairs(set.Actions) do
+    openspace.action.registerAction(action)
+  end
+end
+
+local function removeRegions(set)
+  for i = #set.Actions, 1, -1 do
+    openspace.action.removeAction(set.Actions[i])
+  end
+  for i = #set.Nodes, 1, -1 do
+    openspace.removeSceneGraphNode(set.Nodes[i])
+  end
+end
+
+
+--------------------------------------------------------------------------------------
+-- Settings actions
+--------------------------------------------------------------------------------------
+
+local Actions = {}
+
+for _, part in ipairs(Parts) do
+  local s = Settings[part]
+  table.insert(Actions, {
+    Identifier = "os.scalelocations.Enable" .. part,
+    Name = "Enable " .. string.lower(s.Name),
+    Command = string.format([[
+      openspace.setPropertyValueSingle(%q, true)
+      for _, v in ipairs(openspace.propertyValue(%q)) do
+        local r = "Scene." .. v .. "_" .. %q .. ".Renderable"
+        if openspace.hasProperty(r .. ".Enabled") then
+          openspace.fadeIn(r)
+        end
+      end
+    ]], settingUri(part), ShownUri, part),
+    Documentation = "Shows the " .. string.lower(part) .. " of scale locations, both " ..
+      "on regions already shown and on those placed later",
+    GuiPath = GuiPath,
+    IsLocal = false
+  })
+  table.insert(Actions, {
+    Identifier = "os.scalelocations.Disable" .. part,
+    Name = "Disable " .. string.lower(s.Name),
+    Command = string.format([[
+      openspace.setPropertyValueSingle(%q, false)
+      local tagged = %q
+      if #openspace.property(tagged .. ".Enabled") > 0 then
+        openspace.fadeOut(tagged)
+      end
+    ]], settingUri(part), "{" .. partTag(part) .. "}.Renderable"),
+    Documentation = "Hides the " .. string.lower(part) .. " of all scale locations, " ..
+      "now and for regions placed later",
+    GuiPath = GuiPath,
+    IsLocal = false
+  })
+end
+
+table.insert(Actions, {
+  Identifier = "os.scalelocations.Raise",
+  Name = "Raise scale locations",
+  Command = string.format(
+    "openspace.setPropertyValueSingle(%q, openspace.propertyValue(%q) + %f)",
+    AltitudeUri, AltitudeUri, Altitude.Step
+  ),
+  Documentation = string.format(
+    "Raises all scale locations %.0f m further above the surface, for terrain that " ..
+    "hides parts of them", Altitude.Step
+  ),
+  GuiPath = GuiPath,
+  IsLocal = false
+})
+table.insert(Actions, {
+  Identifier = "os.scalelocations.Lower",
+  Name = "Lower scale locations",
+  Command = string.format(
+    "openspace.setPropertyValueSingle(%q, math.max(0.0, openspace.propertyValue(%q) - %f))",
+    AltitudeUri, AltitudeUri, Altitude.Step
+  ),
+  Documentation = string.format("Lowers all scale locations by %.0f m", Altitude.Step),
+  GuiPath = GuiPath,
+  IsLocal = false
+})
+table.insert(Actions, {
+  Identifier = "os.scalelocations.ResetHeight",
+  Name = "Reset scale location height",
+  Command = string.format("openspace.setPropertyValueSingle(%q, %f)", AltitudeUri, Altitude.Default),
+  Documentation = string.format(
+    "Puts all scale locations back to %.0f m above the surface", Altitude.Default
+  ),
+  GuiPath = GuiPath,
+  IsLocal = false
+})
+-- Switches the curvature setting and rescales the regions already shown, each for the
+-- globe it is on (its GlobeTranslation's Globe).
+local function curvatureCommand(fit)
+  return string.format([[
+    local fit = %s
+    openspace.setPropertyValueSingle(%q, fit)
+    for _, v in ipairs(openspace.propertyValue(%q)) do
+      local globe = openspace.propertyValue("Scene." .. v .. ".Translation.Globe")
+      local squash = fit and (%f / openspace.interactionSphere(globe)) or 1.0
+      openspace.setPropertyValue("Scene." .. v .. ".Scale.Scale", { 1.0, squash, 1.0 }, 0.5)
+    end
+  ]], tostring(fit), CurvatureUri, ShownUri, ReferenceRadius)
+end
+
+table.insert(Actions, {
+  Identifier = "os.scalelocations.FitCurvature",
+  Name = "Fit scale locations to globe curvature",
+  Command = curvatureCommand(true),
+  Documentation = "Squashes scale locations vertically so they follow the curvature of " ..
+    "the globe they are on (the default). Their area stays true",
+  GuiPath = GuiPath,
+  IsLocal = false
+})
+table.insert(Actions, {
+  Identifier = "os.scalelocations.EarthCurvature",
+  Name = "Keep scale locations at Earth curvature",
+  Command = curvatureCommand(false),
+  Documentation = "Shows scale locations unscaled, with the curvature of Earth they were " ..
+    "built with. On smaller globes their edges then rise above the surface",
+  GuiPath = GuiPath,
+  IsLocal = false
+})
+
+table.insert(Actions, {
+  Identifier = "os.scalelocations.HideAll",
+  Name = "Hide all scale locations",
+  Command = string.format([[
+    local tagged = %q
+    if #openspace.property(tagged .. ".Enabled") > 0 then
+      openspace.fadeOut(tagged)
+    end
+    openspace.setPropertyValueSingle(%q, {})
+  ]], "{" .. Tag .. "}.Renderable", ShownUri),
+  Documentation = "Fades out every scale location of every set",
+  GuiPath = "/Scale Objects",
+  IsLocal = false
+})
+
+
+asset.onInitialize(function()
+  for _, part in ipairs(Parts) do
+    local s = Settings[part]
+    if not openspace.hasProperty(settingUri(part)) then
+      openspace.addCustomProperty(
+        s.Id, "BoolProperty", s.Name,
+        "Whether the " .. string.lower(part) .. " model is shown when a scale " ..
+        "location is placed"
+      )
+      openspace.setPropertyValueSingle(settingUri(part), true)
+    end
+  end
+  if not openspace.hasProperty(AltitudeUri) then
+    openspace.addCustomProperty(
+      Altitude.Id, "DoubleProperty", Altitude.Name,
+      "Height in meters of all scale locations above the terrain at their center. " ..
+      "Raise it when terrain hides parts of a region.",
+      ApplyAltitude
+    )
+    openspace.setPropertyValueSingle(AltitudeUri, Altitude.Default)
+  end
+  if not openspace.hasProperty(CurvatureUri) then
+    openspace.addCustomProperty(
+      Curvature.Id, "BoolProperty", Curvature.Name,
+      "Whether scale locations are squashed vertically to follow the curvature of the " ..
+      "globe they are placed on, instead of keeping Earth's curvature"
+    )
+    openspace.setPropertyValueSingle(CurvatureUri, true)
+  end
+  if not openspace.hasProperty(ShownUri) then
+    openspace.addCustomProperty(
+      Shown.Id, "StringListProperty", Shown.Name,
+      "Scale locations currently shown (managed by the scale location actions)"
+    )
+  end
+
+  for _, action in ipairs(Actions) do
+    openspace.action.registerAction(action)
+  end
+end)
+
+asset.onDeinitialize(function()
+  for i = #Actions, 1, -1 do
+    openspace.action.removeAction(Actions[i])
+  end
+  openspace.removeCustomProperty(Shown.Id)
+  openspace.removeCustomProperty(Altitude.Id)
+  openspace.removeCustomProperty(Curvature.Id)
+  for _, part in ipairs(Parts) do
+    openspace.removeCustomProperty(Settings[part].Id)
+  end
+end)
+
+
+asset.export("createRegions", createRegions)
+asset.export("addRegions", addRegions)
+asset.export("removeRegions", removeRegions)
+
+
+asset.meta = {
+  Name = "Scale Locations - Settings",
+  Description = [[Runtime code and settings shared by all scale-location groups: whether
+    region fills, grids and outlines are shown, how high regions sit above the terrain,
+    plus actions to change these and to hide every scale location.]],
+  Author = "OpenSpace Team",
+  URL = "https://openspaceproject.com",
+  License = "MIT license"
+}

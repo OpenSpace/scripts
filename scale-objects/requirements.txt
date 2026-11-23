@@ -1,0 +1,6 @@
+numpy
+shapely>=2.0
+mapbox_earcut
+pyshp
+pillow
+matplotlib
