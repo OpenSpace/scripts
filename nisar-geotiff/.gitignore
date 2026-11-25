@@ -1,0 +1,19 @@
+# Large inputs and generated rasters: not committed.
+.venv/
+__pycache__/
+*.h5
+*.tif
+*.tiff
+*.vrt
+*.info
+*.png
+*.gif
+data/
+100pers/
+100persFixedStretch/
+5pers/
+color_experiments/
+differences/
+farm/
+notused/
+sutton/
