@@ -1,0 +1,7 @@
+# Inputs downloaded from github.com/thomasorb/M1_paper and the Hubble/JWST reference images: not committed.
+# (Their provenance and the upstream license text are kept in tracked files instead: sitelle_crab.py writes
+# output/SOURCE.txt, output/NOTICE.txt and output/LICENSE, and LICENSE_M1_paper.txt is the license text.)
+data/
+__pycache__/
+dist/
+output/

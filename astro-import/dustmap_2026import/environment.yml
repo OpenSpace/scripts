@@ -1,0 +1,11 @@
+﻿name: dustmap
+channels:
+  - conda-forge
+dependencies:
+  - numpy
+  - astropy
+  - python=3.12
+  - healpy
+  - h5py
+  - matplotlib
+  - scipy
