@@ -52,6 +52,7 @@ region: raise the regions rather than drawing through the planet.
     python generate.py countries                       # 241 countries/territories (718 .glb, ~40 MB)
     python generate.py country-capitals                # 183 capitals, 8 UN SDG region groups
     python generate.py most-populated-cities           # top 100, one group per continent
+    python generate.py top-openspace-cities            # top 50 by OpenSpace launches
     python generate.py us-state-capitals               # 50 capitals (city limits)
     python generate.py style-test --only "New York"    # every style, side by side
     python preview.py "New York"                       # offline style preview PNG
@@ -79,6 +80,11 @@ source and its terms; all boundary data must come from public domain sources.
   centres span several cities (Guangzhou, 43 million). Names as in GHS-UCDB; the 2025
   population is in each description. Capitals are its `GC_UCM_CAP` flag; continents for
   the top 100 come from the Natural Earth country containing each centre.
+- **Top OpenSpace cities:** launch counts per location from the usage statistics at
+  status.openspaceproject.com (`data/openspace_usage.json`, downloaded once; delete it to
+  refresh). Each location goes to the GHS-UCDB urban centre containing it, else the nearest
+  within 25 km; the top 50 centres by all-time launches are kept (~75% of all launches;
+  the rest are in smaller towns or farther out).
 - **US state capitals:** US Census Bureau 2024 Places (public domain): official city
   limits, so e.g. Juneau is ~7,000 km².
 - Cities use 10 km grid lines, a 250 m-1 km border band and 50 m simplification

@@ -412,6 +412,101 @@ class MostPopulatedCities(GHSUrbanCentres):
         )
 
 
+OPENSPACE_USAGE_URL = "https://status.openspaceproject.com/assets/usage-D_1U0_0U.json"
+
+
+class TopOpenSpaceCities(GHSUrbanCentres):
+    """The 50 urban centres where OpenSpace is launched most, from the usage statistics
+    published at status.openspaceproject.com. Each launch location (lat/lng, ~100 m) is
+    assigned to the GHS-UCDB urban centre containing it, else the nearest centre within
+    NEAR_KM (suburbs and small towns around a city); the rest is not counted."""
+
+    COUNT = 50
+    NEAR_KM = 25.0
+
+    def __init__(self):
+        super().__init__(
+            key="OSCity",
+            title="Top OpenSpace Cities",
+            url=GHS_UCDB_URL,
+            filename="ghs_ucdb/GHS_UCDB_GLOBE_R2024A_V1_2.zip",
+            attribution=GHS_UCDB_ATTRIBUTION,
+            groups=[Group(_snake(c), f"Top OpenSpace Cities in {c}") for c in CONTINENTS],
+            folder="top_openspace_cities",
+            license=GHS_UCDB_LICENSE + (
+                " Ranked by OpenSpace launch counts from the usage statistics at "
+                "status.openspaceproject.com (aggregate counts per location, assigned to "
+                "urban centres); continents from the Natural Earth country (public domain) "
+                "containing each centre."
+            ),
+            style_overrides=CITY_STYLE,
+        )
+
+    def usage_path(self) -> Path:
+        p = DATA_DIR / "openspace_usage.json"
+        if not p.exists():
+            print(f"Downloading {OPENSPACE_USAGE_URL}")
+            urllib.request.urlretrieve(OPENSPACE_USAGE_URL, p)
+        return p
+
+    def launches(self, centres: list[dict], geoms: list) -> tuple[dict, dict]:
+        """Returns ({centre index: launches}, summary counts)."""
+        import json
+        import math
+
+        import numpy as np
+        import shapely
+
+        data = json.loads(self.usage_path().read_text(encoding="utf-8"))
+        places = [(p["lng"], p["lat"], sum(p["months"][1::2])) for p in data["places"]]
+        pts = shapely.points([(x, y) for x, y, _ in places])
+        tree = shapely.STRtree(geoms)
+        counts: dict[int, int] = {}
+        total = inside = near = 0
+        hit_pt, hit_c = tree.query(pts, predicate="within")
+        assigned = {}
+        for pi, ci in zip(hit_pt, hit_c):
+            assigned.setdefault(int(pi), int(ci))  # centres don't overlap
+        for i, (lng, lat, n) in enumerate(places):
+            total += n
+            ci = assigned.get(i)
+            if ci is not None:
+                inside += n
+            else:
+                c, d = tree.query_nearest(pts[i], return_distance=True, all_matches=False)
+                km = float(d[0]) * 111.2 * max(0.2, math.cos(math.radians(lat)))
+                if km > self.NEAR_KM:
+                    continue
+                ci = int(c[1]) if getattr(c, "ndim", 1) == 2 else int(c[0])
+                near += n
+            counts[ci] = counts.get(ci, 0) + n
+        return counts, {"total": total, "inside": inside, "near": near}
+
+    def regions(self) -> list[Region]:
+        centres = self.centres()
+        geoms = [_mollweide_to_lonlat(_gpkg_geometry(c["geom"])) for c in centres]
+        counts, summary = self.launches(centres, geoms)
+        order = sorted(counts, key=lambda i: -counts[i])[: self.COUNT]
+        shown = sum(counts[i] for i in order)
+        print(f'Launches: {summary["total"]:,}; in an urban centre {summary["inside"]:,}, '
+              f'within {self.NEAR_KM:.0f} km {summary["near"]:,}; top {self.COUNT} '
+              f'cover {shown:,} ({shown / summary["total"]:.0%})')
+        top = [centres[i] for i in order]
+        launches = {centres[i]["ID_UC_G0"]: counts[i] for i in order}
+        rank = {c["ID_UC_G0"]: r + 1 for r, c in enumerate(top)}
+        continent = _continent_lookup()
+        return self.make_regions(
+            top,
+            group_of=lambda c: _snake(continent(_mollweide_to_lonlat(_gpkg_geometry(c["geom"])))),
+            note_of=lambda c: (
+                f'Rank {rank[c["ID_UC_G0"]]} of {self.COUNT} OpenSpace cities: '
+                f'{launches[c["ID_UC_G0"]]:,} launches (OpenSpace usage statistics, all time, '
+                f'launches within or up to {self.NEAR_KM:.0f} km of the urban centre). '
+                + _population_note(c)
+            ),
+        )
+
+
 CONTINENTS = ["Asia", "Africa", "Europe", "North America", "South America", "Oceania"]
 
 
@@ -520,5 +615,6 @@ SOURCES = {
     "countries": Countries,
     "country-capitals": CountryCapitals,
     "most-populated-cities": MostPopulatedCities,
+    "top-openspace-cities": TopOpenSpaceCities,
     "us-state-capitals": USStateCapitals,
 }
