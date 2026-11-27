@@ -3,7 +3,7 @@
 A TypeScript + Vite + React app that captures the output of a system audio
 device, runs an FFT on it (via the Web Audio `AnalyserNode`), and drives
 OpenSpace properties from the frequency-band energies — using the
-[OpenSpace JavaScript API](../openspace-api-js) (`openspace-api-js`) over
+[OpenSpace JavaScript API](https://www.npmjs.com/package/openspace-api-js) (`openspace-api-js`) over
 OpenSpace's WebSocket interface.
 
 ## How it works
